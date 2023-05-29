@@ -1,0 +1,83 @@
+[
+  {
+    "_id": "67rdca3eeb7f6fgeed471818",
+    "name": "Вода",
+    "userId": null,
+    "proteins": 0,
+    "fats": 0,
+    "carbohydrates": 0,
+    "calories": 0
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471820",
+    "name": "Сахар",
+    "userId": null,
+    "proteins": 0,
+    "fats": 0,
+    "carbohydrates": 100,
+    "calories": 400
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471814",
+    "name": "Гречка",
+    "userId": null,
+    "proteins": 12.6,
+    "fats": 3.3,
+    "carbohydrates": 57.1,
+    "calories": 308
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471822",
+    "name": "Рис",
+    "userId": null,
+    "proteins": 6.6,
+    "fats": 0.6,
+    "carbohydrates": 79.3,
+    "calories": 360
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471824",
+    "name": "Свинина",
+    "userId": null,
+    "proteins": 14.3,
+    "fats": 33.3,
+    "carbohydrates": 0,
+    "calories": 357
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471829",
+    "name": "Говядина",
+    "userId": null,
+    "proteins": 22,
+    "fats": 5,
+    "carbohydrates": 0,
+    "calories": 133
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471829",
+    "name": "Курица",
+    "userId": null,
+    "proteins": 16,
+    "fats": 14,
+    "carbohydrates": 0,
+    "calories": 190
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471829",
+    "name": "Яйцо",
+    "userId": null,
+    "proteins": 12.6,
+    "fats": 10.6,
+    "carbohydrates": 1.1,
+    "calories": 190
+  },
+  {
+    "_id": "67rdca3eeb7f6fgeed471829",
+    "name": "Овощи",
+    "userId": null,
+    "proteins": 0.9,
+    "fats": 0.2,
+    "carbohydrates": 2.7,
+    "calories": 190
+  }
+]
