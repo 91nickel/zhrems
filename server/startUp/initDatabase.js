@@ -1,5 +1,5 @@
-const Product = require('../models/Product')
-const productMock = require('../mock/product.json')
+const Product = require('models/Product')
+const productMock = require('mock/product.json')
 
 const initDatabase = async () => {
     console.log('initDatabase')

@@ -1,5 +1,5 @@
 const express = require('express')
-const Meal = require('../models/Meal')
+const Meal = require('models/Meal')
 
 const router = express.Router({mergeParams: true})
 

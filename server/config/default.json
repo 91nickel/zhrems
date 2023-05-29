@@ -1,4 +1,6 @@
 {
   "port": 8080,
-  "mongDbConnectionString": "mongodb+srv://91nickel:I5fDwHQyxCynARKD@cluster0.ady9s06.mongodb.net/zhrems?retryWrites=true&w=majority"
+  "mongoDbConnectionString": "mongodb+srv://91nickel:I5fDwHQyxCynARKD@cluster0.ady9s06.mongodb.net/zhrems?retryWrites=true&w=majority",
+  "jwtAccessSecret": "qwerty",
+  "jwtRefreshSecret": "ytrewq"
 }
