@@ -3,10 +3,10 @@ const Product = require('../models/Product')
 
 const router = express.Router({mergeParams: true})
 
-// дефолтные продукты
-router.get('/', async (request, response) => {
+router.get('/:id?', async (request, response) => {
     try {
-        const result = await Product.find({userId: null})
+        console.log(request.url, request.body)
+        const result = await Product.find()
         response.status(200).json(result)
     } catch (error) {
         response.status(500).json({
@@ -15,11 +15,29 @@ router.get('/', async (request, response) => {
     }
 })
 
-// кастомные продукты пользователя
-router.get('/:userId', async (request, response) => {
+router.post('/', async (request, response) => {
     try {
-        const result = await Product.find({userId: request.params.userId})
-        response.status(200).json(result)
+        console.log(request.url, request.body)
+    } catch (error) {
+        response.status(500).json({
+            message: 'Server error. Try later.'
+        })
+    }
+})
+
+router.put('/:id', async (request, response) => {
+    try {
+        console.log(request.url, request.body)
+    } catch (error) {
+        response.status(500).json({
+            message: 'Server error. Try later.'
+        })
+    }
+})
+
+router.delete('/:id', async (request, response) => {
+    try {
+        console.log(request.url, request.body)
     } catch (error) {
         response.status(500).json({
             message: 'Server error. Try later.'
