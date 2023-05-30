@@ -11,6 +11,10 @@ class TokenService {
         return {accessToken, refreshToken, expiresIn: 3600}
     }
 
+    delete (user) {
+        return Token.findOneAndDelete({user})
+    }
+
     async save (user, refreshToken) {
         const data = await Token.findOne({user})
         if (data) {
@@ -18,6 +22,14 @@ class TokenService {
             return await data.save()
         }
         return await Token.create({user, refreshToken})
+    }
+
+    async validateAccess (accessToken) {
+        try {
+            return await jwt.verify(accessToken, config.get('jwtAccessSecret'))
+        } catch (error) {
+            return null
+        }
     }
 
     async validateRefresh (refreshToken) {

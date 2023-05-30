@@ -4,13 +4,13 @@ const schema = new Schema(
     {
         name: {type: String, required: true},
         desc: {type: String},
-        // если указан userId, либо дефолтное если не указан
-        userId: {type: Schema.Types.ObjectId, ref: 'User'},
-        // на 100 г
+        // РµСЃР»Рё СѓРєР°Р·Р°РЅ userId, Р»РёР±Рѕ РґРµС„РѕР»С‚РЅРѕРµ РµСЃР»Рё РЅРµ СѓРєР°Р·Р°РЅ
+        user: {type: Schema.Types.ObjectId, ref: 'User'},
+        // РЅР° 100 Рі
         proteins: {type: Number, required: true},
         carbohydrates: {type: Number, required: true},
         fats: {type: Number, required: true},
-        // в граммах
+        // РІ РіСЂР°РјРјР°С…
         weight: {type: Number, required: true},
     },
     {

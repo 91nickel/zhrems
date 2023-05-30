@@ -1,46 +1,82 @@
 const express = require('express')
 const Meal = require('models/Meal')
+const auth = require('middleware/auth.middleware')
 
 const router = express.Router({mergeParams: true})
 
-router.get('/:id?', async (request, response) => {
+router.get('/:id?', auth, async (request, response) => {
     try {
-        const result = await Meal.find()
-        response.status(200).json(result)
+        const {id} = request.params
+        const user = request.user
+
+        if (id) {
+            const meal = await Meal.findById(id)
+            if (!meal) {
+                response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
+            }
+            if (meal.user && meal.user !== user._id && user.role !== 'admin') {
+                response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+            }
+            return response.json(meal)
+        }
+
+        const meals = await Meal.find({$or: [{user: null}, {user: user._id}]})
+        return response.json(meals)
     } catch (error) {
-        response.status(500).json({
-            message: 'Server error. Try later.'
-        })
+        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
     }
 })
 
-router.post('/', async (request, response) => {
+router.post('/', auth, async (request, response) => {
     try {
         console.log(request.url, request.body)
+        const user = request.user
+        const fields = {...request.body, user: user.role !== 'admin' ? user._id : request.body.user}
+        const meal = await Meal.create(fields)
+        return response.json(meal)
     } catch (error) {
-        response.status(500).json({
-            message: 'Server error. Try later.'
-        })
+        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
     }
 })
 
-router.put('/:id', async (request, response) => {
+router.patch('/:id', auth, async (request, response) => {
     try {
         console.log(request.url, request.body)
+        const {id} = request.params
+        const user = request.user
+        if (request.body.user !== user._id && user.role !== 'admin') {
+            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+        }
+        const meal = await Meal.findByIdAndUpdate(id, request.body, {new: true})
+        if (!meal)
+            return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
+        return response.json(meal)
+
     } catch (error) {
-        response.status(500).json({
-            message: 'Server error. Try later.'
-        })
+        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
     }
 })
 
-router.delete('/:id', async (request, response) => {
+router.delete('/:id', auth, async (request, response) => {
     try {
         console.log(request.url, request.body)
+        const {id} = request.params
+        const user = request.user
+        const meal = await Meal.findById(id)
+
+        if (!meal) {
+            return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
+        }
+
+        if (request.body.user !== user._id && user.role !== 'admin') {
+            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+        }
+
+        await Meal.findByIdAndRemove(id)
+        return response.json({})
+
     } catch (error) {
-        response.status(500).json({
-            message: 'Server error. Try later.'
-        })
+        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
     }
 })
 
