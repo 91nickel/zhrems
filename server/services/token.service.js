@@ -19,6 +19,22 @@ class TokenService {
         }
         return await Token.create({user, refreshToken})
     }
+
+    async validateRefresh (refreshToken) {
+        try {
+            return await jwt.verify(refreshToken, config.get('jwtRefreshSecret'))
+        } catch (error) {
+            return null
+        }
+    }
+
+    async findToken (refreshToken) {
+        try {
+            return await Token.findOne({refreshToken})
+        } catch (error) {
+            return null
+        }
+    }
 }
 
 module.exports = new TokenService()
