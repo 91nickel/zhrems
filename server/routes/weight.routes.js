@@ -1,5 +1,5 @@
 const express = require('express')
-const Weight = require('../models/Weight')
+const Weight = require('models/Weight')
 
 const router = express.Router({mergeParams: true})
 const auth = require('middleware/auth.middleware')

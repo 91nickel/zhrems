@@ -1,0 +1,5 @@
+{
+  "mongoEndpoint": "http://localhost:4000/api/v1/",
+  "apiEndpoint": "https://fast-company-f70af-default-rtdb.europe-west1.firebasedatabase.app/",
+  "isFirebase": true
+}
