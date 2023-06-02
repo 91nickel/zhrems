@@ -2,6 +2,7 @@ const express = require('express')
 const bcrypt = require('bcryptjs')
 const {check, validationResult} = require('express-validator')
 const User = require('models/User')
+const Account = require('models/Account')
 const tokenService = require('services/token.service')
 const auth = require('middleware/auth.middleware')
 const {generateUserData} = require('helpers')
@@ -15,6 +16,7 @@ const router = express.Router({mergeParams: true})
 // 5. generate tokens
 // /api/auth/signUp
 router.post('/signUp', [
+    check('name', 'Укажите имя').isLength({min: 1}),
     check('email', 'Некорректный email').isEmail(),
     check('password', 'Минимальная длина пароля - 8 символов').isLength({min: 8}),
     async (request, response) => {
@@ -27,23 +29,25 @@ router.post('/signUp', [
             }
             const {email, password} = request.body
 
-            const existingUser = await User.findOne({email})
-            if (existingUser) {
+            const existingAccount = await Account.findOne({email})
+            if (existingAccount) {
                 return response.status(400).json({error: {message: 'EMAIL_EXISTS', code: 400}})
             }
 
-            const newUser = await User.create({
+            const account = await Account.create({email, password: await bcrypt.hash(password.toString(), 12)})
+            console.log('Successfully created account', account)
+
+            const user = await User.create({
                 ...generateUserData(),
                 ...request.body,
-                role: 'user',
-                password: await bcrypt.hash(password.toString(), 12),
+                account: account._id,
             })
+            console.log('Successfully created user', user)
 
-            const tokens = tokenService.generate({_id: newUser._id, role: newUser.role})
-            await tokenService.save(newUser._id, tokens.refreshToken)
+            const tokens = tokenService.generate({localId: user._id, admin: account.admin})
+            await tokenService.save(account._id, tokens.refreshToken)
 
-            return response.status(201).json({...tokens, userId: newUser._id})
-
+            return response.status(201).json(tokens)
         } catch (error) {
             console.error(error)
             response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
@@ -70,22 +74,25 @@ router.post('/signInWithPassword', [
 
             const {email, password} = request.body
 
-            const existingUser = await User.findOne({email})
-            if (!existingUser) {
+            const account = await Account.findOne({email})
+            if (!account) {
+                return response.status(404).json({error: {message: 'ACCOUNT_NOT_FOUND', code: 404}})
+            }
+
+            const user = await User.findOne({account: account._id})
+            if (!user) {
                 return response.status(404).json({error: {message: 'USER_NOT_FOUND', code: 404}})
             }
 
-            const isPasswordsEqual = await bcrypt.compare(password.toString(), existingUser.password)
-
+            const isPasswordsEqual = await bcrypt.compare(password.toString(), account.password)
             if (!isPasswordsEqual) {
                 return response.status(403).json({error: {message: 'INVALID_PASSWORD', code: 403}})
             }
 
-            const tokens = tokenService.generate({_id: existingUser._id, role: existingUser.role})
-            await tokenService.save(existingUser._id, tokens.refreshToken)
+            const tokens = tokenService.generate({localId: user._id, admin: account.admin})
+            await tokenService.save(account._id, tokens.refreshToken)
 
-            return response.status(200).json({...tokens, userId: existingUser._id})
-
+            return response.status(200).json(tokens)
         } catch (error) {
             console.error(error)
             response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
@@ -117,9 +124,10 @@ router.post('/token', async (request, response) => {
             return response.status(401).json({error: {message: 'Unauthorized', code: 401}})
         }
 
-        const tokens = await tokenService.generate({
-            id: data._id
-        })
+        const account = await Account.findById(dbToken.account)
+        const user = await User.find({account: account._id})
+
+        const tokens = await tokenService.generate({localId: user._id, admin: account.admin})
         await tokenService.save(data._id, tokens.refreshToken)
 
         return response.status(200).json({...tokens, userId: data._id})

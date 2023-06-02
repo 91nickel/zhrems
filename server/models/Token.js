@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose')
 
 const schema = new Schema(
     {
-        user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+        account: {type: Schema.Types.ObjectId, ref: 'Account', required: true},
         refreshToken: {type: String, required: true},
     },
     {

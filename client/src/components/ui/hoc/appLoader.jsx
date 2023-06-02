@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
-import { loadQualitiesList } from 'store/quality'
-import { loadProfessionsList } from 'store/profession'
+// import { loadQualitiesList } from 'store/quality'
+// import { loadProfessionsList } from 'store/profession'
 import {
     getUsersIsAuthorized,
     getUsersIsLoading,
@@ -16,25 +16,23 @@ const AppLoader = ({children}) => {
 
     const dispatch = useDispatch()
     const isAuthorized = useSelector(getUsersIsAuthorized())
-    const isUsersLoading = useSelector(getUsersIsLoading())
-    const isUsersLoaded = useSelector(getUsersIsDataLoaded())
-    const isProcessingAuth = useSelector(getUsersIsProcessingAuth())
+    // const isUsersLoading = useSelector(getUsersIsLoading())
+    // const isUsersLoaded = useSelector(getUsersIsDataLoaded())
+    // const isProcessingAuth = useSelector(getUsersIsProcessingAuth())
 
     useEffect(() => {
-        dispatch(loadQualitiesList())
-        dispatch(loadProfessionsList())
         dispatch(setAuth())
     }, [])
 
-    useEffect(() => {
-        if (isAuthorized && !isUsersLoaded)
-            dispatch(loadUsersList())
-    }, [isAuthorized])
+    // useEffect(() => {
+    //     if (isAuthorized && !isUsersLoaded)
+    //         dispatch(loadUsersList())
+    // }, [isAuthorized])
 
     // console.log(isProcessingAuth, isAuthorized, isUsersLoaded)
 
-    if (isProcessingAuth || (isAuthorized && !isUsersLoaded))
-        return 'App loading...'
+    // if (isProcessingAuth || (isAuthorized && !isUsersLoaded))
+    //     return 'App loading...'
 
     return children
 }

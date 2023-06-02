@@ -1,10 +1,10 @@
+import React from 'react'
 import { createAction, createSlice } from '@reduxjs/toolkit'
 import userService from 'services/user.service'
 import authService from 'services/auth.service'
 import localStorageService from 'services/localStorage.service'
-import randomInt from 'utils/randomInt'
-import history from 'utils/history'
-import generateAuthError from '../utils/generateAuthError'
+
+import generateAuthError from 'utils/generateAuthError'
 
 const slice = createSlice({
     name: 'user',
@@ -103,9 +103,9 @@ export const signIn = ({payload, redirect}) => async dispatch => {
         const data = await authService.login({email, password})
         dispatch(authRequestSuccess({userId: data.localId}))
         localStorageService.setTokens(data)
-        history.push(redirect)
     } catch (error) {
-        const {code, message} = error.response.data.error
+        console.error(error)
+        const {code, message} = error?.response?.data?.error
         if (code === 400) {
             const errorMessage = generateAuthError(message)
             dispatch(authRequestFailed(generateAuthError(errorMessage)))
@@ -118,17 +118,9 @@ export const signIn = ({payload, redirect}) => async dispatch => {
 export const signUp = ({email, password, ...rest}) => async dispatch => {
     dispatch(authRequested())
     try {
-        const data = await authService.register({email, password})
+        const data = await authService.register({email, password, ...rest})
         localStorageService.setTokens(data)
         dispatch(authRequestSuccess({userId: data.localId}))
-        dispatch(createUser({
-            _id: data.localId,
-            email,
-            rate: randomInt(1, 5),
-            completedMeetings: randomInt(0, 200),
-            image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1).toString(36).substring(7)}.svg`,
-            ...rest
-        }))
     } catch (error) {
         dispatch(authRequestFailed(error.message))
     }
@@ -140,7 +132,6 @@ function createUser (payload) {
         try {
             const {content} = await userService.create(payload)
             dispatch(userCreated(content))
-            history.push('/users')
         } catch (error) {
             dispatch(userCreateFailed(error.message))
         }
@@ -151,7 +142,6 @@ export const logOut = () => {
     return function (dispatch) {
         localStorageService.removeAuthData()
         dispatch(loggedOut())
-        history.push('/')
     }
 }
 

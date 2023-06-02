@@ -4,24 +4,27 @@ const Token = require('models/Token')
 
 class TokenService {
     generate (payload) {
-        const accessToken = jwt.sign(payload, config.get('jwtAccessSecret'), {
-            expiresIn: '1h',
-        })
+        const accessToken = jwt.sign(payload, config.get('jwtAccessSecret'), {expiresIn: '1h'})
         const refreshToken = jwt.sign(payload, config.get('jwtRefreshSecret'))
-        return {accessToken, refreshToken, expiresIn: 3600}
+        return {
+            idToken: accessToken,
+            refreshToken,
+            localId: payload.localId,
+            expiresIn: 3600,
+        }
     }
 
     delete (user) {
         return Token.findOneAndDelete({user})
     }
 
-    async save (user, refreshToken) {
-        const data = await Token.findOne({user})
+    async save (account, refreshToken) {
+        const data = await Token.findOne({user: account})
         if (data) {
             data.refreshToken = refreshToken
             return await data.save()
         }
-        return await Token.create({user, refreshToken})
+        return await Token.create({account, refreshToken})
     }
 
     async validateAccess (accessToken) {
