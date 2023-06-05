@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import * as yup from 'yup'
 
 import TextField from 'components/common/form/textField'
@@ -10,14 +10,14 @@ import { getAuthErrors, getUsersIsAuthorized, signIn } from 'store/user'
 const LoginForm = () => {
     const dispatch = useDispatch()
     const [data, setData] = useState({email: '', password: '', stayOn: false})
-    const globalError = useSelector(getAuthErrors())
     const [errors, setErrors] = useState({})
+    const globalError = useSelector(getAuthErrors())
     const isLoggedIn = useSelector(getUsersIsAuthorized())
-    const navigate = useNavigate()
 
-    if (isLoggedIn) {
-        return <Navigate to="/" replace={true}/>
-    }
+    useEffect(() => {
+        validate()
+    }, [data])
+
 
     const validateScheme = yup.object().shape({
         password: yup.string()
@@ -28,10 +28,6 @@ const LoginForm = () => {
         email: yup.string().required('Электронная почта обязательна для заполнения').email('Электронная почта указана в неверном формате'),
     })
 
-    useEffect(() => {
-        validate()
-    }, [data])
-
     function validate () {
         validateScheme.validate(data)
             .then(() => setErrors({}))
@@ -39,23 +35,17 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0
     }
 
-    const handleChange = (target) => {
-        setData(prevState => (
-            {
-                ...prevState,
-                [target.name]: target.value,
-            }
-        ))
+    if (isLoggedIn) {
+        return <Navigate to="../../dashboard" replace={true}/>
     }
+
+    const handleChange = target => setData(prevState => ({...prevState, [target.name]: target.value}))
 
     const handleSubmit = (event) => {
         event.preventDefault()
         const isValid = validate()
         if (!isValid) return
         dispatch(signIn({payload: data}))
-            .then(() => {
-                navigate('/', {replace: true})
-            })
     }
 
     const isValid = Object.keys(errors).length === 0
@@ -86,7 +76,6 @@ const LoginForm = () => {
             >
                 Запомнить меня
             </CheckboxField>
-            {/*{globalError && <p className="text-danger">{globalError}</p>}*/}
             <button className="btn btn-primary w-100 mx-auto" type="submit" disabled={!isValid}>Отправить</button>
         </form>
     )

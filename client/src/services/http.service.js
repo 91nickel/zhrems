@@ -10,18 +10,25 @@ const http = axios.create({
 
 http.interceptors.request.use(
     async function (config) {
-        console.log('http.service->request.interceptor', config)
-
-        const expireDate = localStorageService.getTokenExpirationDate()
+        const hasAccessToken = !!localStorageService.getAccessToken()
+        const authExpired = hasAccessToken && localStorageService.getTokenExpirationDate() < Date.now()
         const refreshToken = localStorageService.getRefreshToken()
-        if (refreshToken && expireDate < Date.now()) {
-            const data = await authService.refresh()
-            localStorageService.setTokens({
-                refreshToken: data.refresh_token,
-                idToken: data.id_token,
-                expiresIn: data.expires_in,
-                localId: data.user_id,
-            })
+
+        // console.log('http.service->request.interceptor.onFulfilled', {config, hasAccessToken, authExpired, refreshToken})
+
+        if (refreshToken && authExpired) {
+            try {
+                const data = await authService.refresh()
+                localStorageService.setTokens({
+                    refreshToken: data.refresh_token,
+                    idToken: data.id_token,
+                    expiresIn: data.expires_in,
+                    localId: data.user_id,
+                })
+            } catch (error) {
+                console.error('Auth refresh failed', error)
+                localStorageService.removeAuthData()
+            }
         }
 
         const accessToken = localStorageService.getAccessToken()
@@ -32,19 +39,21 @@ http.interceptors.request.use(
         return config
     },
     function (error) {
+        console.log('http.service->request.interceptor.onRejected', )
         return Promise.reject(error)
     }
 )
 
 http.interceptors.response.use(
     function (response) {
+        console.log('http.service.response.interceptor.onFulfilled')
         return response
     },
     function (error) {
+        console.log('http.service.response.interceptor.onRejected')
         const expectedErrors = error.response && error.response.status >= 400 && error.response.status < 500
         if (!expectedErrors) {
-            // console.log(error)
-            toast.info('Something went wrong. Try later...')
+            // console.error(error)
             toast.error('Something went wrong. Try later...')
         }
         return Promise.reject(error)

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, Route, Routes, NavLink, Navigate } from 'react-router-dom'
+import { Link, Route, Routes, NavLink, Navigate, Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 // import Users from 'layouts/users'
 // import Login from 'layouts/login'
@@ -11,6 +11,8 @@ import AppLoader from './components/ui/hoc/appLoader'
 import LoginLayout from 'layouts/login.layout'
 import RegisterLayout from 'layouts/register.layout'
 import HomeLayout from 'layouts/home.layout'
+import Dashboard from 'components/ui/dashBoard'
+import ProtectedRoute from 'components/ProtectedRoute'
 
 const App = () => {
 
@@ -49,12 +51,56 @@ const App = () => {
                     <div className="row">
                         <div className="col-12">
                             <Routes>
-                                <Route path="/" index element={<HomeLayout />}/>
+                                <Route path="/" index element={<HomeLayout/>}/>
                                 <Route path="auth/*">
                                     <Route index element={<Navigate to={'signin'}/>}/>
                                     <Route path="signin" element={<LoginLayout/>}/>
                                     <Route path="signup" element={<RegisterLayout/>}/>
                                     <Route path="*" element={<Navigate to={'signin'}/>}/>
+                                </Route>
+                                <Route
+                                    path="/dashboard"
+                                    element={
+                                        <ProtectedRoute redirectTo="/auth/signin">
+                                            <Dashboard/>
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/products/*"
+                                    element={
+                                        <ProtectedRoute redirectTo="/auth/signin">
+                                            <Outlet/>
+                                        </ProtectedRoute>
+                                    }
+                                >
+                                    <Route index element={<>ProductsList</>}/>
+                                    <Route path=":id" element={<>ProductView</>}/>
+                                    <Route path=":id/edit" element={<>ProductEdit</>}/>
+                                </Route>
+                                <Route
+                                    path="/meals"
+                                    element={
+                                        <ProtectedRoute redirectTo="/auth/signin">
+                                            <Outlet/>
+                                        </ProtectedRoute>
+                                    }
+                                >
+                                    <Route index element={<>MealsList</>}/>
+                                    <Route path=":id" element={<>MealView</>}/>
+                                    <Route path=":id/edit" element={<>MealEdit</>}/>
+                                </Route>
+                                <Route
+                                    path="/users"
+                                    element={
+                                        <ProtectedRoute redirectTo="/auth/signin">
+                                            <Outlet/>
+                                        </ProtectedRoute>
+                                    }
+                                >
+                                    <Route index element={<>UsersList</>}/>
+                                    <Route path=":id" element={<>UserView</>}/>
+                                    <Route path=":id/edit" element={<>UserEdit</>}/>
                                 </Route>
                                 {/*<Route*/}
                                 {/*    path="posts/*"*/}
