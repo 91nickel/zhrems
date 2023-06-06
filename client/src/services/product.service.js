@@ -1,15 +1,13 @@
 import httpService from './http.service'
-import localStorageService from './localStorage.service'
-const entrypoint = 'user/'
+const entrypoint = 'product/'
 
 const service = {
     get: async () => {
         const {data} = await httpService.get(entrypoint)
         return data
     },
-    getCurrentUser: async () => {
-        // console.log('user.service.getCurrentUser()', localStorageService.getUserId())
-        const {data} = await httpService.get(entrypoint + localStorageService.getUserId())
+    getById: async (id) => {
+        const {data} = await httpService.get(entrypoint + id)
         return data
     },
     create: async (payload) => {

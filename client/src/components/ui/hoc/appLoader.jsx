@@ -3,25 +3,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 // import { loadQualitiesList } from 'store/quality'
 // import { loadProfessionsList } from 'store/profession'
-import {
-    getUsersIsAuthorized,
-    getUsersIsLoading,
-    getUsersIsDataLoaded,
-    getUsersIsProcessingAuth,
-    loadUsersList,
-    setAuth
-} from 'store/user'
-
+import {action, selector} from 'store/user'
 const AppLoader = ({children}) => {
 
     const dispatch = useDispatch()
-    const isAuthorized = useSelector(getUsersIsAuthorized())
+    const isAuthorized = useSelector(selector.isAuthorized())
     // const isUsersLoading = useSelector(getUsersIsLoading())
     // const isUsersLoaded = useSelector(getUsersIsDataLoaded())
     // const isProcessingAuth = useSelector(getUsersIsProcessingAuth())
 
     useEffect(() => {
-        dispatch(setAuth())
+        dispatch(action.setAuth())
     }, [])
 
     // useEffect(() => {

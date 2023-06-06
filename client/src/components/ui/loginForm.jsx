@@ -5,14 +5,14 @@ import * as yup from 'yup'
 
 import TextField from 'components/common/form/textField'
 import CheckboxField from 'components/common/form/checkboxField'
-import { getAuthErrors, getUsersIsAuthorized, signIn } from 'store/user'
-
+import { action, selector } from 'store/user'
+// getAuthErrors, getUsersIsAuthorized, signIn
 const LoginForm = () => {
     const dispatch = useDispatch()
     const [data, setData] = useState({email: '', password: '', stayOn: false})
     const [errors, setErrors] = useState({})
-    const globalError = useSelector(getAuthErrors())
-    const isLoggedIn = useSelector(getUsersIsAuthorized())
+    const globalError = useSelector(selector.authErrors())
+    const isLoggedIn = useSelector(selector.isAuthorized())
 
     useEffect(() => {
         validate()

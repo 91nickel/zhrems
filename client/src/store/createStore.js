@@ -1,15 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import UserReducer from 'store/user'
-// import QualityReducer from 'store/quality'
-// import ProfessionReducer from 'store/profession'
-// import CommentReducer from 'store/comment'
+import ProductReducer from 'store/product'
+import MealReducer from 'store/meal'
 
 const rootReducer = combineReducers({
     user: UserReducer,
-
-    // quality: QualityReducer,
-    // profession: ProfessionReducer,
-    // comment: CommentReducer,
+    product: ProductReducer,
+    meal: MealReducer,
 })
 
 export function createStore () {

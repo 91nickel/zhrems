@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import TextField from 'components/common/form/textField'
 import CheckboxField from 'components/common/form/checkboxField'
 import RadioField from 'components/common/form/radioField'
-import { getAuthErrors, signUp } from 'store/user'
+import { action, selector } from 'store/user'
 
 import { validator } from 'utils/validator'
 
@@ -14,7 +14,7 @@ const RegisterForm = () => {
     const [data, setData] = useState({name: '', sex: 'male', email: '', password: '', license: false})
     const [errors, setErrors] = useState({})
     const navigate = useNavigate()
-    const globalError = useSelector(getAuthErrors())
+    const globalError = useSelector(selector.authErrors())
 
     useEffect(() => {
         validate()
@@ -53,7 +53,7 @@ const RegisterForm = () => {
         event.preventDefault()
         const isValid = validate()
         if (!isValid) return
-        dispatch(signUp(data))
+        dispatch(action.signUp(data))
             .then(() => {
                 navigate('/', {replace: true})
             })
