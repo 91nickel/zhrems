@@ -18,6 +18,10 @@ const service = {
         const {data} = await httpService.patch(entrypoint + payload._id, payload)
         return data
     },
+    delete: async (id) => {
+        const {data} = await httpService.delete(entrypoint + id)
+        return data
+    },
 }
 
 export default service

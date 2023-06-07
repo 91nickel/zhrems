@@ -53,7 +53,8 @@ http.interceptors.response.use(
         console.log('http.service.response.interceptor.onRejected')
         const expectedErrors = error.response && error.response.status >= 400 && error.response.status < 500
         if (!expectedErrors) {
-            // console.error(error)
+            console.error(error)
+            console.error(error?.response?.data?.error)
             toast.error('Something went wrong. Try later...')
         }
         return Promise.reject(error)

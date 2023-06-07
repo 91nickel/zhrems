@@ -1,7 +1,14 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Navigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import {selector} from 'store/user'
 
 function HomeLayout () {
+    const isAuthorized = useSelector(selector.isAuthorized())
+
+    if (isAuthorized)
+        return <Navigate to="/dashboard" />
+
     return (
         <div className="row mt-3 justify-content-center">
             <div className="col-12 col-md-6">

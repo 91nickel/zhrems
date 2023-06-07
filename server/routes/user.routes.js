@@ -1,5 +1,6 @@
 const express = require('express')
 const User = require('models/User')
+const Account = require('models/Account')
 const auth = require('middleware/auth.middleware')
 
 const router = express.Router({mergeParams: true})
@@ -10,7 +11,8 @@ router.get('/:id?', auth, async (request, response) => {
         const {id} = request.params
         if (id) {
             const user = await User.findOne({_id: id})
-            return response.json(user)
+            const account = await Account.findById(user.account)
+            return response.json({...user.toObject(), isAdmin: account.admin})
         }
         const userList = await User.find()
         return response.json(userList)

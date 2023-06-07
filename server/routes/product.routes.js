@@ -22,7 +22,8 @@ router.get('/:id?', auth, async (request, response) => {
             return response.json(product)
         }
 
-        const products = await Product.find({$or: [{user: null}, {user: user._id}]})
+        const products = await Product.find({$or: [{user: null}, {user: user.localId}]})
+
         return response.json(products)
 
     } catch (error) {

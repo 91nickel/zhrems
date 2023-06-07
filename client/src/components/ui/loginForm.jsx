@@ -6,13 +6,13 @@ import * as yup from 'yup'
 import TextField from 'components/common/form/textField'
 import CheckboxField from 'components/common/form/checkboxField'
 import { action, selector } from 'store/user'
-// getAuthErrors, getUsersIsAuthorized, signIn
+
 const LoginForm = () => {
     const dispatch = useDispatch()
     const [data, setData] = useState({email: '', password: '', stayOn: false})
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.authErrors())
-    const isLoggedIn = useSelector(selector.isAuthorized())
+    const isAuthorized = useSelector(selector.isAuthorized())
 
     useEffect(() => {
         validate()
@@ -35,7 +35,7 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0
     }
 
-    if (isLoggedIn) {
+    if (isAuthorized === true) {
         return <Navigate to="../../dashboard" replace={true}/>
     }
 
@@ -45,7 +45,7 @@ const LoginForm = () => {
         event.preventDefault()
         const isValid = validate()
         if (!isValid) return
-        dispatch(signIn({payload: data}))
+        dispatch(action.signIn({payload: data}))
     }
 
     const isValid = Object.keys(errors).length === 0

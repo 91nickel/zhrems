@@ -11,6 +11,11 @@ async function authMiddleware (request, response, next) {
             return response.status(401).json({error: {message: 'Unauthorized', code: 401}})
         }
         request.user = await tokenService.validateAccess(token)
+
+        if (!request.user) {
+            return response.status(403).json({error: {message: 'Forbidden by auth middleware', code: 403}})
+        }
+
         next()
     } catch (error) {
         return response.status(401).json({error: {message: 'Unauthorized', code: 401}})

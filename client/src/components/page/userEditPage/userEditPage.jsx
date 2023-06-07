@@ -1,8 +1,7 @@
 import React from 'react'
+import { Link, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import UserEditForm from '../../ui/userEditForm'
-import { Link } from 'react-router-dom'
-import { useParams } from 'react-router'
+import UserEditForm from 'components/ui/userEditForm'
 
 const UserEditPage = () => {
     const {id} = useParams()

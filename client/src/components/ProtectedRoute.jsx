@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 function ProtectedRoute ({redirectTo, children}) {
     const location = useLocation()
     const isLoggedIn = useSelector(selector.isAuthorized())
-    if (!isLoggedIn) {
+    if (isLoggedIn === false) {
         return <Navigate to="/auth/signin" state={{referer: redirectTo ? redirectTo : location}}/>
     }
     return children

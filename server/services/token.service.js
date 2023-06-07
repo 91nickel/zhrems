@@ -8,8 +8,9 @@ class TokenService {
         const refreshToken = jwt.sign(payload, config.get('jwtRefreshSecret'))
         return {
             idToken: accessToken,
-            refreshToken,
+            refreshToken: refreshToken,
             localId: payload.localId,
+            isAdmin: payload.isAdmin,
             expiresIn: 3600,
         }
     }

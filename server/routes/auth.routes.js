@@ -89,7 +89,7 @@ router.post('/signInWithPassword', [
                 return response.status(403).json({error: {message: 'INVALID_PASSWORD', code: 403}})
             }
 
-            const tokens = tokenService.generate({localId: user._id, admin: account.admin})
+            const tokens = tokenService.generate({localId: user._id, isAdmin: account.admin})
             await tokenService.save(account._id, tokens.refreshToken)
 
             return response.status(200).json(tokens)

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, Route, Routes, NavLink, Navigate, Outlet } from 'react-router-dom'
+import { Route, Routes, NavLink, Navigate, Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 // import Users from 'layouts/users'
 // import Login from 'layouts/login'
@@ -7,12 +7,14 @@ import { ToastContainer } from 'react-toastify'
 // import NotFound from 'layouts/not-found'
 // import NavBar from 'components/ui/navBar'
 // import ProtectedRoute from 'components/common/protectedRoute'
-import AppLoader from './components/ui/hoc/appLoader'
+import AppLoader from './components/hoc/appLoader'
 import LoginLayout from 'layouts/login.layout'
 import RegisterLayout from 'layouts/register.layout'
 import HomeLayout from 'layouts/home.layout'
 import Dashboard from 'components/ui/dashBoard'
 import ProtectedRoute from 'components/ProtectedRoute'
+import ProductPage from 'components/page/product'
+import MealPage from 'components/page/meal'
 
 const App = () => {
 
@@ -48,74 +50,70 @@ const App = () => {
                     <div className="row">
                         {/*<NavBar pages={} />*/}
                     </div>
-                    <div className="row">
-                        <div className="col-12">
-                            <Routes>
-                                <Route path="/" index element={<HomeLayout/>}/>
-                                <Route path="auth/*">
-                                    <Route index element={<Navigate to={'signin'}/>}/>
-                                    <Route path="signin" element={<LoginLayout/>}/>
-                                    <Route path="signup" element={<RegisterLayout/>}/>
-                                    <Route path="*" element={<Navigate to={'signin'}/>}/>
-                                </Route>
-                                <Route
-                                    path="/dashboard"
-                                    element={
-                                        <ProtectedRoute redirectTo="/auth/signin">
-                                            <Dashboard/>
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/products/*"
-                                    element={
-                                        <ProtectedRoute redirectTo="/auth/signin">
-                                            <Outlet/>
-                                        </ProtectedRoute>
-                                    }
-                                >
-                                    <Route index element={<>ProductsList</>}/>
-                                    <Route path=":id" element={<>ProductView</>}/>
-                                    <Route path=":id/edit" element={<>ProductEdit</>}/>
-                                </Route>
-                                <Route
-                                    path="/meals"
-                                    element={
-                                        <ProtectedRoute redirectTo="/auth/signin">
-                                            <Outlet/>
-                                        </ProtectedRoute>
-                                    }
-                                >
-                                    <Route index element={<>MealsList</>}/>
-                                    <Route path=":id" element={<>MealView</>}/>
-                                    <Route path=":id/edit" element={<>MealEdit</>}/>
-                                </Route>
-                                <Route
-                                    path="/users"
-                                    element={
-                                        <ProtectedRoute redirectTo="/auth/signin">
-                                            <Outlet/>
-                                        </ProtectedRoute>
-                                    }
-                                >
-                                    <Route index element={<>UsersList</>}/>
-                                    <Route path=":id" element={<>UserView</>}/>
-                                    <Route path=":id/edit" element={<>UserEdit</>}/>
-                                </Route>
-                                {/*<Route*/}
-                                {/*    path="posts/*"*/}
-                                {/*    element={*/}
-                                {/*        <ProtectedRoute redirectTo="/auth/login">*/}
-                                {/*            <PostsLayout/>*/}
-                                {/*        </ProtectedRoute>*/}
-                                {/*    }>*/}
-                                {/*    <Route index element={<PostsListPage/>}/>*/}
-                                {/*    <Route path=":postId" element={<PostPage/>}/>*/}
-                                {/*</Route>*/}
-                                <Route path="*" element={<Navigate to="/"/>}/>
-                            </Routes>
-                        </div>
-                    </div>
+                    <Routes>
+                        <Route path="/" index element={<HomeLayout/>}/>
+                        <Route path="auth/*">
+                            <Route index element={<Navigate to={'signin'}/>}/>
+                            <Route path="signin" element={<LoginLayout/>}/>
+                            <Route path="signup" element={<RegisterLayout/>}/>
+                            <Route path="*" element={<Navigate to={'signin'}/>}/>
+                        </Route>
+                        <Route
+                            path="/dashboard"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signin">
+                                    <Dashboard/>
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/products/*"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signin">
+                                    <Outlet/>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<ProductPage.List/>}/>
+                            <Route path=":id" element={<ProductPage.View/>}/>
+                            <Route path=":id/edit" element={<ProductPage.Edit/>}/>
+                        </Route>
+                        <Route
+                            path="/meals"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signin">
+                                    <Outlet/>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<MealPage.List/>}/>
+                            <Route path=":id" element={<MealPage.View/>}/>
+                            <Route path=":id/edit" element={<MealPage.Edit/>}/>
+                        </Route>
+                        <Route
+                            path="/users"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signin">
+                                    <Outlet/>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<>UsersList</>}/>
+                            <Route path=":id" element={<>UserView</>}/>
+                            <Route path=":id/edit" element={<>UserEdit</>}/>
+                        </Route>
+                        {/*<Route*/}
+                        {/*    path="posts/*"*/}
+                        {/*    element={*/}
+                        {/*        <ProtectedRoute redirectTo="/auth/login">*/}
+                        {/*            <PostsLayout/>*/}
+                        {/*        </ProtectedRoute>*/}
+                        {/*    }>*/}
+                        {/*    <Route index element={<PostsListPage/>}/>*/}
+                        {/*    <Route path=":postId" element={<PostPage/>}/>*/}
+                        {/*</Route>*/}
+                        <Route path="*" element={<Navigate to="/"/>}/>
+                    </Routes>
                 </div>
                 {/*<NavBar {...{pages}}/>*/}
                 {/*<div className="row">*/}

@@ -9,12 +9,13 @@ import generateAuthError from 'utils/generateAuthError'
 const slice = createSlice({
     name: 'user',
     initialState: {
-        entities: null,
+        entities: [],
         isLoading: false,
         error: null,
-        auth: null,
+        auth: {userId: null, isAdmin: false},
+        user: {},
         isProcessingAuth: true,
-        isAuthorized: false,
+        isAuthorized: null,
         isDataLoaded: false,
     },
     reducers: {
@@ -46,12 +47,14 @@ const slice = createSlice({
             state.error = null
         },
         authRequestSuccess: (state, action) => {
-            state.auth = action.payload
+            state.auth = {userId: action.payload._id, isAdmin: action.payload.isAdmin}
+            state.user = action.payload
             state.isAuthorized = true
             state.isProcessingAuth = false
         },
         authRequestFailed: (state, action) => {
             state.error = action.payload
+            state.isAuthorized = false
             state.isProcessingAuth = false
         },
         loggedOut: (state,) => {
@@ -120,20 +123,20 @@ export const action = {
     },
 
     setAuth: () => async (dispatch, getState) => {
-        console.log('state.user.setAuth()',
-            {
-                accessToken: localStorageService.getAccessToken(),
-                refreshToken: localStorageService.getRefreshToken(),
-                expiration: localStorageService.getTokenExpirationDate(),
-                stateIsAuthorized: getState().user.isAuthorized,
-            }
-        )
+        // console.log('state.user.setAuth()',
+        //     {
+        //         accessToken: localStorageService.getAccessToken(),
+        //         refreshToken: localStorageService.getRefreshToken(),
+        //         expiration: localStorageService.getTokenExpirationDate(),
+        //         stateIsAuthorized: getState().user.isAuthorized,
+        //     }
+        // )
         const state = getState().user
         dispatch(authRequested())
         if (localStorageService.getAccessToken() && !state.isAuthorized) {
             try {
                 const user = await userService.getCurrentUser()
-                dispatch(authRequestSuccess({userId: user._id}))
+                setTimeout(() => dispatch(authRequestSuccess(user)), 1000)
             } catch (error) {
                 dispatch(authRequestFailed(error.message))
             }
@@ -147,7 +150,7 @@ export const action = {
         dispatch(authRequested())
         try {
             const data = await authService.login({email, password})
-            dispatch(authRequestSuccess({userId: data.localId}))
+            dispatch(authRequestSuccess({userId: data.localId, isAdmin: data.isAdmin}))
             localStorageService.setTokens(data)
         } catch (error) {
             console.error(error)
@@ -181,13 +184,14 @@ export const action = {
 }
 
 export const selector = {
-    get : () => state => state.user.entities,
-    getById : id => state => state.user?.entities.find(u => u._id === id),
-    isLoading : () => state => state.user.isLoading,
-    isAuthorized : () => state => state.user.isAuthorized,
-    isDataLoaded : () => state => state.user.isDataLoaded,
-    isProcessingAuth : () => state => state.user.isProcessingAuth,
-    authErrors : () => state => state.user.error,
+    all: () => state => state.user.entities,
+    byId: id => state => state.user?.entities.find(u => u._id === id),
+    isLoading: () => state => state.user.isLoading,
+    isAuthorized: () => state => state.user.isAuthorized,
+    isDataLoaded: () => state => state.user.isDataLoaded,
+    isProcessingAuth: () => state => state.user.isProcessingAuth,
+    authErrors: () => state => state.user.error,
+    authData: () => state => state.user.auth,
 }
 
 export default slice.reducer
