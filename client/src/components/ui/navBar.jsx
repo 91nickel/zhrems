@@ -1,52 +1,41 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
 import NavProfile from './navProfile'
-import { getUsersIsAuthorized } from 'store/user'
+import { selector as userSelector } from 'store/user'
 
-function NavBar ({pages}) {
-    const location = useLocation()
-    const isAuthorized = useSelector(getUsersIsAuthorized())
+function NavBar () {
+    const isAuthorized = useSelector(userSelector.isAuthorized())
 
     return (
-        <div className="row">
-            <div className="col-12">
-                <nav className="navbar bg-light mb-3">
-                    <div className="container-fluid">
-                        <ul className="nav">{
-                            pages
-                                .filter(page => {
-                                    return page.nav
-                                        && (!Object.keys(page).includes('auth') || (page.auth === true && isAuthorized))
-                                })
-                                .map(
-                                    (page, i) => {
-                                        const isActive = page.exact
-                                            ? page.path === location.pathname
-                                            : location.pathname.includes(page.path)
-                                        const classList = 'nav-item nav-link' + (isActive ? ' active' : '')
-                                        return (
-                                            <li key={`ntm_${i}`} className={classList}>
-                                                <Link to={page.path}>{page.name}</Link>
-                                            </li>
-                                        )
-                                    }
-                                )}
-                        </ul>
-                        <div className="d-flex">
-                            {isAuthorized ? <NavProfile /> : <Link to="/login">Login</Link>}
-                        </div>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="container-fluid">
+                <a className="navbar-brand" href="/">ZHREMS</a>
+                <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div className="navbar-nav me-auto">
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/">Главная</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/">Продукты</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/">Блюда</NavLink>
+                        </li>
                     </div>
-                </nav>
+                    <div className="navbar-profile">
+                        <NavProfile />
+                    </div>
+                </div>
             </div>
-        </div>
+        </nav>
     )
 }
 
 NavBar.propTypes = {
-    pages: PropTypes.array.isRequired,
+    // pages: PropTypes.array.isRequired,
 }
 
 export default NavBar

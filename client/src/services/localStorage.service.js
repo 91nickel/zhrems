@@ -25,7 +25,7 @@ export function getRefreshToken () {
 }
 
 export function getTokenExpirationDate () {
-    return localStorage.getItem(EXPIRES_KEY)
+    return +localStorage.getItem(EXPIRES_KEY)
 }
 
 export function getUserId () {

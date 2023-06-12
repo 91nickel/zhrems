@@ -28,11 +28,20 @@ const service = {
         return data
     },
 
+    logout: async () => {
+        const {data} = await httpAuth.post('signOut', {}, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorageService.getAccessToken()
+            }
+        })
+        return data
+    },
+
     refresh: async () => {
         const {data} = await httpAuth.post('token', {
             refresh_token: localStorageService.getRefreshToken(),
         })
-        // console.log('auth.service.refresh()', data)
+        console.log('auth.service.refresh()', data)
         return data
     },
 

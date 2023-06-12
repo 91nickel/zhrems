@@ -31,15 +31,15 @@ router.get('/:id?', auth, async (request, response) => {
     }
 })
 
-router.post('/', auth, async (request, response) => {
+router.put('/', auth, async (request, response) => {
     try {
-        console.log(request.url, request.body)
+        console.log('PUT /products/', request.url, request.body)
         const user = request.user
-        const fields = {...request.body, user: user.role !== 'admin' ? user._id : request.body.user}
+        const fields = {...request.body, user: user.isAdmin ? request.body.user || null : user._id}
         const product = await Product.create(fields)
         return response.json(product)
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
     }
 })
 
@@ -48,12 +48,15 @@ router.patch('/:id', auth, async (request, response) => {
         console.log(request.url, request.body)
         const {id} = request.params
         const user = request.user
-        if (request.body.user !== user._id && user.role !== 'admin') {
-            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+        console.log('user:', user)
+
+        if (!user.isAdmin && request.body.user !== user._id) {
+            return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
         const product = await Product.findByIdAndUpdate(id, request.body, {new: true})
         if (!product)
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
+
         return response.json(product)
 
     } catch (error) {
@@ -72,8 +75,8 @@ router.delete('/:id', auth, async (request, response) => {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         }
 
-        if (request.body.user !== user._id && user.role !== 'admin') {
-            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+        if (!user.isAdmin && request.body.user !== user._id) {
+            return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
         await Product.findByIdAndRemove(id)

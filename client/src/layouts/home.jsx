@@ -3,7 +3,7 @@ import { NavLink, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import {selector} from 'store/user'
 
-function HomeLayout () {
+function Home () {
     const isAuthorized = useSelector(selector.isAuthorized())
 
     if (isAuthorized)
@@ -34,4 +34,4 @@ function HomeLayout () {
     )
 }
 
-export default HomeLayout
+export default Home

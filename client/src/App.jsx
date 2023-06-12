@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Route, Routes, NavLink, Navigate, Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
 // import Users from 'layouts/users'
 // import Login from 'layouts/login'
@@ -7,17 +8,17 @@ import { ToastContainer } from 'react-toastify'
 // import NotFound from 'layouts/not-found'
 // import NavBar from 'components/ui/navBar'
 // import ProtectedRoute from 'components/common/protectedRoute'
-import AppLoader from './components/hoc/appLoader'
-import LoginLayout from 'layouts/login.layout'
-import RegisterLayout from 'layouts/register.layout'
-import HomeLayout from 'layouts/home.layout'
+import Layout from 'layouts'
+import AppLoader from 'components/hoc/appLoader'
 import Dashboard from 'components/ui/dashBoard'
 import ProtectedRoute from 'components/ProtectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
+import NavBar from 'components/ui/navBar'
+import {selector as userSelector} from 'store/user'
 
 const App = () => {
-
+    const isAuthorized = useSelector(userSelector.isAuthorized())
     // const pages = [
     //     {name: 'Home', path: '/', exact: true, nav: true, component: Home},
     //     {
@@ -47,15 +48,18 @@ const App = () => {
         <>
             <AppLoader>
                 <div className="container">
-                    <div className="row">
-                        {/*<NavBar pages={} />*/}
+                    <div className="row justify-content-center">
+                        <div className="col-12 col-md-6 mt-5">
+                            {isAuthorized && <NavBar/>}
+                        </div>
                     </div>
                     <Routes>
-                        <Route path="/" index element={<HomeLayout/>}/>
+                        <Route path="/" index element={<Layout.Home/>}/>
                         <Route path="auth/*">
                             <Route index element={<Navigate to={'signin'}/>}/>
-                            <Route path="signin" element={<LoginLayout/>}/>
-                            <Route path="signup" element={<RegisterLayout/>}/>
+                            <Route path="signin" element={<Layout.Login/>}/>
+                            <Route path="signup" element={<Layout.Register/>}/>
+                            <Route path="logout" element={<Layout.Logout/>}/>
                             <Route path="*" element={<Navigate to={'signin'}/>}/>
                         </Route>
                         <Route
@@ -75,8 +79,9 @@ const App = () => {
                             }
                         >
                             <Route index element={<ProductPage.List/>}/>
+                            <Route path="create" element={<ProductPage.Create/>}/>
                             <Route path=":id" element={<ProductPage.View/>}/>
-                            <Route path=":id/edit" element={<ProductPage.Edit/>}/>
+                            <Route path=":id/update" element={<ProductPage.Update/>}/>
                         </Route>
                         <Route
                             path="/meals"
@@ -88,7 +93,8 @@ const App = () => {
                         >
                             <Route index element={<MealPage.List/>}/>
                             <Route path=":id" element={<MealPage.View/>}/>
-                            <Route path=":id/edit" element={<MealPage.Edit/>}/>
+                            <Route path="create" element={<MealPage.View/>}/>
+                            <Route path=":id/update" element={<MealPage.Update/>}/>
                         </Route>
                         <Route
                             path="/users"

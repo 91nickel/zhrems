@@ -50,7 +50,7 @@ router.post('/signUp', [
             return response.status(201).json(tokens)
         } catch (error) {
             console.error(error)
-            response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+            response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
         }
     }
 ])
@@ -95,19 +95,19 @@ router.post('/signInWithPassword', [
             return response.status(200).json(tokens)
         } catch (error) {
             console.error(error)
-            response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+            response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
         }
     }
 ])
 
 router.post('/signOut', auth, async (request, response) => {
     try {
-        console.log(request.url, request.body)
+        console.log(request.url, request.body, request.user)
         await tokenService.delete(request.user._id)
         response.json({})
     } catch (error) {
         console.error(error)
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
     }
 })
 
@@ -125,15 +125,18 @@ router.post('/token', async (request, response) => {
         }
 
         const account = await Account.findById(dbToken.account)
-        const user = await User.find({account: account._id})
+        const user = await User.findOne({account: account._id})
 
-        const tokens = await tokenService.generate({localId: user._id, admin: account.admin})
+        const localId = user._id.toString()
+
+        const tokens = await tokenService.generate({localId, isAdmin: account.admin})
+        console.log(tokens)
         await tokenService.save(data._id, tokens.refreshToken)
 
-        return response.status(200).json({...tokens, userId: data._id})
+        return response.status(200).json(tokens)
 
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
     }
 })
 

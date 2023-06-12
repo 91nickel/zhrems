@@ -1,5 +1,6 @@
-import List from './list'
-import Edit from './edit'
 import View from './view'
+import List from './list'
+import Create from './create'
+import Update from './update'
 
-export default {List, Edit, View}
+export default {List, Update, Create, View}

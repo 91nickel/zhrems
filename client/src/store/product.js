@@ -1,5 +1,5 @@
 import React from 'react'
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import service from 'services/product.service'
 
 const slice = createSlice({
@@ -7,12 +7,14 @@ const slice = createSlice({
     initialState: {
         entities: [],
         isLoading: false,
+        success: null,
         error: null,
         isDataLoaded: false,
     },
     reducers: {
         created: (state, action) => {
             state.entities.push(action.payload)
+            state.success = `Successfully created product ${action.payload.name}`
         },
         updated: (state, action) => {
             const updatedProduct = action.payload
@@ -21,13 +23,17 @@ const slice = createSlice({
                     return updatedProduct
                 return prod
             })
+            state.success = `Successfully updated product ${updatedProduct.name}`
         },
         deleted: (state, action) => {
             const id = action.payload
             state.entities = state.entities.filter(prod => prod._id !== id)
+            state.success = `Successfully deleted product with _id=${id}`
         },
         requested: (state) => {
             state.isLoading = true
+            state.error = null
+            state.success = null
         },
         received: (state, action) => {
             state.entities = action.payload
@@ -36,12 +42,17 @@ const slice = createSlice({
         },
         requestFailed: (state, action) => {
             state.error = action.payload
+            state.success = null
             state.isLoading = false
+        },
+        messagesCleared: (state, action) => {
+            state.error = null
+            state.success = null
         },
     }
 })
 
-const {created, updated, deleted, requested, received, requestFailed} = slice.actions
+const {created, updated, deleted, requested, received, requestFailed, messagesCleared} = slice.actions
 
 const createRequested = createAction('product/createRequested')
 const createFailed = createAction('product/createFailed')
@@ -52,55 +63,86 @@ const deleteFailed = createAction('product/deleteFailed')
 
 export const action = {
 
-    create: payload => async dispatch => {
-        dispatch(createRequested(payload))
-        try {
-            const content = await service.create(payload)
-            dispatch(created(content))
-        } catch (error) {
-            dispatch(createFailed(error.message))
+    create: createAsyncThunk(
+        'product/create',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(createRequested(payload))
+            try {
+                const content = await service.create(payload)
+                thunkAPI.dispatch(created(content))
+                return content
+            } catch (error) {
+                console.log(error)
+                thunkAPI.dispatch(createFailed(error.message))
+                return thunkAPI.rejectWithValue()
+            }
         }
+    ),
 
-    },
+    update: createAsyncThunk(
+        'product/update',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(updateRequested(payload))
+            try {
+                const content = await service.update(payload)
+                thunkAPI.dispatch(updated(content))
+                return content
+            } catch (error) {
+                console.log(error)
+                thunkAPI.dispatch(updateFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
 
-    update: payload => async dispatch => {
-        dispatch(updateRequested(payload))
-        try {
-            const content = await service.update(payload)
-            dispatch(updated(content))
-        } catch (error) {
-            dispatch(updateFailed(error.message))
-        }
-    },
+    delete: createAsyncThunk(
+        'product/delete',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(deleteRequested(payload))
+            try {
+                console.log('store.product.delete', payload)
+                // const content = await service.delete(payload)
+                // thunkAPI.dispatch(deleted(content))
+            } catch (error) {
+                thunkAPI.dispatch(deleteFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
 
-    delete: payload => async dispatch => {
-        dispatch(deleteRequested(payload))
-        try {
-            const content = await service.delete(payload)
-            dispatch(deleted(content))
-        } catch (error) {
-            dispatch(deleteFailed(error.message))
-        }
-    },
+    getById: createAsyncThunk(
+        'product/getById',
+        async (id, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await service.getById(id)
+                thunkAPI.dispatch(received(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
 
-    getById: (id) => async (dispatch) => {
-        dispatch(requested())
-        try {
-            const content = await service.getById(id)
-            dispatch(received(content))
-        } catch (error) {
-            dispatch(requestFailed(error.message))
-        }
-    },
+    get: createAsyncThunk(
+        'product/get',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await service.get()
+                thunkAPI.dispatch(received(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
 
-    get: () => async (dispatch) => {
-        dispatch(requested())
-        try {
-            const content = await service.get()
-            dispatch(received(content))
-        } catch (error) {
-            dispatch(requestFailed(error.message))
-        }
+
+    clearMessages: () => async (dispatch) => {
+        dispatch(messagesCleared())
     },
 
 }
@@ -110,7 +152,8 @@ export const selector = {
     byId: id => state => state.product.entities.find(u => u._id === id),
     isDataLoaded: () => state => state.product.isDataLoaded,
     isLoading: () => state => state.product.isLoading,
-    errors: () => state => state.product.error,
+    error: () => state => state.product.error,
+    success: () => state => state.product.success,
 }
 
 export default slice.reducer

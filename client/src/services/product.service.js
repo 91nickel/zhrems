@@ -11,7 +11,7 @@ const service = {
         return data
     },
     create: async (payload) => {
-        const {data} = await httpService.put(entrypoint + payload._id, payload)
+        const {data} = await httpService.put(entrypoint, payload)
         return data
     },
     update: async (payload) => {

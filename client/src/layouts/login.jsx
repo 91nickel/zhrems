@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import LoginForm from 'components/ui/loginForm'
 import PropTypes from 'prop-types'
 
-const LoginLayout = ({children}) => {
+const Login = ({children}) => {
     return (
         <div className="row justify-content-center mt-3">
             <div className="col-12 col-md-6 col-lg-4">
@@ -15,11 +15,11 @@ const LoginLayout = ({children}) => {
     )
 }
 
-LoginLayout.propTypes = {
+Login.propTypes = {
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node,
     ]),
 }
 
-export default LoginLayout
+export default Login

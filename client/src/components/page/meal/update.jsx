@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
-import ProductEditForm from 'components/ui/productEditForm'
+import ProductForm from 'components/ui/productForm'
 
-const Edit = () => {
+const Update = () => {
     const {id} = useParams()
 
     return (
@@ -16,7 +16,7 @@ const Edit = () => {
             <div className="col-12 mt-5 d-flex justify-content-center">
                 <div className="card w-50">
                     <div className="card-body">
-                        <ProductEditForm/>
+                        <ProductForm/>
                     </div>
                 </div>
             </div>
@@ -24,4 +24,4 @@ const Edit = () => {
     )
 }
 
-export default Edit
+export default Update

@@ -3,7 +3,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import RegisterForm from 'components/ui/registerForm'
 
-const RegisterLayout = () => {
+const Register = () => {
     return (
         <div className="row justify-content-center mt-3">
             <div className="col-12 col-md-6 col-lg-4">
@@ -15,4 +15,4 @@ const RegisterLayout = () => {
     )
 }
 
-export default RegisterLayout
+export default Register

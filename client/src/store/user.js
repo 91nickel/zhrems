@@ -1,7 +1,9 @@
 import React from 'react'
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+
 import userService from 'services/user.service'
 import authService from 'services/auth.service'
+import productService from 'services/product.service'
 import localStorageService from 'services/localStorage.service'
 
 import generateAuthError from 'utils/generateAuthError'
@@ -47,7 +49,7 @@ const slice = createSlice({
             state.error = null
         },
         authRequestSuccess: (state, action) => {
-            state.auth = {userId: action.payload._id, isAdmin: action.payload.isAdmin}
+            state.auth = {userId: action.payload.localId, isAdmin: action.payload.isAdmin}
             state.user = action.payload
             state.isAuthorized = true
             state.isProcessingAuth = false
@@ -150,8 +152,9 @@ export const action = {
         dispatch(authRequested())
         try {
             const data = await authService.login({email, password})
-            dispatch(authRequestSuccess({userId: data.localId, isAdmin: data.isAdmin}))
             localStorageService.setTokens(data)
+            const user = await userService.getCurrentUser()
+            dispatch(authRequestSuccess(user))
         } catch (error) {
             console.error(error)
             const {code, message} = error?.response?.data?.error
@@ -175,17 +178,28 @@ export const action = {
         }
     },
 
-    logOut: () => {
-        return function (dispatch) {
-            localStorageService.removeAuthData()
-            dispatch(loggedOut())
-        }
-    },
+    logOut: createAsyncThunk(
+        'user/logout',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await authService.logout()
+                localStorageService.removeAuthData()
+                thunkAPI.dispatch(loggedOut())
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
 }
 
 export const selector = {
     all: () => state => state.user.entities,
     byId: id => state => state.user?.entities.find(u => u._id === id),
+    current: id => state => state.user.user,
     isLoading: () => state => state.user.isLoading,
     isAuthorized: () => state => state.user.isAuthorized,
     isDataLoaded: () => state => state.user.isDataLoaded,

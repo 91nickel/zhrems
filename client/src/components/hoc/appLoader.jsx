@@ -10,7 +10,7 @@ const AppLoader = ({children}) => {
     const dispatch = useDispatch()
     const isAuthorized = useSelector(userSelector.isAuthorized())
     const isProcessingAuth = useSelector(userSelector.isProcessingAuth())
-    // const isUsersLoading = useSelector(getUsersIsLoading())
+    const isProductsLoading = useSelector(productSelector.isLoading())
     // const isUsersLoaded = useSelector(getUsersIsDataLoaded())
 
     useEffect(() => {
@@ -20,9 +20,11 @@ const AppLoader = ({children}) => {
     useEffect(() => {
         if (isAuthorized === true)
             dispatch(productAction.get())
+        if (isAuthorized === true)
+            dispatch(productAction.get())
     }, [isAuthorized])
 
-    if (isProcessingAuth)
+    if (isProcessingAuth || isProductsLoading)
         return <LoadingLayout/>
 
     return children

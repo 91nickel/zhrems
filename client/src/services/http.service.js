@@ -11,20 +11,16 @@ const http = axios.create({
 http.interceptors.request.use(
     async function (config) {
         const hasAccessToken = !!localStorageService.getAccessToken()
-        const authExpired = hasAccessToken && localStorageService.getTokenExpirationDate() < Date.now()
+        const authExpired = hasAccessToken && +localStorageService.getTokenExpirationDate() < Date.now()
         const refreshToken = localStorageService.getRefreshToken()
 
-        // console.log('http.service->request.interceptor.onFulfilled', {config, hasAccessToken, authExpired, refreshToken})
+        console.log('http.service->request.interceptor.onFulfilled', {config, hasAccessToken, authExpired, refreshToken})
 
         if (refreshToken && authExpired) {
             try {
                 const data = await authService.refresh()
-                localStorageService.setTokens({
-                    refreshToken: data.refresh_token,
-                    idToken: data.id_token,
-                    expiresIn: data.expires_in,
-                    localId: data.user_id,
-                })
+                console.log('token refresh result', data)
+                localStorageService.setTokens(data)
             } catch (error) {
                 console.error('Auth refresh failed', error)
                 localStorageService.removeAuthData()
@@ -46,7 +42,7 @@ http.interceptors.request.use(
 
 http.interceptors.response.use(
     function (response) {
-        console.log('http.service.response.interceptor.onFulfilled')
+        // console.log('http.service.response.interceptor.onFulfilled')
         return response
     },
     function (error) {
