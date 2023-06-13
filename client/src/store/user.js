@@ -49,8 +49,13 @@ const slice = createSlice({
             state.error = null
         },
         authRequestSuccess: (state, action) => {
-            state.auth = {userId: action.payload.localId, isAdmin: action.payload.isAdmin}
+            state.auth = {
+                userId: action.payload._id,
+                accountId: action.payload.account,
+                isAdmin: action.payload.isAdmin,
+            }
             state.user = action.payload
+            state.entities = [...state.entities, action.payload]
             state.isAuthorized = true
             state.isProcessingAuth = false
         },
@@ -98,31 +103,38 @@ function createUser (payload) {
 }
 
 export const action = {
-    update: (payload) => async dispatch => {
-        dispatch(userUpdateRequested(payload))
-        try {
-            const {content} = await userService.update(payload)
-            dispatch(updated(content))
-        } catch (error) {
-            dispatch(userUpdateFailed(error.message))
-        }
-    },
 
-    get: () => async (dispatch) => {
-        dispatch(requested())
-        try {
-            const {content} = await userService.get()
-            dispatch(received(content))
-        } catch (error) {
-            dispatch(requestFailed(error.message))
+    get: createAsyncThunk(
+        'user/signin',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await userService.get()
+                thunkAPI.dispatch(received(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
         }
-    },
+    ),
 
-    getCurrent: () => state => {
-        if (state.user.isDataLoaded && state.user.auth)
-            return state.user.entities.find(u => u._id === state.user.auth.userId)
-        return null
-    },
+    update: createAsyncThunk(
+        'user/update',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(userUpdateRequested(payload))
+            try {
+                console.log('user/update', payload)
+                const content = await userService.update(payload)
+                console.log(content)
+                thunkAPI.dispatch(updated(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(userUpdateFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        }
+    ),
 
     setAuth: () => async (dispatch, getState) => {
         // console.log('state.user.setAuth()',
@@ -147,36 +159,47 @@ export const action = {
         }
     },
 
-    signIn: ({payload, redirect}) => async dispatch => {
-        const {email, password} = payload
-        dispatch(authRequested())
-        try {
-            const data = await authService.login({email, password})
-            localStorageService.setTokens(data)
-            const user = await userService.getCurrentUser()
-            dispatch(authRequestSuccess(user))
-        } catch (error) {
-            console.error(error)
-            const {code, message} = error?.response?.data?.error
-            if (code === 400) {
-                const errorMessage = generateAuthError(message)
-                dispatch(authRequestFailed(generateAuthError(errorMessage)))
-            } else {
-                dispatch(authRequestFailed(message))
+    signIn: createAsyncThunk(
+        'user/signin',
+        async ({email, password}, thunkAPI) => {
+            // console.log('user/signin', email, password)
+            thunkAPI.dispatch(authRequested())
+            try {
+                const tokens = await authService.login({email, password})
+                localStorageService.setTokens(tokens)
+                const user = await userService.getCurrentUser()
+                thunkAPI.dispatch(authRequestSuccess(user))
+                return {user, tokens}
+            } catch (error) {
+                console.error(error)
+                const {code, message} = error?.response?.data?.error
+                if (code === 400) {
+                    const errorMessage = generateAuthError(message)
+                    thunkAPI.dispatch(authRequestFailed(generateAuthError(errorMessage)))
+                } else {
+                    thunkAPI.dispatch(authRequestFailed(message))
+                }
+                return thunkAPI.rejectWithValue(error.message)
             }
         }
-    },
+    ),
 
-    signUp: ({email, password, ...rest}) => async dispatch => {
-        dispatch(authRequested())
-        try {
-            const data = await authService.register({email, password, ...rest})
-            localStorageService.setTokens(data)
-            dispatch(authRequestSuccess({userId: data.localId}))
-        } catch (error) {
-            dispatch(authRequestFailed(error.message))
-        }
-    },
+    signUp: createAsyncThunk(
+        'user/signup',
+        async ({email, password, ...rest}, thunkAPI) => {
+            thunkAPI.dispatch(authRequested())
+            try {
+                const tokens = await authService.register({email, password, ...rest})
+                localStorageService.setTokens(tokens)
+                const user = await userService.getCurrentUser()
+                thunkAPI.dispatch(authRequestSuccess(user))
+                return {user, tokens}
+            } catch (error) {
+                thunkAPI.dispatch(authRequestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
 
     logOut: createAsyncThunk(
         'user/logout',

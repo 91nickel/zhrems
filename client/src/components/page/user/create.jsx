@@ -2,20 +2,23 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import ProductForm from 'components/ui/productForm'
-import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/product'
+import UserForm from 'components/ui/userForm'
+import { selector, action } from 'store/user'
 
-const Update = () => {
+const Create = () => {
     const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const {userId, isAdmin} = useSelector(authSelector.authData())
-    // const product = useSelector(selector.byId(id))
-
     const handleSubmit = payload => {
-        dispatch(action.update(payload))
+        dispatch(action.create(payload))
+            .unwrap()
+            .then(() => {
+                setTimeout(() => navigate('..', {replace: true}), 1000)
+            })
+            .catch(() => {
+                console.log('Failed')
+            })
     }
 
     return (
@@ -29,12 +32,12 @@ const Update = () => {
                 </div>
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
-                    <h2>Редактирование продукта</h2>
-                    <ProductForm onSubmit={handleSubmit}/>
+                    <h2>Добавление нового пользователя</h2>
+                    <UserForm onSubmit={handleSubmit}/>
                 </div>
             </div>
         </>
     )
 }
 
-export default Update
+export default Create

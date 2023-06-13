@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 
 import TextField from 'components/common/form/textField'
@@ -8,6 +8,7 @@ import CheckboxField from 'components/common/form/checkboxField'
 import { action, selector } from 'store/user'
 
 const LoginForm = () => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const [data, setData] = useState({email: '', password: '', stayOn: false})
     const [errors, setErrors] = useState({})
@@ -45,7 +46,12 @@ const LoginForm = () => {
         event.preventDefault()
         const isValid = validate()
         if (!isValid) return
-        dispatch(action.signIn({payload: data}))
+        dispatch(action.signIn(data))
+            .unwrap()
+            .then((result) => {
+                navigate('/', {replace: true})
+            })
+            .catch((e) => console.error(e))
     }
 
     const isValid = Object.keys(errors).length === 0

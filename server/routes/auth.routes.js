@@ -44,7 +44,7 @@ router.post('/signUp', [
             })
             console.log('Successfully created user', user)
 
-            const tokens = tokenService.generate({localId: user._id, admin: account.admin})
+            const tokens = tokenService.generate({localId: user._id, isAdmin: account.admin, email: account.email})
             await tokenService.save(account._id, tokens.refreshToken)
 
             return response.status(201).json(tokens)
@@ -129,8 +129,8 @@ router.post('/token', async (request, response) => {
 
         const localId = user._id.toString()
 
-        const tokens = await tokenService.generate({localId, isAdmin: account.admin})
-        console.log(tokens)
+        const tokens = await tokenService.generate({localId, isAdmin: account.admin, email: account.email})
+        // console.log(tokens)
         await tokenService.save(data._id, tokens.refreshToken)
 
         return response.status(200).json(tokens)

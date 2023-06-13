@@ -45,7 +45,7 @@ const ProductForm = ({onSubmit}) => {
     }
 
     const handleChange = target => {
-        console.log(target)
+        // console.log(target)
         const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
         setData(prevState => {
             const nextState = {...prevState, [target.name]: target.value}
@@ -84,7 +84,7 @@ const ProductForm = ({onSubmit}) => {
         if (!product) return true
         let hasDifference = false
         Object.keys(defaultData).forEach(key => {
-            console.log(key, product[key], data[key])
+            // console.log(key, product[key], data[key])
             if (product[key] !== data[key])
                 hasDifference = true
         })

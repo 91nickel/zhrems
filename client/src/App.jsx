@@ -10,12 +10,14 @@ import { ToastContainer } from 'react-toastify'
 // import ProtectedRoute from 'components/common/protectedRoute'
 import Layout from 'layouts'
 import AppLoader from 'components/hoc/appLoader'
+import UserLoader from 'components/hoc/userLoader'
 import Dashboard from 'components/ui/dashBoard'
 import ProtectedRoute from 'components/ProtectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
+import UserPage from 'components/page/user'
 import NavBar from 'components/ui/navBar'
-import {selector as userSelector} from 'store/user'
+import { selector as userSelector } from 'store/user'
 
 const App = () => {
     const isAuthorized = useSelector(userSelector.isAuthorized())
@@ -92,21 +94,30 @@ const App = () => {
                             }
                         >
                             <Route index element={<MealPage.List/>}/>
+                            <Route path="create" element={<MealPage.Create/>}/>
                             <Route path=":id" element={<MealPage.View/>}/>
-                            <Route path="create" element={<MealPage.View/>}/>
                             <Route path=":id/update" element={<MealPage.Update/>}/>
                         </Route>
                         <Route
                             path="/users"
                             element={
                                 <ProtectedRoute redirectTo="/auth/signin">
-                                    <Outlet/>
+                                    <UserLoader>
+                                        <Outlet/>
+                                    </UserLoader>
                                 </ProtectedRoute>
                             }
                         >
-                            <Route index element={<>UsersList</>}/>
-                            <Route path=":id" element={<>UserView</>}/>
-                            <Route path=":id/edit" element={<>UserEdit</>}/>
+                            <Route index element={<UserPage.List/>}/>
+                            <Route path="create" element={
+                                <ProtectedRoute admin={true}>
+                                    <UserPage.Create/>
+                                </ProtectedRoute>}/>
+                            }/>
+                            <Route path=":id/*">
+                                <Route index element={<UserPage.View/>}/>
+                                <Route path="update" element={<UserPage.Update/>}/>
+                            </Route>
                         </Route>
                         {/*<Route*/}
                         {/*    path="posts/*"*/}
