@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import UserEditForm from 'components/ui/userEditForm'
+import EditForm from 'components/ui/user/editForm'
 
 const UserEditPage = () => {
     const {id} = useParams()
@@ -16,7 +16,7 @@ const UserEditPage = () => {
         <div className="col-12 mt-5 d-flex justify-content-center">
             <div className="card w-50">
                 <div className="card-body">
-                    <UserEditForm />
+                    <EditForm />
                 </div>
             </div>
         </div>

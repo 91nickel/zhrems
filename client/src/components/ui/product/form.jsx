@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector, action } from 'store/product'
 import PropTypes from 'prop-types'
 
-const ProductForm = ({onSubmit}) => {
+const Form = ({onSubmit}) => {
     const dispatch = useDispatch()
 
     const {id} = useParams()
@@ -160,8 +160,8 @@ const ProductForm = ({onSubmit}) => {
     )
 }
 
-ProductForm.propTypes = {
+Form.propTypes = {
     onSubmit: PropTypes.func,
 }
 
-export default ProductForm
+export default Form

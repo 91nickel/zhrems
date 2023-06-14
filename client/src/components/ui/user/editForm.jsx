@@ -17,7 +17,7 @@ import { getQualities, getQualitiesIsLoading } from 'store/quality'
 import { getProfessions, getProfessionsIsLoading } from 'store/profession'
 import { getCurrentUser, getUsersIsLoading, updateUser } from 'store/user'
 
-const UserEditForm = () => {
+const EditForm = () => {
     const dispatch = useDispatch()
     const history = useHistory()
     const {id} = useParams()
@@ -154,8 +154,8 @@ const UserEditForm = () => {
     )
 }
 
-UserEditForm.propTypes = {
+EditForm.propTypes = {
 
 }
 
-export default UserEditForm
+export default EditForm

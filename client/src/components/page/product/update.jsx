@@ -2,9 +2,9 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import ProductForm from 'components/ui/productForm'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
+import Form from 'components/ui/product/form'
 
 const Update = () => {
     const {id} = useParams()
@@ -30,7 +30,7 @@ const Update = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Редактирование продукта</h2>
-                    <ProductForm onSubmit={handleSubmit}/>
+                    <Form onSubmit={handleSubmit}/>
                 </div>
             </div>
         </>

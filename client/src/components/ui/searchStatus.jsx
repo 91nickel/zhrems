@@ -7,12 +7,12 @@ const SearchStatus = ({ value }) => {
     if (value > 0) {
         phrase = [
             value,
-            renderPhrase(value, ['человек', 'человека', 'человек']),
-            renderPhrase(value, ['тусанет', 'тусанут', 'тусанут']),
-            'с тобой сегодня'
+            renderPhrase(value, ['элемент', 'элемента', 'элементов']),
+            renderPhrase(value, ['найден', 'найдено', 'найдено']),
+            ''
         ].join(' ')
     } else {
-        phrase = 'Никто с тобой не тусанет'
+        phrase = 'Ничего не найдено'
     }
     const color = value > 0 ? 'primary' : 'danger'
 

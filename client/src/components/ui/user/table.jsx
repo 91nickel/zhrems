@@ -3,14 +3,14 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
-import ControlsPannel from './controlsPannel'
+import ControlsPannel from 'components/ui/controlsPannel'
 
-const UsersTable = ({users, currentSort, onSort, onDelete, ...rest}) => {
+const UserTable = ({users, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {
         name: {
             name: 'Имя',
-            component: user => {
-                return <NavLink to={`/users/${user._id}`}>{user.name}</NavLink>
+            component: el => {
+                return <NavLink to={`/users/${el._id}`}>{el.name}</NavLink>
             }
         },
         email: {path: 'email', name: 'E-mail'},
@@ -18,8 +18,8 @@ const UsersTable = ({users, currentSort, onSort, onDelete, ...rest}) => {
         controls: {
             path: '',
             name: '',
-            component: user => {
-                return <ControlsPannel id={user._id} prefix="" onDelete={onDelete}/>
+            component: el => {
+                return <ControlsPannel id={el._id} prefix="" onDelete={onDelete}/>
             }
         },
     }
@@ -31,11 +31,11 @@ const UsersTable = ({users, currentSort, onSort, onDelete, ...rest}) => {
     )
 }
 
-UsersTable.propTypes = {
+UserTable.propTypes = {
     users: PropTypes.array.isRequired,
     currentSort: PropTypes.object.isRequired,
     onSort: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 }
 
-export default UsersTable
+export default UserTable

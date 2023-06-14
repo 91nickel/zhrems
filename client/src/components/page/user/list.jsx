@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import _ from 'lodash'
 import Pagination from 'components/common/pagination'
 import GroupList from 'components/common/groupList'
-import UsersTable from 'components/ui/usersTable'
+import Table from 'components/ui/user/table'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
 import paginate from 'utils/paginate'
@@ -15,91 +15,79 @@ const List = () => {
     const pageSize = 10
     const user = useSelector(selector.current())
     const users = useSelector(selector.all())
-    const usersIsLoading = useSelector(selector.isDataLoaded())
+    const isLoaded = useSelector(selector.isDataLoaded())
 
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
+    const [searchQuery, setSearchQuery] = useState('')
 
-
-    const handleDelete = id => {
-        console.log('handleDelete()', id)
+    const paginationHandler = {
+        onChange: function (index) {
+            setCurrentPage(index)
+        }
     }
 
-    // const handleBookmark = id => {
-    //     const newArray = users.map((el) => {
-    //         if (id === el._id) {
-    //             el.bookmark = !el.bookmark
-    //             return el
-    //         }
-    //         return el
-    //     })
-    //     console.log(newArray)
-    // }
-
-    const handlePageChange = pageIndex => {
-        setCurrentPage(pageIndex)
+    const tableHandler = {
+        onSort: function (item) {
+            setCurrentSort(item)
+        },
+        onDelete: function (id) {
+            console.log('handleDelete()', id)
+        },
     }
 
-    // const handleProfessionSelect = item => {
-    //     setCurrentProfession(item)
-    //     clearSearch()
-    // }
-
-    // const clearFilter = () => {
-    //     setCurrentProfession(undefined)
-    // }
-
-    const handleSort = item => {
-        setCurrentSort(item)
+    const searchHandler = {
+        onSubmit: function (value) {
+            setSearchQuery(value)
+        },
     }
 
-    // const handleSearch = value => {
-    //     setSearchQuery(value)
-    //     clearFilter()
-    // }
-
-    // const clearSearch = () => {
-    //     setSearchQuery('')
-    // }
-
-    function filterUsers (users) {
-        // if (!data)
-        //     return []
-        // let filteredUsers
+    function filter (data) {
+        if (!data)
+            return []
+        let filteredData
         // if (currentProfession) {
         //     filteredUsers = data.filter(u => u.profession === currentProfession._id)
-        // } else if (!!searchQuery) {
-        //     const regexp = new RegExp(searchQuery, 'ig')
-        //     const searchResults = data.filter(u => regexp.test(u.name))
-        //     filteredUsers = searchResults.length > 0 ? searchResults : users
-        // } else {
-        //     filteredUsers = users
-        // }
-        // return filteredUsers.filter(u => u._id !== user._id)
-        return users
+        // } else
+        if (!!searchQuery) {
+            const regexp = new RegExp(searchQuery, 'ig')
+            const searchResults = data.filter(u => regexp.test(u.name))
+            filteredData = searchResults.length > 0 ? searchResults : data
+        } else {
+            filteredData = data
+        }
+        // return filteredData.filter(u => u._id !== user._id)
+        return filteredData
     }
 
-    const filteredUsers = filterUsers(users)
+    const filteredUsers = filter(users)
 
     const count = filteredUsers.length
     const sortedUsers = _.orderBy(filteredUsers, currentSort.path, currentSort.order)
-    const userCrop = paginate(sortedUsers, currentPage, pageSize)
+    const crop = paginate(sortedUsers, currentPage, pageSize)
 
     return (
         <div className="row mt-3 justify-content-center">
             <div className="col-12 col-md-6 d-flex flex-column">
-                <UsersTable
-                    users={userCrop}
+                <SearchStatus
+                    value={count}
+                />
+                <SearchString
+                    query={searchQuery}
+                    onSubmit={searchHandler.onSubmit}
+                />
+                <Table
+                    users={crop}
                     currentSort={currentSort}
-                    onDelete={handleDelete}
-                    onSort={handleSort}
+                    onDelete={tableHandler.onDelete}
+                    onSort={tableHandler.onSort}
                 />
                 <div className="d-flex justify-content-center">
                     <Pagination
                         currentPage={currentPage}
                         pageSize={pageSize}
                         itemsCount={count}
-                        onPageChange={handlePageChange}
+                        onChange={paginationHandler.onChange}
                     />
                 </div>
             </div>

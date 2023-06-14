@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useParams } from 'react-router-dom'
-import ProductForm from 'components/ui/productForm'
+import Form from 'components/ui/product/form'
 
 const Update = () => {
     const {id} = useParams()
@@ -16,7 +16,7 @@ const Update = () => {
             <div className="col-12 mt-5 d-flex justify-content-center">
                 <div className="card w-50">
                     <div className="card-body">
-                        <ProductForm/>
+                        <Form/>
                     </div>
                 </div>
             </div>

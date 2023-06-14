@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import UserForm from 'components/ui/userForm'
+import UserForm from 'components/ui/user/userForm'
 import { selector, action } from 'store/user'
 
 const Update = () => {

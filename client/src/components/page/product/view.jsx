@@ -3,7 +3,7 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
-import ProductCard from 'components/ui/productCard'
+import Card from 'components/ui/product/card'
 
 const View = () => {
     const {id} = useParams()
@@ -27,7 +27,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <ProductCard {...{product, onRemove}} />
+                <Card {...{product, onRemove}} />
             </div>
         </div>
     )

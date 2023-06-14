@@ -10,19 +10,12 @@ const SearchString = ({query, onSubmit}) => {
         name: 'search',
         value: query,
         error: '',
-        onInput: ({target}) => {
-            onSubmit(target.value)
-        },
-    }
-
-    const handleSubmit = event => {
-        event.preventDefault()
-        onSubmit(fieldConfig.value)
+        onChange: data => onSubmit(data.value),
     }
 
     return (
-        <form className="mt-3" onSubmit={handleSubmit}>
-            <TextField {...fieldConfig}/>
+        <form className="mt-3">
+            <TextField {...fieldConfig} />
         </form>
     )
 }

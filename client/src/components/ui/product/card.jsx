@@ -5,7 +5,7 @@ import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
 import PropTypes from 'prop-types'
 
-const ProductCard = ({product, onRemove}) => {
+const Card = ({product, onRemove}) => {
     const {id} = useParams()
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
@@ -57,9 +57,9 @@ const ProductCard = ({product, onRemove}) => {
 
 }
 
-ProductCard.propTypes = {
+Card.propTypes = {
     product: PropTypes.object,
     onRemove: PropTypes.func,
 }
 
-export default ProductCard
+export default Card

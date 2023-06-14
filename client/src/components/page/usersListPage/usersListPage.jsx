@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import _ from 'lodash'
 import Pagination from 'components/common/pagination'
 import GroupList from 'components/common/groupList'
-import UsersTable from 'components/ui/usersTable'
+import Table from 'components/ui/user/table'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
 import paginate from 'utils/paginate'
@@ -128,7 +128,7 @@ const UsersListPage = () => {
                 <SearchString query={searchQuery} onSubmit={handleSearch}/>
                 {count > 0 &&
                 <>
-                    <UsersTable
+                    <Table
                         users={userCrop}
                         currentSort={currentSort}
                         onDelete={handleDelete}
