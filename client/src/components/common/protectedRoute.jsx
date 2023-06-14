@@ -1,33 +1,35 @@
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { selector } from 'store/user'
+import Layout from 'layouts'
 import PropTypes from 'prop-types'
-import { getUsersIsAuthorized, getUsersIsProcessingAuth } from 'store/user'
 
-const ProtectedRoute = ({component: Component, children, ...rest}) => {
+function ProtectedRoute ({redirectTo, admin, children}) {
+    const location = useLocation()
+    const isLoggedIn = useSelector(selector.isAuthorized())
+    const {isAdmin} = useSelector(selector.authData())
 
-    const isProcessingAuth = useSelector(getUsersIsProcessingAuth())
-    const isAuthorized = useSelector(getUsersIsAuthorized())
-
-    const render = (props) => {
-        if (isProcessingAuth)
-            return 'Auth processing...'
-        if (!isAuthorized) {
-            return <Redirect to={{pathname: '/login', state: {from: props.location}}}/>
-        }
-        return Component ? <Component {...props} /> : children
+    if (isLoggedIn === false) {
+        return <Navigate to="/auth/signIn" state={{referer: redirectTo ? redirectTo : location}}/>
     }
+    if (admin && isAdmin === false) {
+        return <Layout.Forbidden />
+    }
+    return children
+}
 
-    return <Route {...rest} render={render}/>
+ProtectedRoute.defaultValue = {
+    admin: false,
 }
 
 ProtectedRoute.propTypes = {
-    component: PropTypes.func,
-    location: PropTypes.object,
+    redirectTo: PropTypes.string,
+    admin: PropTypes.bool,
     children: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.node),
         PropTypes.node,
-        PropTypes.arrayOf(PropTypes.node)
-    ])
+    ]),
 }
 
 export default ProtectedRoute

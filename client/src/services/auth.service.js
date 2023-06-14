@@ -18,17 +18,17 @@ httpAuth.interceptors.response.use(
 
 const service = {
 
-    register: async ({email, password, ...rest}) => {
+    signUp: async ({email, password, ...rest}) => {
         const {data} = await httpAuth.post('signUp', {email, password, ...rest})
         return data
     },
 
-    login: async ({email, password}) => {
+    signIn: async ({email, password}) => {
         const {data} = await httpAuth.post('signInWithPassword', {email, password})
         return data
     },
 
-    logout: async () => {
+    signOut: async () => {
         const {data} = await httpAuth.post('signOut', {}, {
             headers: {
                 'Authorization': 'Bearer ' + localStorageService.getAccessToken()

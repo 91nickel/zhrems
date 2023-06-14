@@ -9,7 +9,7 @@ import { action, selector } from 'store/user'
 
 import { validator } from 'utils/validator'
 
-const RegisterForm = () => {
+const SignUp = () => {
     const dispatch = useDispatch()
     const [data, setData] = useState({name: '', sex: 'male', email: '', password: '', license: false})
     const [errors, setErrors] = useState({})
@@ -120,4 +120,4 @@ const RegisterForm = () => {
     )
 }
 
-export default RegisterForm
+export default SignUp

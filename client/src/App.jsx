@@ -7,45 +7,21 @@ import { ToastContainer } from 'react-toastify'
 // import Logout from 'layouts/logout'
 // import NotFound from 'layouts/not-found'
 // import NavBar from 'components/ui/navBar'
-// import ProtectedRoute from 'components/common/protectedRoute'
 import Layout from 'layouts'
+import CommonLoader from 'components/hoc/commonLoader'
 import AppLoader from 'components/hoc/appLoader'
-import UserLoader from 'components/hoc/userLoader'
+
 import Dashboard from 'components/ui/dashBoard'
-import ProtectedRoute from 'components/ProtectedRoute'
+import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
+import WeightPage from 'components/page/weight'
 import UserPage from 'components/page/user'
 import NavBar from 'components/ui/navBar'
 import { selector as userSelector } from 'store/user'
 
 const App = () => {
     const isAuthorized = useSelector(userSelector.isAuthorized())
-    // const pages = [
-    //     {name: 'Home', path: '/', exact: true, nav: true, component: Home},
-    //     {
-    //         name: 'Login',
-    //         path: '/login',
-    //         params: '/:type?',
-    //         exact: false,
-    //         nav: false,
-    //         professions: true,
-    //         component: (params) => <Login id={params.match.params.type}/>
-    //     },
-    //     {
-    //         name: 'Users',
-    //         path: '/users',
-    //         params: '/:id?/:type?',
-    //         exact: false,
-    //         nav: true,
-    //         professions: true,
-    //         auth: true,
-    //         component: (params) => <Users id={params.match.params.id} mode={params.match.params.type}/>
-    //     },
-    //     {name: 'Not Found', path: '/404', exact: false, nav: false, component: NotFound},
-    //     {name: 'Logout', path: '/logout', exact: false, nav: false, component: Logout},
-    // ]
-
     return (
         <>
             <AppLoader>
@@ -56,55 +32,90 @@ const App = () => {
                         </div>
                     </div>
                     <Routes>
+
                         <Route path="/" index element={<Layout.Home/>}/>
+
                         <Route path="auth/*">
-                            <Route index element={<Navigate to={'signin'}/>}/>
-                            <Route path="signin" element={<Layout.Login/>}/>
-                            <Route path="signup" element={<Layout.Register/>}/>
-                            <Route path="logout" element={<Layout.Logout/>}/>
-                            <Route path="*" element={<Navigate to={'signin'}/>}/>
+                            <Route index element={<Navigate to={'signIn'}/>}/>
+                            <Route path="*" element={<Layout.NotFound/>}/>
+                            <Route path="signIn" element={<Layout.SignIn/>}/>
+                            <Route path="signUp" element={<Layout.SignUp/>}/>
+                            <Route path="signOut" element={<Layout.SignOut/>}/>
                         </Route>
+
                         <Route
                             path="/dashboard"
                             element={
-                                <ProtectedRoute redirectTo="/auth/signin">
+                                <ProtectedRoute redirectTo="/auth/signIn">
                                     <Dashboard/>
                                 </ProtectedRoute>
                             }
                         />
+
                         <Route
                             path="/products/*"
                             element={
-                                <ProtectedRoute redirectTo="/auth/signin">
-                                    <Outlet/>
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <CommonLoader entity="product">
+                                        <Outlet/>
+                                    </CommonLoader>
                                 </ProtectedRoute>
                             }
                         >
                             <Route index element={<ProductPage.List/>}/>
                             <Route path="create" element={<ProductPage.Create/>}/>
-                            <Route path=":id" element={<ProductPage.View/>}/>
-                            <Route path=":id/update" element={<ProductPage.Update/>}/>
+                            <Route path=":id/*">
+                                <Route index element={<ProductPage.View/>}/>
+                                <Route path=":id/update" element={<ProductPage.Update/>}/>
+                            </Route>
+                            <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
+
                         <Route
                             path="/meals"
                             element={
-                                <ProtectedRoute redirectTo="/auth/signin">
-                                    <Outlet/>
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <CommonLoader entity="meal">
+                                        <Outlet/>
+                                    </CommonLoader>
                                 </ProtectedRoute>
                             }
                         >
                             <Route index element={<MealPage.List/>}/>
                             <Route path="create" element={<MealPage.Create/>}/>
-                            <Route path=":id" element={<MealPage.View/>}/>
-                            <Route path=":id/update" element={<MealPage.Update/>}/>
+                            <Route path=":id/*">
+                                <Route index element={<MealPage.View/>}/>
+                                <Route path=":id/update" element={<MealPage.Update/>}/>
+                            </Route>
+                            <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
+
+                        <Route
+                            path="/weights"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <CommonLoader entity="weight">
+                                        <Outlet/>
+                                    </CommonLoader>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<WeightPage.List/>}/>
+                            <Route path="create" element={<WeightPage.Create/>}/>
+                            <Route path=":id/*">
+                                <Route index element={<WeightPage.View/>}/>
+                                <Route path=":id/update" element={<WeightPage.Update/>}/>
+                            </Route>
+                            <Route path="*" element={<Layout.NotFound/>}/>
+                        </Route>
+
                         <Route
                             path="/users"
                             element={
-                                <ProtectedRoute redirectTo="/auth/signin">
-                                    <UserLoader>
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <CommonLoader entity="user">
                                         <Outlet/>
-                                    </UserLoader>
+                                    </CommonLoader>
                                 </ProtectedRoute>
                             }
                         >
@@ -118,49 +129,13 @@ const App = () => {
                                 <Route index element={<UserPage.View/>}/>
                                 <Route path="update" element={<UserPage.Update/>}/>
                             </Route>
+                            <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
-                        {/*<Route*/}
-                        {/*    path="posts/*"*/}
-                        {/*    element={*/}
-                        {/*        <ProtectedRoute redirectTo="/auth/login">*/}
-                        {/*            <PostsLayout/>*/}
-                        {/*        </ProtectedRoute>*/}
-                        {/*    }>*/}
-                        {/*    <Route index element={<PostsListPage/>}/>*/}
-                        {/*    <Route path=":postId" element={<PostPage/>}/>*/}
-                        {/*</Route>*/}
+
                         <Route path="*" element={<Navigate to="/"/>}/>
+
                     </Routes>
                 </div>
-                {/*<NavBar {...{pages}}/>*/}
-                {/*<div className="row">*/}
-                {/*    <div className="col-12">*/}
-                {/*        <Switch>*/}
-                {/*            {pages*/}
-                {/*                .filter(page => page.professions)*/}
-                {/*                .map(*/}
-                {/*                    (page, i) => {*/}
-                {/*                        const RouteComponent = page.auth*/}
-                {/*                            ? ProtectedRoute*/}
-                {/*                            : Route*/}
-                {/*                        return <RouteComponent*/}
-                {/*                            key={`page_${i + 1}`}*/}
-                {/*                            exact={page.exact}*/}
-                {/*                            path={page.path + (page.params ? page.params : '')}*/}
-                {/*                            component={page.component}/>*/}
-                {/*                    }*/}
-                {/*                )}*/}
-                {/*            {pages*/}
-                {/*                .filter(page => !page.professions)*/}
-                {/*                .map((page, i) =>*/}
-                {/*                    <Route*/}
-                {/*                        key={`page_${i + 1}`} exact={page.exact}*/}
-                {/*                        path={page.path + (page.params ? page.params : '')}*/}
-                {/*                        component={page.component}/>)}*/}
-                {/*            <Redirect to="/"/>*/}
-                {/*        </Switch>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
             </AppLoader>
             <ToastContainer/>
         </>

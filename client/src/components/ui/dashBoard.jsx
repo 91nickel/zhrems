@@ -42,7 +42,11 @@ const Dashboard = () => {
     return (<>
         <div className="row justify-content-center my-3">
             <div className="col-1 d-flex justify-content-start">
-                <button className="btn btn-success w-50" onClick={() => submitChangeDate(-1)} disabled={!prevDateActive}>
+                <button
+                    className="btn btn-success w-50"
+                    onClick={() => submitChangeDate(-1)}
+                    disabled={!prevDateActive}
+                >
                     <i className="bi bi-arrow-left"></i>
                 </button>
             </div>
@@ -50,17 +54,21 @@ const Dashboard = () => {
                 <h3>{dateString}</h3>
             </div>
             <div className="col-1 d-flex justify-content-end">
-                <button className="btn btn-success w-50" onClick={() => submitChangeDate(1)} disabled={!nextDateActive}>
+                <button
+                    className="btn btn-success w-50"
+                    onClick={() => submitChangeDate(1)}
+                    disabled={!nextDateActive}
+                >
                     <i className="bi bi-arrow-right"></i>
                 </button>
             </div>
         </div>
         <div className="row justify-content-center mb-3">
             <div className="col-6 col-md-3">
-                <NavLink className="btn btn-primary w-100" to="/products">Продукты</NavLink>
+                <NavLink className="btn btn-primary w-100" to="/weights/create">Взвеситься</NavLink>
             </div>
             <div className="col-6 col-md-3">
-                <NavLink className="btn btn-success w-100" to="/meals">Блюда</NavLink>
+                <NavLink className="btn btn-success w-100" to="/transactions/create">Поесть</NavLink>
             </div>
         </div>
     </>)

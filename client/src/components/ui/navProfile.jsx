@@ -30,7 +30,7 @@ function NavProfile () {
                 </div>
                 <div className={'w-100 dropdown-menu' + (isOpened ? ' show' : '')}>
                     <Link to={`/users/${user._id}`} className="dropdown-item">Profile</Link>
-                    <Link to={`/auth/logout`} className="dropdown-item">Logout</Link>
+                    <Link to={`/auth/signOut`} className="dropdown-item">Logout</Link>
                 </div>
             </div>
             }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+
 import _ from 'lodash'
+
 import Pagination from 'components/common/pagination'
-import GroupList from 'components/common/groupList'
 import Table from 'components/ui/user/table'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
@@ -12,14 +14,19 @@ import { action, selector } from 'store/user'
 
 const List = () => {
 
-    const pageSize = 10
-    const user = useSelector(selector.current())
-    const users = useSelector(selector.all())
-    const isLoaded = useSelector(selector.isDataLoaded())
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
+    const pageSize = 10
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
     const [searchQuery, setSearchQuery] = useState('')
+
+    const users = useSelector(selector.get())
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchQuery])
 
     const paginationHandler = {
         onChange: function (index) {

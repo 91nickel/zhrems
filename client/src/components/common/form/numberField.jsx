@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const NumberField = ({label, name, placeholder, value, error, onChange}) => {
+const NumberField = ({label, name, step, placeholder, value, error, onChange}) => {
 
     const handleChange = ({target}) => {
         onChange({name: target.name, value: +target.value})
@@ -26,6 +26,7 @@ const NumberField = ({label, name, placeholder, value, error, onChange}) => {
                     id={name}
                     name={name}
                     value={value}
+                    step={step}
                     onChange={handleChange}
                     onInput={handleChange}
                 />
@@ -36,6 +37,7 @@ const NumberField = ({label, name, placeholder, value, error, onChange}) => {
 }
 NumberField.defaultProps = {
     type: 'number',
+    step: 1,
     placeholder: '',
 }
 NumberField.propTypes = {
@@ -44,6 +46,7 @@ NumberField.propTypes = {
     name: PropTypes.string,
     placeholder: PropTypes.string,
     value: PropTypes.number,
+    step: PropTypes.number,
     error: PropTypes.string,
     onChange: PropTypes.func,
     onInput: PropTypes.func,

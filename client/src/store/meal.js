@@ -1,29 +1,39 @@
 import React from 'react'
-import { createAction, createSlice } from '@reduxjs/toolkit'
+import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import service from 'services/meal.service'
 
 const slice = createSlice({
     name: 'meal',
     initialState: {
-        entities: null,
+        entities: [],
         isLoading: false,
-        error: null,
         isDataLoaded: false,
+        success: null,
+        error: null,
     },
     reducers: {
         created: (state, action) => {
             state.entities.push(action.payload)
+            state.success = `Successfully created meal ${action.payload.name}`
         },
         updated: (state, action) => {
-            const updatedUser = action.payload
-            state.entities = state.entities.map(user => {
-                if (user._id === updatedUser._id)
-                    return updatedUser
-                return user
+            const updated = action.payload
+            state.entities = state.entities.map(prod => {
+                if (prod._id === updated._id)
+                    return updated
+                return prod
             })
+            state.success = `Successfully updated meal ${updated.name}`
+        },
+        deleted: (state, action) => {
+            const id = action.payload
+            state.entities = state.entities.filter(prod => prod._id !== id)
+            state.success = `Successfully deleted meal with _id=${id}`
         },
         requested: (state) => {
             state.isLoading = true
+            state.error = null
+            state.success = null
         },
         received: (state, action) => {
             state.entities = action.payload
@@ -32,56 +42,118 @@ const slice = createSlice({
         },
         requestFailed: (state, action) => {
             state.error = action.payload
+            state.success = null
             state.isLoading = false
+        },
+        messagesCleared: (state, action) => {
+            state.error = null
+            state.success = null
         },
     }
 })
 
-const {created, updated, requested, received, requestFailed} = slice.actions
+const {created, updated, deleted, requested, received, requestFailed, messagesCleared} = slice.actions
 
-const createRequested = createAction('user/createRequested')
-const createFailed = createAction('user/createFailed')
-const updateRequested = createAction('user/updateRequested')
-const updateFailed = createAction('user/updateFailed')
+const createRequested = createAction('meal/createRequested')
+const createFailed = createAction('meal/createFailed')
+const updateRequested = createAction('meal/updateRequested')
+const updateFailed = createAction('meal/updateFailed')
+const deleteRequested = createAction('meal/deleteRequested')
+const deleteFailed = createAction('meal/deleteFailed')
 
 export const action = {
-    create: payload => async dispatch => {
-        dispatch(createRequested(payload))
-        try {
-            const {content} = await service.create(payload)
-            dispatch(created(content))
-        } catch (error) {
-            dispatch(createFailed(error.message))
-        }
-    },
 
-    update: payload => async dispatch => {
-        dispatch(updateRequested(payload))
-        try {
-            const {content} = await service.update(payload)
-            dispatch(updated(content))
-        } catch (error) {
-            dispatch(updateFailed(error.message))
+    create: createAsyncThunk(
+        'meal/create',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(createRequested(payload))
+            try {
+                const content = await service.create(payload)
+                thunkAPI.dispatch(created(content))
+                return content
+            } catch (error) {
+                console.log(error)
+                thunkAPI.dispatch(createFailed(error.message))
+                return thunkAPI.rejectWithValue()
+            }
         }
-    },
+    ),
 
-    get: () => async (dispatch) => {
-        dispatch(requested())
-        try {
-            const {content} = await service.get()
-            dispatch(received(content))
-        } catch (error) {
-            dispatch(requestFailed(error.message))
-        }
+    update: createAsyncThunk(
+        'meal/update',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(updateRequested(payload))
+            try {
+                const content = await service.update(payload)
+                thunkAPI.dispatch(updated(content))
+                return content
+            } catch (error) {
+                console.log(error)
+                thunkAPI.dispatch(updateFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
+    delete: createAsyncThunk(
+        'meal/delete',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(deleteRequested(payload))
+            try {
+                console.log('store.meal.delete', payload)
+                // const content = await service.delete(payload)
+                // thunkAPI.dispatch(deleted(content))
+            } catch (error) {
+                thunkAPI.dispatch(deleteFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
+    getById: createAsyncThunk(
+        'meal/getById',
+        async (id, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await service.getById(id)
+                thunkAPI.dispatch(received(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
+    get: createAsyncThunk(
+        'meal/get',
+        async (payload, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await service.get()
+                thunkAPI.dispatch(received(content))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
+
+    clearMessages: () => async (dispatch) => {
+        dispatch(messagesCleared())
     },
 
 }
 
 export const selector = {
-    getAll: () => state => state.meal.entities,
-    getById: id => state => state.meal.entities.find(u => u._id === id),
+    get: () => state => state.meal.entities,
+    byId: id => state => state.meal.entities.find(u => u._id === id),
+    isDataLoaded: () => state => state.meal.isDataLoaded,
     isLoading: () => state => state.meal.isLoading,
-    errors: () => state => state.meal.error,
+    error: () => state => state.meal.error,
+    success: () => state => state.meal.success,
 }
 
 export default slice.reducer

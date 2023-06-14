@@ -5,37 +5,36 @@ import PropTypes from 'prop-types'
 import Table, { TableHeader, TableBody } from 'components/common/table'
 import ControlsPanel from 'components/ui/controlsPanel'
 
-const UserTable = ({users, currentSort, onSort, onDelete, ...rest}) => {
+const WeightTable = ({weights, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {
-        name: {
-            name: 'Имя',
+        date: {
+            name: 'Дата',
+            path: 'date',
             component: el => {
-                return <NavLink to={`/users/${el._id}`}>{el.name}</NavLink>
+                return <NavLink to={`/weights/${el._id}`}>{el.name}</NavLink>
             }
         },
-        email: {path: 'email', name: 'E-mail'},
-        weight: {path: 'weight', name: 'Вес'},
+        user: {path: 'user', name: 'Пользователь'},
+        value: {path: 'value', name: 'Вес'},
         controls: {
-            path: '',
-            name: '',
             component: el => {
                 return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>
             }
         },
     }
     return (
-        <Table onSort={onSort} currentSort={currentSort} columns={columns} data={users}>
+        <Table onSort={onSort} currentSort={currentSort} columns={columns} data={weights}>
             <TableHeader {...{columns, currentSort, onSort}} />
-            <TableBody {...{columns, data: users}} />
+            <TableBody {...{columns, data: weights}} />
         </Table>
     )
 }
 
-UserTable.propTypes = {
-    users: PropTypes.array.isRequired,
+WeightTable.propTypes = {
+    weights: PropTypes.array.isRequired,
     currentSort: PropTypes.object.isRequired,
     onSort: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 }
 
-export default UserTable
+export default WeightTable

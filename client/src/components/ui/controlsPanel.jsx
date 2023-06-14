@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import NavProfile from './navProfile'
 import { selector as userSelector } from 'store/user'
 
-function ControlsPannel ({id, prefix, onDelete}) {
+function ControlsPanel ({id, prefix, onDelete}) {
     const [open, setOpen] = useState()
 
     return (
@@ -32,14 +32,14 @@ function ControlsPannel ({id, prefix, onDelete}) {
     )
 }
 
-ControlsPannel.defaultValues = {
+ControlsPanel.defaultValues = {
     prefix: '',
 }
 
-ControlsPannel.propTypes = {
+ControlsPanel.propTypes = {
     id: PropTypes.string.isRequired,
     prefix: PropTypes.string,
     onDelete: PropTypes.func,
 }
 
-export default ControlsPannel
+export default ControlsPanel

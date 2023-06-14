@@ -13,12 +13,12 @@ const slice = createSlice({
     initialState: {
         entities: [],
         isLoading: false,
+        isDataLoaded: false,
         error: null,
         auth: {userId: null, isAdmin: false},
         user: {},
         isProcessingAuth: true,
         isAuthorized: null,
-        isDataLoaded: false,
     },
     reducers: {
         created: (state, action) => {
@@ -165,7 +165,7 @@ export const action = {
             // console.log('user/signin', email, password)
             thunkAPI.dispatch(authRequested())
             try {
-                const tokens = await authService.login({email, password})
+                const tokens = await authService.signIn({email, password})
                 localStorageService.setTokens(tokens)
                 const user = await userService.getCurrentUser()
                 thunkAPI.dispatch(authRequestSuccess(user))
@@ -189,7 +189,7 @@ export const action = {
         async ({email, password, ...rest}, thunkAPI) => {
             thunkAPI.dispatch(authRequested())
             try {
-                const tokens = await authService.register({email, password, ...rest})
+                const tokens = await authService.signUp({email, password, ...rest})
                 localStorageService.setTokens(tokens)
                 const user = await userService.getCurrentUser()
                 thunkAPI.dispatch(authRequestSuccess(user))
@@ -206,7 +206,7 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
-                const content = await authService.logout()
+                const content = await authService.signOut()
                 localStorageService.removeAuthData()
                 thunkAPI.dispatch(loggedOut())
                 return content
@@ -220,7 +220,7 @@ export const action = {
 }
 
 export const selector = {
-    all: () => state => state.user.entities,
+    get: () => state => state.user.entities,
     byId: id => state => state.user?.entities.find(u => u._id === id),
     current: id => state => state.user.user,
     isLoading: () => state => state.user.isLoading,

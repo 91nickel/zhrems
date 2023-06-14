@@ -1,9 +1,9 @@
 import React from 'react'
 import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import service from 'services/product.service'
+import service from 'services/weight.service'
 
 const slice = createSlice({
-    name: 'product',
+    name: 'weight',
     initialState: {
         entities: [],
         isLoading: false,
@@ -14,7 +14,7 @@ const slice = createSlice({
     reducers: {
         created: (state, action) => {
             state.entities.push(action.payload)
-            state.success = `Successfully created product ${action.payload.name}`
+            state.success = `Successfully created weight ${action.payload.value}`
         },
         updated: (state, action) => {
             const updated = action.payload
@@ -23,12 +23,12 @@ const slice = createSlice({
                     return updated
                 return prod
             })
-            state.success = `Successfully updated product ${updated.name}`
+            state.success = `Successfully updated weight ${updated.name}`
         },
         deleted: (state, action) => {
             const id = action.payload
             state.entities = state.entities.filter(prod => prod._id !== id)
-            state.success = `Successfully deleted product with _id=${id}`
+            state.success = `Successfully deleted weight with _id=${id}`
         },
         requested: (state) => {
             state.isLoading = true
@@ -54,17 +54,17 @@ const slice = createSlice({
 
 const {created, updated, deleted, requested, received, requestFailed, messagesCleared} = slice.actions
 
-const createRequested = createAction('product/createRequested')
-const createFailed = createAction('product/createFailed')
-const updateRequested = createAction('product/updateRequested')
-const updateFailed = createAction('product/updateFailed')
-const deleteRequested = createAction('product/deleteRequested')
-const deleteFailed = createAction('product/deleteFailed')
+const createRequested = createAction('weight/createRequested')
+const createFailed = createAction('weight/createFailed')
+const updateRequested = createAction('weight/updateRequested')
+const updateFailed = createAction('weight/updateFailed')
+const deleteRequested = createAction('weight/deleteRequested')
+const deleteFailed = createAction('weight/deleteFailed')
 
 export const action = {
 
     create: createAsyncThunk(
-        'product/create',
+        'weight/create',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(createRequested(payload))
             try {
@@ -80,7 +80,7 @@ export const action = {
     ),
 
     update: createAsyncThunk(
-        'product/update',
+        'weight/update',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(updateRequested(payload))
             try {
@@ -96,11 +96,11 @@ export const action = {
     ),
 
     delete: createAsyncThunk(
-        'product/delete',
+        'weight/delete',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.product.delete', payload)
+                console.log('store.weight.delete', payload)
                 // const content = await service.delete(payload)
                 // thunkAPI.dispatch(deleted(content))
             } catch (error) {
@@ -111,7 +111,7 @@ export const action = {
     ),
 
     getById: createAsyncThunk(
-        'product/getById',
+        'weight/getById',
         async (id, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -126,7 +126,7 @@ export const action = {
     ),
 
     get: createAsyncThunk(
-        'product/get',
+        'weight/get',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -148,12 +148,12 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.product.entities,
-    byId: id => state => state.product.entities.find(u => u._id === id),
-    isDataLoaded: () => state => state.product.isDataLoaded,
-    isLoading: () => state => state.product.isLoading,
-    error: () => state => state.product.error,
-    success: () => state => state.product.success,
+    get: () => state => state.weight.entities,
+    byId: id => state => state.weight.entities.find(u => u._id === id),
+    isDataLoaded: () => state => state.weight.isDataLoaded,
+    isLoading: () => state => state.weight.isLoading,
+    error: () => state => state.weight.error,
+    success: () => state => state.weight.success,
 }
 
 export default slice.reducer

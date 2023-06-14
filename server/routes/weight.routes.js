@@ -6,6 +6,14 @@ const auth = require('middleware/auth.middleware')
 
 router.get('/:id?', auth, async (request, response) => {
     try {
+
+        console.log({
+            path: 'GET /weights/' + request.url,
+            // body: request.body,
+            params: request.params,
+            user: request.user
+        })
+
         const {id} = request.params
         const user = request.user
 
@@ -14,13 +22,13 @@ router.get('/:id?', auth, async (request, response) => {
             if (!weight) {
                 response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
             }
-            if (weight.user && weight.user !== user._id && user.role !== 'admin') {
+            if (weight.user.toString() !== user.localId && !user.isAdmin) {
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             }
             return response.json(weight)
         }
 
-        const weights = await Weight.find({user: user._id})
+        const weights = await Weight.find({user: user.localId}).sort({date: 'desc'})
         return response.json(weights)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})

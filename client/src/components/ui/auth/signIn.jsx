@@ -7,7 +7,7 @@ import TextField from 'components/common/form/textField'
 import CheckboxField from 'components/common/form/checkboxField'
 import { action, selector } from 'store/user'
 
-const LoginForm = () => {
+const SignIn = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [data, setData] = useState({email: '', password: '', stayOn: false})
@@ -87,4 +87,4 @@ const LoginForm = () => {
     )
 }
 
-export default LoginForm
+export default SignIn

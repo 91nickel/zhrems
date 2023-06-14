@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
-import ControlsPannel from 'components/ui/controlsPannel'
+import ControlsPanel from 'components/ui/controlsPanel'
 
 const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {
@@ -20,7 +20,7 @@ const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
         calories: {path: 'calories', name: 'ККАЛ'},
         controls: {
             component: el => {
-                return <ControlsPannel id={el._id} prefix="" onDelete={onDelete}/>
+                return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>
             }
         },
     }

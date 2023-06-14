@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { action } from 'store/user'
 
-const Logout = () => {
+const SignOut = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     useEffect(() => {
@@ -14,4 +14,4 @@ const Logout = () => {
     return ''
 }
 
-export default Logout
+export default SignOut
