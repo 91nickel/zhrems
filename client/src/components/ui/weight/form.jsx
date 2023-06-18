@@ -26,13 +26,26 @@ const Form = ({onSubmit}) => {
     if (id)
         weight = useSelector(selector.byId(id))
 
+    useEffect(() => {
+        dispatch(action.clearMessages())
+        setData(createFields())
+    }, [])
+
     const lastWeight = weights[0]
 
     const defaultData = {
-        date: id ? new Date(weight.date) : new Date(),
         value: id ? weight.value : (lastWeight?.value || 50),
         user: userId,
     }
+
+    function createFields () {
+        return {
+            ...data,
+            ...(weight ? weight : defaultData),
+            date: id ? new Date(weight.date) : new Date(),
+        }
+    }
+
     defaultData.date.setSeconds(0)
 
     const [data, setData] = useState({...defaultData})
@@ -49,10 +62,6 @@ const Form = ({onSubmit}) => {
     useEffect(() => {
         validate()
     }, [data])
-
-    function createFields (weight) {
-        return {}
-    }
 
     const onChange = target => {
         console.log('onChange()', target)
