@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
-import ControlsPanel from 'components/ui/controlsPanel'
+import ControlsPanel from 'components/common/controlsPanel'
 
 const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {

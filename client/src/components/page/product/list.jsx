@@ -38,7 +38,7 @@ const List = () => {
             setCurrentSort(item)
         },
         onDelete: function (id) {
-            console.log('handleDelete()', id)
+            dispatch(action.delete(id))
         },
     }
 

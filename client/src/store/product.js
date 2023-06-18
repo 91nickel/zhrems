@@ -101,8 +101,8 @@ export const action = {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
                 console.log('store.product.delete', payload)
-                // const content = await service.delete(payload)
-                // thunkAPI.dispatch(deleted(content))
+                const content = await service.delete(payload)
+                thunkAPI.dispatch(deleted(payload))
             } catch (error) {
                 thunkAPI.dispatch(deleteFailed(error.message))
                 return thunkAPI.rejectWithValue(error.message)

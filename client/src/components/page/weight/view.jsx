@@ -2,20 +2,22 @@ import React from 'react'
 import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/product'
-import Card from 'components/ui/product/card'
+import { selector, action } from 'store/weight'
+import Card from 'components/ui/weight/card'
 
 const View = () => {
     const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const product = useSelector(selector.byId(id))
+    const weight = useSelector(selector.byId(id))
 
-    const onRemove = () => {
+    const onDelete = () => {
         dispatch(action.delete(id))
+            .unwrap()
+            .then(() => navigate('..'))
+            .catch(error => console.error(error.message))
     }
-    console.log(product)
 
     return (
         <div className="row justify-content-center">
@@ -27,7 +29,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Card {...{product, onRemove}} />
+                <Card {...{weight, onDelete}} />
             </div>
         </div>
     )

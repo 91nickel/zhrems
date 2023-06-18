@@ -36,7 +36,7 @@ const SelectField = ({label, name, value, defaultValue, error, onChange, options
 }
 SelectField.defaultProps = {
     options: [],
-    defaultValue: 'Choose your destiny...',
+    defaultValue: 'Выберите пользователя',
 }
 SelectField.propTypes = {
     label: PropTypes.string,

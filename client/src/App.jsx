@@ -104,7 +104,7 @@ const App = () => {
                             <Route path="create" element={<WeightPage.Create/>}/>
                             <Route path=":id/*">
                                 <Route index element={<WeightPage.View/>}/>
-                                <Route path=":id/update" element={<WeightPage.Update/>}/>
+                                <Route path="update" element={<WeightPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>

@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
-import ControlsPanel from 'components/ui/controlsPanel'
+import ControlsPanel from 'components/common/controlsPanel'
 
 const WeightTable = ({weights, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {
@@ -11,7 +11,7 @@ const WeightTable = ({weights, currentSort, onSort, onDelete, ...rest}) => {
             name: 'Дата',
             path: 'date',
             component: el => {
-                return <NavLink to={`/weights/${el._id}`}>{el.name}</NavLink>
+                return <NavLink to={`/weights/${el._id}`}>{el.date}</NavLink>
             }
         },
         user: {path: 'user', name: 'Пользователь'},

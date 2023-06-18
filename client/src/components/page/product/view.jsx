@@ -12,10 +12,12 @@ const View = () => {
 
     const product = useSelector(selector.byId(id))
 
-    const onRemove = () => {
+    const onDelete = () => {
         dispatch(action.delete(id))
+            .unwrap()
+            .then(() => navigate('..'))
+            .catch(error => console.error(error.message))
     }
-    console.log(product)
 
     return (
         <div className="row justify-content-center">
@@ -27,7 +29,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Card {...{product, onRemove}} />
+                <Card {...{product, onDelete}} />
             </div>
         </div>
     )

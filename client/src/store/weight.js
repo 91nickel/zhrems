@@ -13,7 +13,7 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            state.entities.push(action.payload)
+            state.entities = [action.payload, ...state.entities]
             state.success = `Successfully created weight ${action.payload.value}`
         },
         updated: (state, action) => {
@@ -101,8 +101,8 @@ export const action = {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
                 console.log('store.weight.delete', payload)
-                // const content = await service.delete(payload)
-                // thunkAPI.dispatch(deleted(content))
+                const content = await service.delete(payload)
+                thunkAPI.dispatch(deleted(payload))
             } catch (error) {
                 thunkAPI.dispatch(deleteFailed(error.message))
                 return thunkAPI.rejectWithValue(error.message)

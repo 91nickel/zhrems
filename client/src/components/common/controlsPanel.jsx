@@ -3,10 +3,11 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
-import NavProfile from './navProfile'
+import NavProfile from '../ui/navProfile'
 import { selector as userSelector } from 'store/user'
 
 function ControlsPanel ({id, prefix, onDelete}) {
+
     const [open, setOpen] = useState()
 
     return (

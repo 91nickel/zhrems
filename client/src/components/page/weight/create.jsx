@@ -15,7 +15,7 @@ const Create = () => {
         dispatch(action.create(payload))
             .unwrap()
             .then(() => {
-                setTimeout(() => navigate('..', {replace: true}), 1000)
+                setTimeout(() => navigate('../..', {replace: true}), 1000)
             })
             .catch(() => {
                 console.log('Failed')

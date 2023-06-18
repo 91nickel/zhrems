@@ -1,38 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
-import TextField from 'components/common/form/textField'
-import NumberField from 'components/common/form/numberField'
-
-import { useDispatch, useSelector } from 'react-redux'
 import { selector as userSelector } from 'store/user'
 import { selector, action } from 'store/weight'
-import PropTypes from 'prop-types'
+
+import DateTimeField from 'components/common/form/dateTimeField'
+import NumberField from 'components/common/form/numberField'
+import SelectField from 'components/common/form/selectField'
 
 const Form = ({onSubmit}) => {
     const dispatch = useDispatch()
 
     const {id} = useParams()
     const {userId, isAdmin} = useSelector(userSelector.authData())
+    const users = useSelector(userSelector.get())
 
     const weights = useSelector(selector.get())
 
-    let weight;
+    let weight
     if (id)
         weight = useSelector(selector.byId(id))
 
     const lastWeight = weights[0]
-    const date = new Date;
 
     const defaultData = {
-        date: `${date.getFullYear()}-${('0' + date.getMonth()).slice(-2)}-${('0' + date.getDate()).slice(-2)}`,
-        time: `${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}`,
-        value: lastWeight?.value || 50,
+        date: id ? new Date(weight.date) : new Date(),
+        value: id ? weight.value : (lastWeight?.value || 50),
         user: userId,
     }
+    defaultData.date.setSeconds(0)
 
     const [data, setData] = useState({...defaultData})
     const [errors, setErrors] = useState({})
@@ -53,8 +54,8 @@ const Form = ({onSubmit}) => {
         return {}
     }
 
-    const handleChange = target => {
-        // console.log(target)
+    const onChange = target => {
+        console.log('onChange()', target)
         const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
         setData(prevState => {
             const nextState = {...prevState, [target.name]: target.value}
@@ -69,13 +70,12 @@ const Form = ({onSubmit}) => {
         event.preventDefault()
         if (!validate() || !hasDifference())
             return false
-        return onSubmit(data)
+        return onSubmit({...data, date: data.date.toISOString()})
     }
 
     const validateScheme = yup.object().shape({
-        date: yup.string().required('Поле обязательно'),
-        time: yup.string().required('Поле обязательно'),
-        user: yup.number().required('Поле обязательно'),
+        date: yup.date().required('Поле обязательно'),
+        user: yup.string().required('Поле обязательно'),
         value: yup.number().required('Поле обязательно'),
     })
 
@@ -91,36 +91,38 @@ const Form = ({onSubmit}) => {
         if (!weight) return true
         let hasDifference = false
         Object.keys(defaultData).forEach(key => {
-            // console.log(key, product[key], data[key])
-            if (weight[key] !== data[key])
-                hasDifference = true
+            // console.log(weight[key], data[key], weight[key] === data[key])
+            if (data[key] instanceof Date) {
+                if (data[key].toISOString() !== weight[key])
+                    hasDifference = true
+            } else {
+                if (weight[key] !== data[key])
+                    hasDifference = true
+            }
         })
         return hasDifference
     }
 
     const isValid = Object.keys(errors).length === 0
 
-    console.log(data)
-
     return (
         <form onSubmit={handleSubmit}>
             {globalSuccess && <div className="alert alert-success">{globalSuccess}</div>}
             {globalError && <div className="alert alert-danger">{globalError}</div>}
-            <TextField
-                label="Дата"
-                type="date"
+            <SelectField
+                label="Пользователь"
+                name="user"
+                value={data.user}
+                error={errors.user}
+                options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
+                onChange={onChange}
+            />
+            <DateTimeField
+                label="Дата/Время"
                 name="date"
                 value={data.date}
                 error={errors.date}
-                onChange={handleChange}
-            />
-            <TextField
-                label="Время"
-                type="time"
-                name="time"
-                value={data.time}
-                error={errors.time}
-                onChange={handleChange}
+                onChange={onChange}
             />
             <NumberField
                 label="Вес"
@@ -128,7 +130,7 @@ const Form = ({onSubmit}) => {
                 step={0.1}
                 value={data.value}
                 error={errors.value}
-                onChange={handleChange}
+                onChange={onChange}
             />
             <button
                 className="btn btn-primary w-100 mx-auto"
