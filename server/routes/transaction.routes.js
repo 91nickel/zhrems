@@ -15,7 +15,7 @@ router.get('/:id?', auth, async (request, response) => {
             if (!transaction) {
                 response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
             }
-            if (transaction.user !== user._id && user.role !== 'admin') {
+            if (transaction.user !== user._id && !user.isAdmin) {
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             }
             return response.json(transaction)
@@ -23,7 +23,7 @@ router.get('/:id?', auth, async (request, response) => {
         const transactions = await Transaction.find({user: user._id})
         return response.json(transactions)
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
@@ -31,13 +31,13 @@ router.post('/', auth, async (request, response) => {
     try {
         console.log(request.url, request.body)
         const user = request.user
-        if (request.body.user !== user._id && user.role !== 'admin') {
+        if (request.body.user !== user._id && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
         const transaction = await Transaction.create(request.body)
         return response.status(201).json(transaction)
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
@@ -46,7 +46,7 @@ router.patch('/:id', auth, async (request, response) => {
         console.log(request.url, request.body)
         const {id} = request.params
         const user = request.user
-        if (request.body.user !== user._id && user.role !== 'admin') {
+        if (request.body.user !== user._id && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
         const transaction = await Transaction.findByIdAndUpdate(id, request.body, {new: true})
@@ -54,7 +54,7 @@ router.patch('/:id', auth, async (request, response) => {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         return response.json(transaction)
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
@@ -70,7 +70,7 @@ router.delete('/:id', auth, async (request, response) => {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         }
 
-        if (request.body.user !== user._id && user.role !== 'admin') {
+        if (request.body.user !== user._id && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
@@ -78,7 +78,7 @@ router.delete('/:id', auth, async (request, response) => {
         return response.json({})
 
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
+        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 

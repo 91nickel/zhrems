@@ -2,14 +2,15 @@ const {Schema, model} = require('mongoose')
 
 const schema = new Schema(
     {
-        name: {type: String, required: true},
-        desc: {type: String},
+        date: {type: Date, required: true},
+        desc: String,
+        content: Object,
         // если указан userId, либо дефолтное если не указан
-        user: {type: Schema.Types.ObjectId, ref: 'User'},
+        user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
         // на 100 г
-        proteins: {type: Number, required: true},
-        carbohydrates: {type: Number, required: true},
-        fats: {type: Number, required: true},
+        proteins: Number,
+        carbohydrates: Number,
+        fats: Number,
         // в граммах
         weight: {type: Number, required: true},
     },

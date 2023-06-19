@@ -16,6 +16,7 @@ import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
 import WeightPage from 'components/page/weight'
+import TransactionPage from 'components/page/transaction'
 import UserPage from 'components/page/user'
 import NavBar from 'components/ui/navBar'
 import { selector as userSelector } from 'store/user'
@@ -105,6 +106,23 @@ const App = () => {
                             <Route path=":id/*">
                                 <Route index element={<WeightPage.View/>}/>
                                 <Route path="update" element={<WeightPage.Update/>}/>
+                            </Route>
+                            <Route path="*" element={<Layout.NotFound/>}/>
+                        </Route>
+
+                        <Route
+                            path="/transactions"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <Outlet/>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<TransactionPage.List/>}/>
+                            <Route path="create" element={<TransactionPage.Create/>}/>
+                            <Route path=":id/*">
+                                <Route index element={<TransactionPage.View/>}/>
+                                <Route path="update" element={<TransactionPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>

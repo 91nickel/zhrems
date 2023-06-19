@@ -3,12 +3,14 @@ import UserReducer from 'store/user'
 import ProductReducer from 'store/product'
 import MealReducer from 'store/meal'
 import WeightReducer from 'store/weight'
+import TransactionReducer from 'store/transaction'
 
 const rootReducer = combineReducers({
     user: UserReducer,
     product: ProductReducer,
     meal: MealReducer,
     weight: WeightReducer,
+    transaction: TransactionReducer,
 })
 
 export function createStore () {
