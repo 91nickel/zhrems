@@ -36,7 +36,7 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
         const [hours, minutes] = data.time.split(':')
 
         value.setFullYear(+year)
-        value.setMonth(+month)
+        value.setMonth(+month - 1)
         value.setDate(+day)
         value.setHours(+hours)
         value.setMinutes(+minutes)

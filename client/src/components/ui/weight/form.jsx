@@ -26,32 +26,26 @@ const Form = ({onSubmit}) => {
     if (id)
         weight = useSelector(selector.byId(id))
 
-    useEffect(() => {
-        dispatch(action.clearMessages())
-        setData(createFields())
-    }, [])
-
     const lastWeight = weights[0]
 
     const defaultData = {
-        value: id ? weight.value : (lastWeight?.value || 50),
+        value: lastWeight?.value || 50,
         user: userId,
+        date: Date.now(),
     }
 
-    function createFields () {
-        return {
-            ...data,
-            ...(weight ? weight : defaultData),
-            date: id ? new Date(weight.date) : new Date(),
-        }
-    }
+    const startData = id
+        ? createFields(weight)
+        : createFields(defaultData)
 
-    defaultData.date.setSeconds(0)
-
-    const [data, setData] = useState({...defaultData})
+    const [data, setData] = useState(startData)
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
+
+    useEffect(() => {
+        dispatch(action.clearMessages())
+    }, [])
 
     useEffect(() => {
         dispatch(action.clearMessages())
@@ -62,6 +56,15 @@ const Form = ({onSubmit}) => {
     useEffect(() => {
         validate()
     }, [data])
+
+    function createFields (weight) {
+        const fields = {
+            ...weight,
+            date: new Date(weight.date),
+        }
+        fields.date.setSeconds(0)
+        return fields
+    }
 
     const onChange = target => {
         console.log('onChange()', target)
@@ -75,7 +78,7 @@ const Form = ({onSubmit}) => {
         })
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = event => {
         event.preventDefault()
         if (!validate() || !hasDifference())
             return false
