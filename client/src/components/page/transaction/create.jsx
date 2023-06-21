@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
-// import Form from 'components/ui/transaction/form'
+import Form from 'components/ui/transaction/form'
 
 const Create = () => {
     const {id} = useParams()
@@ -12,6 +12,7 @@ const Create = () => {
     const dispatch = useDispatch()
 
     const onSubmit = payload => {
+        return console.log('onSubmit', payload)
         dispatch(action.create(payload))
             .unwrap()
             .then(() => {
@@ -33,9 +34,8 @@ const Create = () => {
                 </div>
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
-                    <h2>Добавить измерение веса</h2>
-                    TRANSACTION FORM
-                    {/*<Form onSubmit={onSubmit}/>*/}
+                    <h2>Добавить прием пищи</h2>
+                    <Form onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

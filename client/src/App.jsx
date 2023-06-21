@@ -114,7 +114,9 @@ const App = () => {
                             path="/transactions"
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
-                                    <Outlet/>
+                                    <CommonLoader entity="product">
+                                        <Outlet/>
+                                    </CommonLoader>
                                 </ProtectedRoute>
                             }
                         >
