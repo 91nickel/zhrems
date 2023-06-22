@@ -12,8 +12,15 @@ import { selector, action } from 'store/transaction'
 import DateTimeField from 'components/common/form/dateTimeField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
+import ProductCard from 'components/ui/product/card'
 import ProductForm from './productForm'
 import MealForm from './mealForm'
+
+const validateScheme = yup.object().shape({
+    date: yup.date().required('Поле обязательно'),
+    user: yup.string().required('Поле обязательно'),
+    products: yup.array().required('Поле обязательно').min(1),
+})
 
 const Form = ({onSubmit}) => {
     const dispatch = useDispatch()
@@ -34,6 +41,7 @@ const Form = ({onSubmit}) => {
     const defaultData = {
         user: userId,
         date: Date.now(),
+        products: [],
     }
 
     const startData = id
@@ -91,11 +99,6 @@ const Form = ({onSubmit}) => {
         return onSubmit({...data, date: data.date.toISOString()})
     }
 
-    const validateScheme = yup.object().shape({
-        date: yup.date().required('Поле обязательно'),
-        user: yup.string().required('Поле обязательно'),
-    })
-
     const validate = () => {
         validateScheme.validate(data)
             .then(() => setErrors({}))
@@ -120,16 +123,18 @@ const Form = ({onSubmit}) => {
         return hasDifference
     }
 
-    function addProduct () {
-
+    function onProductAdd (product) {
+        console.log('onProductAdd()', product)
+        setData({...data, products: [...data.products, product]})
     }
 
-    function onProductAdd () {
-
+    function onProductDelete (index) {
+        console.log('onProductDelete()', index)
+        setData({...data, products: data.products.filter((p, i) => i !== index)})
     }
 
-    function onMealAdd () {
-
+    function onMealAdd (meal) {
+        console.log('onMealAdd()', meal)
     }
 
     const isValid = Object.keys(errors).length === 0
@@ -153,10 +158,13 @@ const Form = ({onSubmit}) => {
                 error={errors.date}
                 onChange={onChange}
             />
+            <div className="product-list mb-3">
+                {data.products.map((p, i) => <ProductCard key={`tr.pid.${i}`} product={p} onDelete={() => onProductDelete(i)}/>)}
+            </div>
             <div className="d-flex flex-fill">
                 <div className="col-12 col-md-6">
                     <button
-                        className="btn btn-primary w-100"
+                        className={'btn w-100 ' + (showForm.product ? 'btn-outline-primary' : 'btn-primary')}
                         type="button"
                         onClick={() => toggleForm('product')}
                     >
@@ -165,7 +173,7 @@ const Form = ({onSubmit}) => {
                 </div>
                 <div className="col-12 col-md-6">
                     <button
-                        className="btn btn-primary w-100"
+                        className={'btn w-100 ' + (showForm.meal ? 'btn-outline-primary' : 'btn-primary')}
                         type="button"
                         onClick={() => toggleForm('meal')}
                     >
@@ -173,7 +181,7 @@ const Form = ({onSubmit}) => {
                     </button>
                 </div>
             </div>
-            <div>
+            <div className="mb-3 py-3">
                 {showForm.product && <ProductForm onSubmit={onProductAdd}/>}
                 {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
             </div>

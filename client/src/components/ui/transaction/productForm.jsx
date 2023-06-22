@@ -8,12 +8,12 @@ import * as yup from 'yup'
 
 import { selector, action } from 'store/product'
 
-import DateTimeField from 'components/common/form/dateTimeField'
+import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
 
 const defaultData = {
-    name: 'Новый продукт',
+    name: 'Какая-то еда',
     proteins: 0,
     carbohydrates: 0,
     fats: 0,
@@ -22,10 +22,16 @@ const defaultData = {
 }
 
 function createFields (fields) {
+    // console.log('createFields', defaultData, fields)
     const newFields = {...defaultData}
-    Object.keys(newFields).forEach(key => newFields[key] = fields[key])
+    Object.keys(defaultData).forEach(key => newFields[key] = fields[key] || defaultData[key])
     return newFields
 }
+
+const validateScheme = yup.object().shape({
+    name: yup.string().required('Поле обязательно'),
+    weight: yup.number().required('Поле обязательно').moreThan(0),
+})
 
 const Form = ({product, onSubmit}) => {
     const products = useSelector(selector.get())
@@ -39,42 +45,12 @@ const Form = ({product, onSubmit}) => {
     const [data, setData] = useState(startData)
     const [errors, setErrors] = useState({})
     const items = useSelector(selector.get())
-    const globalError = useSelector(selector.error())
-    const globalSuccess = useSelector(selector.success())
-
-    // useEffect(() => {
-    //     dispatch(action.clearMessages())
-    // }, [])
 
     useEffect(() => {
-        // dispatch(action.clearMessages())
-        // if (transaction)
-        //     setData({...data, ...createFields(transaction)})
-    }, [])
+        validate()
+    }, [data])
 
-    // useEffect(() => {
-    //     validate()
-    // }, [data])
-
-    const onProductSelect = target => {
-        const pid = target.value
-        const product = products.find(p => p._id === pid)
-        setData(createFields(product))
-    }
-
-    const handleSubmit = event => {
-        event.preventDefault()
-        if (!validate() || !hasDifference())
-            return false
-        return onSubmit({...data, date: data.date.toISOString()})
-    }
-
-    const validateScheme = yup.object().shape({
-        date: yup.date().required('Поле обязательно'),
-        user: yup.string().required('Поле обязательно'),
-    })
-
-    const validate = () => {
+    function validate () {
         validateScheme.validate(data)
             .then(() => setErrors({}))
             .catch(err => setErrors({[err.path]: err.message}))
@@ -82,28 +58,37 @@ const Form = ({product, onSubmit}) => {
         return Object.keys(errors).length === 0
     }
 
-    const hasDifference = () => {
-        let hasDifference = false
-        // Object.keys(defaultData).forEach(key => {
-        //     // console.log(weight[key], data[key], weight[key] === data[key])
-        //     if (data[key] instanceof Date) {
-        //         if (data[key].toISOString() !== transaction[key])
-        //             hasDifference = true
-        //     } else {
-        //         if (transaction[key] !== data[key])
-        //             hasDifference = true
-        //     }
-        // })
-        return hasDifference
+    function onProductSelect (target) {
+        // console.log('onProductSelect', target)
+        const pid = target.value
+        const product = products.find(p => p._id === pid)
+        setProductId(pid)
+        setData(createFields(product))
+    }
+
+    function onChange (target) {
+        // console.log('onChange', target)
+        if (productId && target.name === 'name')
+            setProductId('')
+        setData({...data, [target.name]: target.value})
+    }
+
+    function handleSubmit () {
+        onSubmit(data)
+        refresh()
+    }
+
+    function refresh () {
+        setProductId('')
+        setData(startData)
     }
 
     const isValid = Object.keys(errors).length === 0
 
     return (
         <fieldset>
-            PRODUCT FORM
             <SelectField
-                label="Продукт"
+                label="Выберите продукт"
                 name="product"
                 defaultValue="Выбрать продукт"
                 value={productId}
@@ -111,10 +96,17 @@ const Form = ({product, onSubmit}) => {
                 options={Object.values(items).map(p => ({label: p.name, value: p._id}))}
                 onChange={onProductSelect}
             />
+            <TextField
+                label="Или укажите свое название"
+                name="name"
+                value={data.name}
+                error={errors.name}
+                onChange={onChange}
+            />
             <div className="d-flex">
                 <div className="col-12 col-md-4">
                     <NumberField
-                        label="Белки на 100 г"
+                        label="Белки/100"
                         name="proteins"
                         value={data.proteins}
                         error={errors.proteins}
@@ -123,7 +115,7 @@ const Form = ({product, onSubmit}) => {
                 </div>
                 <div className="col-12 col-md-4">
                     <NumberField
-                        label="Жиры на 100 г"
+                        label="Жиры/100"
                         name="fats"
                         value={data.fats}
                         error={errors.fats}
@@ -132,7 +124,7 @@ const Form = ({product, onSubmit}) => {
                 </div>
                 <div className="col-12 col-md-4">
                     <NumberField
-                        label="Углеводы на 100 г"
+                        label="Углеводы/100"
                         name="carbohydrates"
                         value={data.carbohydrates}
                         error={errors.carbohydrates}
@@ -141,16 +133,24 @@ const Form = ({product, onSubmit}) => {
                 </div>
             </div>
             <NumberField
-                label="ККАЛ"
+                label="ККАЛ/100"
                 name="calories"
                 value={data.calories}
                 error={errors.calories}
                 onChange={onChange}
             />
+            <NumberField
+                label="Вес"
+                name="weight"
+                value={data.weight}
+                error={errors.weight}
+                onChange={onChange}
+            />
             <button
                 className="btn btn-primary w-100 mx-auto"
-                type="submit"
-                disabled={!isValid || !hasDifference()}
+                type="button"
+                onClick={handleSubmit}
+                disabled={!isValid}
             >
                 Добавить
             </button>

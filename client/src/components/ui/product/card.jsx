@@ -7,12 +7,8 @@ import PropTypes from 'prop-types'
 import ControlsPanel from '../../common/controlsPanel'
 
 const Card = ({product, onDelete}) => {
-    const {id} = useParams()
+    const id = product._id
     const {userId, isAdmin} = useSelector(authSelector.authData())
-
-    function onDelete (payload) {
-
-    }
 
     return (
         <div key={product._id} className="card mb-2">
@@ -37,6 +33,7 @@ const Card = ({product, onDelete}) => {
                             <span className="badge bg-info mx-1">{product.proteins}</span>
                             <span className="badge bg-warning mx-1">{product.fats}</span>
                             <span className="badge bg-success mx-1">{product.carbohydrates}</span>
+                            {product.weight && <span className="badge bg-dark mx-1">{product.weight}</span>}
                         </h5>
                     </div>
                 </div>

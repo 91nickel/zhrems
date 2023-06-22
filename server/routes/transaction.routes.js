@@ -1,13 +1,14 @@
 const express = require('express')
 const Transaction = require('models/Transaction')
 const auth = require('middleware/auth.middleware')
+const log = require('middleware/log.middleware')
 
 const router = express.Router({mergeParams: true})
 
-router.get('/:id?', auth, async (request, response) => {
+router.get('/:id?', auth, log, async (request, response) => {
     try {
         console.log(request.url, request.body)
-        const {id} = request.params
+        const {id, date} = request.params
         const user = request.user
 
         if (id) {
@@ -20,16 +21,30 @@ router.get('/:id?', auth, async (request, response) => {
             }
             return response.json(transaction)
         }
-        const transactions = await Transaction.find({user: user._id})
+        const filter = {user: user._id}
+        if (date) {
+            const dateStart = new Date(date)
+            const dateEnd = new Date(date)
+            dateStart.setHours(0)
+            dateStart.setMinutes(0)
+            dateStart.setSeconds(0)
+            dateEnd.setHours(0)
+            dateEnd.setMinutes(0)
+            dateEnd.setSeconds(0)
+            filter.date = {
+                $gte: dateStart.toISOString(),
+                $lte: dateEnd.toISOString(),
+            }
+        }
+        const transactions = await Transaction.find(filter)
         return response.json(transactions)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
-router.post('/', auth, async (request, response) => {
+router.put('/', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body)
         const user = request.user
         if (request.body.user !== user._id && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
@@ -41,7 +56,7 @@ router.post('/', auth, async (request, response) => {
     }
 })
 
-router.patch('/:id', auth, async (request, response) => {
+router.patch('/:id', auth, log, async (request, response) => {
     try {
         console.log(request.url, request.body)
         const {id} = request.params
@@ -58,7 +73,7 @@ router.patch('/:id', auth, async (request, response) => {
     }
 })
 
-router.delete('/:id', auth, async (request, response) => {
+router.delete('/:id', auth, log, async (request, response) => {
     try {
         console.log(request.url, request.body)
         const {id} = request.params

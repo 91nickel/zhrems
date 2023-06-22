@@ -1,6 +1,6 @@
 import httpService from './http.service'
 
-const entrypoint = 'weight/'
+const entrypoint = 'transaction/'
 
 const service = {
     get: async () => {

@@ -13,14 +13,20 @@ function ControlsPanel ({id, prefix, onDelete}) {
     return (
         <ul className="list-group-horizontal list-unstyled d-flex justify-content-end">
             <li className="list-item">
-                <NavLink to={prefix + id} className="btn btn-sm btn-success mx-1">
-                    <i className="bi bi-eye" style={{width: '1rem', height: '1rem'}}></i>
-                </NavLink>
+                {
+                    id &&
+                    <NavLink to={prefix + id} className="btn btn-sm btn-success mx-1">
+                        <i className="bi bi-eye" style={{width: '1rem', height: '1rem'}}></i>
+                    </NavLink>
+                }
             </li>
             <li>
-                <NavLink to={`${prefix}${id}/update`} className="btn btn-sm btn-warning mx-1">
-                    <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
-                </NavLink>
+                {
+                    id &&
+                    <NavLink to={`${prefix}${id}/update`} className="btn btn-sm btn-warning mx-1">
+                        <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
+                    </NavLink>
+                }
             </li>
             <li>
                 <button
@@ -38,7 +44,7 @@ ControlsPanel.defaultValues = {
 }
 
 ControlsPanel.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     prefix: PropTypes.string,
     onDelete: PropTypes.func,
 }
