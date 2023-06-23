@@ -7,6 +7,7 @@ async function logMiddleware (request, response, next) {
         path: `${request.method} ${request.originalUrl}`,
         body: request.body,
         params: request.params,
+        query: request.query,
         user: request.user
     })
     next()

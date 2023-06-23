@@ -2,23 +2,25 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
-// import Form from 'components/ui/transaction/form'
+import { selector as authSelector } from 'store/user'
+
+import Form from 'components/ui/transaction/form'
 
 const Update = () => {
     const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    // const {userId, isAdmin} = useSelector(authSelector.authData())
-    // const weight = useSelector(selector.byId(id))
-
     const onSubmit = payload => {
-        dispatch(action.update({_id: id, ...payload}))
+        dispatch(action.update(payload))
             .unwrap()
-            .then(() => navigate('../..'))
-            .catch(error => console.error(error.message))
+            .then(() => {
+                setTimeout(() => navigate('../..', {replace: true}), 1000)
+            })
+            .catch(() => {
+                console.log('Failed')
+            })
     }
 
     return (
@@ -31,8 +33,7 @@ const Update = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <h2>Редактировать прием пищи</h2>
-                {/*<Form onSubmit={onSubmit}/>*/}
+                <Form onSubmit={onSubmit}/>
             </div>
         </div>
     )

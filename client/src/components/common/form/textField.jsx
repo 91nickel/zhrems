@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const TextField = ({label, type, name, placeholder, value, error, onChange, onInput}) => {
+const TextField = ({label, type, name, placeholder, value, error, onChange, onInput, className = 'mb-4'}) => {
     const [showPassword, setShowPassword] = useState(false)
     const handleChange = ({target}) => {
         onChange({name: target.name, value: target.value})
@@ -17,7 +17,7 @@ const TextField = ({label, type, name, placeholder, value, error, onChange, onIn
         setShowPassword(prevState => !prevState)
     }
     return (
-        <div className="mb-4">
+        <div className={className}>
             <label htmlFor={name}>{label}</label>
             <div className="input-group has-validation">
                 <input
@@ -52,6 +52,7 @@ TextField.propTypes = {
     placeholder: PropTypes.string,
     value: PropTypes.string,
     error: PropTypes.string,
+    className: PropTypes.string,
     onChange: PropTypes.func,
     onInput: PropTypes.func,
 }

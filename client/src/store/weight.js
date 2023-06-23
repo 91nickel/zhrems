@@ -1,6 +1,7 @@
 import React from 'react'
 import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import service from 'services/weight.service'
+import { getDateEnd, getDateStart } from '../utils/date'
 
 const slice = createSlice({
     name: 'weight',
@@ -149,6 +150,13 @@ export const action = {
 
 export const selector = {
     get: () => state => state.weight.entities,
+    last: () => state => state.weight.entities[0],
+    byDate: (date) => state => state.weight.entities.filter(weight => {
+        const dateStart = getDateStart(date)
+        const dateEnd = getDateEnd(date)
+        const weightDate = new Date(weight.date)
+        return weightDate >= dateStart && weightDate <= dateEnd
+    }),
     byId: id => state => state.weight.entities.find(u => u._id === id),
     isDataLoaded: () => state => state.weight.isDataLoaded,
     isLoading: () => state => state.weight.isLoading,

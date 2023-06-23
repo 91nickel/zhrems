@@ -7,8 +7,8 @@ const router = express.Router({mergeParams: true})
 
 router.get('/:id?', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body)
-        const {id, date} = request.params
+        const {id} = request.params
+        const {date, dateStart, dateEnd} = request.query
         const user = request.user
 
         if (id) {
@@ -16,27 +16,26 @@ router.get('/:id?', auth, log, async (request, response) => {
             if (!transaction) {
                 response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
             }
-            if (transaction.user !== user._id && !user.isAdmin) {
+            if (transaction.user !== user.localId && !user.isAdmin) {
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             }
             return response.json(transaction)
         }
-        const filter = {user: user._id}
+        const filter = {user: user.localId}
         if (date) {
             const dateStart = new Date(date)
             const dateEnd = new Date(date)
             dateStart.setHours(0)
             dateStart.setMinutes(0)
             dateStart.setSeconds(0)
-            dateEnd.setHours(0)
-            dateEnd.setMinutes(0)
-            dateEnd.setSeconds(0)
-            filter.date = {
-                $gte: dateStart.toISOString(),
-                $lte: dateEnd.toISOString(),
-            }
+            dateEnd.setHours(23)
+            dateEnd.setMinutes(59)
+            dateEnd.setSeconds(59)
+            filter.date = {$gte: dateStart.toISOString(), $lte: dateEnd.toISOString()}
+        } else if (dateStart && dateEnd) {
+            filter.date = {$gte: dateStart, $lte: dateEnd}
         }
-        const transactions = await Transaction.find(filter)
+        const transactions = await Transaction.find(filter).sort({date: 'asc'})
         return response.json(transactions)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
@@ -46,11 +45,12 @@ router.get('/:id?', auth, log, async (request, response) => {
 router.put('/', auth, log, async (request, response) => {
     try {
         const user = request.user
-        if (request.body.user !== user._id && !user.isAdmin) {
+        if (request.body.user !== user.localId && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
-        const transaction = await Transaction.create(request.body)
-        return response.status(201).json(transaction)
+        console.log(request.body.products)
+        // const result = request.body.products.map(async p => await Transaction.create({}))
+        return response.status(201).json(/*transaction*/)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
@@ -58,10 +58,9 @@ router.put('/', auth, log, async (request, response) => {
 
 router.patch('/:id', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body)
         const {id} = request.params
         const user = request.user
-        if (request.body.user !== user._id && !user.isAdmin) {
+        if (request.body.user !== user.localId && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
         const transaction = await Transaction.findByIdAndUpdate(id, request.body, {new: true})
@@ -75,7 +74,6 @@ router.patch('/:id', auth, log, async (request, response) => {
 
 router.delete('/:id', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body)
         const {id} = request.params
         const user = request.user
 
@@ -85,7 +83,7 @@ router.delete('/:id', auth, log, async (request, response) => {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         }
 
-        if (request.body.user !== user._id && !user.isAdmin) {
+        if (request.body.user !== user.localId && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 

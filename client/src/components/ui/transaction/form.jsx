@@ -35,7 +35,7 @@ const Form = ({onSubmit}) => {
     if (id)
         transaction = useSelector(selector.byId(id))
 
-    const defaultShowForm = {product: false, newProduct: false, meal: false}
+    const defaultShowForm = {select: false, new: false, meal: false}
     const [showForm, setShowForm] = useState(defaultShowForm)
 
     const defaultData = {
@@ -158,32 +158,53 @@ const Form = ({onSubmit}) => {
                 error={errors.date}
                 onChange={onChange}
             />
-            <div className="product-list mb-3">
-                {data.products.map((p, i) => <ProductCard key={`tr.pid.${i}`} product={p} onDelete={() => onProductDelete(i)}/>)}
-            </div>
-            <div className="d-flex flex-fill">
-                <div className="col-12 col-md-6">
-                    <button
-                        className={'btn w-100 ' + (showForm.product ? 'btn-outline-primary' : 'btn-primary')}
-                        type="button"
-                        onClick={() => toggleForm('product')}
-                    >
-                        Выбрать продукт
-                    </button>
-                </div>
-                <div className="col-12 col-md-6">
-                    <button
-                        className={'btn w-100 ' + (showForm.meal ? 'btn-outline-primary' : 'btn-primary')}
-                        type="button"
-                        onClick={() => toggleForm('meal')}
-                    >
-                        Выбрать блюдо
-                    </button>
-                </div>
-            </div>
-            <div className="mb-3 py-3">
-                {showForm.product && <ProductForm onSubmit={onProductAdd}/>}
+            <ul className="list-group mb-3">
+                {
+                    data.products.map((p, i) =>
+                        <li key={`tr.pid.${i}`} className="list-group-item d-flex justify-content-between">
+                            <span className="col-6">{p.name}</span>
+                            <span>{p.weight}/{Math.round(p.weight * p.calories / 100)}</span>
+                            <button className="btn btn-close" onClick={() => onProductDelete(i)}></button>
+                        </li>
+                    )
+                }
+            </ul>
+            <div className="mb-3">
+                {showForm.select && <ProductForm onSubmit={onProductAdd} select={true}/>}
+                {showForm.new && <ProductForm onSubmit={onProductAdd} select={false}/>}
                 {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
+            </div>
+            <div className="d-flex justify-content-end mb-3">
+                {Object.values(showForm).find(v => v === true) &&
+                <button
+                    className="btn btn-danger me-1"
+                    type="button"
+                    onClick={() => toggleForm('none')}
+                >
+                    <i className="bi bi-x"></i>
+                </button>
+                }
+                <button
+                    className={'btn me-1 ' + (showForm.select ? 'btn-outline-primary' : 'btn-primary')}
+                    type="button"
+                    onClick={() => toggleForm('select')}
+                >
+                    <i className="bi bi-check-square"></i>
+                </button>
+                <button
+                    className={'btn me-1 ' + (showForm.new ? 'btn-outline-primary' : 'btn-primary')}
+                    type="button"
+                    onClick={() => toggleForm('new')}
+                >
+                    <i className="bi bi-plus"></i>
+                </button>
+                <button
+                    className={'btn ' + (showForm.meal ? 'btn-outline-primary' : 'btn-primary')}
+                    type="button"
+                    onClick={() => toggleForm('meal')}
+                >
+                    <i className="bi bi-list-ul"></i>
+                </button>
             </div>
             <button
                 className="btn btn-primary w-100 mx-auto"

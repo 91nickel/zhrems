@@ -12,7 +12,6 @@ const Create = () => {
     const dispatch = useDispatch()
 
     const onSubmit = payload => {
-        console.log('onSubmit', payload)
         dispatch(action.create(payload))
             .unwrap()
             .then(() => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const SelectField = ({label, name, value, defaultValue, error, onChange, options}) => {
+const SelectField = ({label, name, value, defaultValue, error, onChange, options, className = 'mb-4'}) => {
     const arOptions = !Array.isArray(options) && typeof options === 'object' ?
         Object.keys(options).map(key => ({name: options[key].name, value: options[key].value})) :
         options
@@ -18,7 +18,7 @@ const SelectField = ({label, name, value, defaultValue, error, onChange, options
         return classes.join(' ')
     }
     return (
-        <div className="mb-4">
+        <div className={className}>
             <label htmlFor={name}>{label}</label>
             <select
                 className={getInputClasses()}
@@ -43,6 +43,7 @@ SelectField.propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     defaultValue: PropTypes.string,
+    className: PropTypes.string,
     error: PropTypes.string,
     onChange: PropTypes.func,
     options: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.objectOf(PropTypes.object)]),

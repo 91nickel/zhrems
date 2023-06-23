@@ -1,11 +1,13 @@
 import React from 'react'
 import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import service from 'services/transaction.service'
+import { getDateStart, getDateEnd } from 'utils/date'
 
 const slice = createSlice({
     name: 'transaction',
     initialState: {
         entities: [],
+        journal: {},
         isLoading: false,
         isDataLoaded: false,
         success: null,
@@ -13,7 +15,7 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            state.entities = [action.payload, ...state.entities]
+            state.entities = [...state.entities, action.payload]
             state.success = `Successfully created transaction ${action.payload.value}`
         },
         updated: (state, action) => {
@@ -36,9 +38,13 @@ const slice = createSlice({
             state.success = null
         },
         received: (state, action) => {
-            state.entities = action.payload
+            state.entities = [...state.entities, ...action.payload]
             state.isLoading = false
             state.isDataLoaded = true
+        },
+        journal: (state, action) => {
+            const {key, value} = action.payload
+            state.journal = {...state.journal, [key]: value}
         },
         requestFailed: (state, action) => {
             state.error = action.payload
@@ -52,7 +58,7 @@ const slice = createSlice({
     }
 })
 
-const {created, updated, deleted, requested, received, requestFailed, messagesCleared} = slice.actions
+const {created, updated, deleted, requested, received, requestFailed, messagesCleared, journal} = slice.actions
 
 const createRequested = createAction('transaction/createRequested')
 const createFailed = createAction('transaction/createFailed')
@@ -140,6 +146,22 @@ export const action = {
         },
     ),
 
+    getByDate: createAsyncThunk(
+        'transaction/get',
+        async (date, thunkAPI) => {
+            thunkAPI.dispatch(requested())
+            try {
+                const content = await service.getByDate(date)
+                thunkAPI.dispatch(received(content))
+                thunkAPI.dispatch(journal({key: date.toLocaleDateString('ru-RU'), value: true}))
+                return content
+            } catch (error) {
+                thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
 
     clearMessages: () => async (dispatch) => {
         dispatch(messagesCleared())
@@ -149,7 +171,14 @@ export const action = {
 
 export const selector = {
     get: () => state => state.transaction.entities,
+    journal: () => state => state.transaction.journal,
     byId: id => state => state.transaction.entities.find(u => u._id === id),
+    byDate: date => state => state.transaction.entities.filter(transaction => {
+        const dateStart = getDateStart(date)
+        const dateEnd = getDateEnd(date)
+        const transactionDate = new Date(transaction.date)
+        return transactionDate >= dateStart && transactionDate <= dateEnd
+    }),
     isDataLoaded: () => state => state.transaction.isDataLoaded,
     isLoading: () => state => state.transaction.isLoading,
     error: () => state => state.transaction.error,

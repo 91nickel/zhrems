@@ -30,10 +30,15 @@ function createFields (fields) {
 
 const validateScheme = yup.object().shape({
     name: yup.string().required('Поле обязательно'),
+    product: yup.string(),
+    proteins: yup.number().required('Белки обязательно'),
+    carbohydrates: yup.number().required('Углеводы обязательно'),
+    fats: yup.number().required('Жиры обязательно'),
+    calories: yup.number().required('Энергетическая ценность обязательна'),
     weight: yup.number().required('Поле обязательно').moreThan(0),
 })
 
-const Form = ({product, onSubmit}) => {
+const Form = ({product, onSubmit, select = true}) => {
     const products = useSelector(selector.get())
     // console.log('isNewProduct', isNewProduct)
 
@@ -86,45 +91,80 @@ const Form = ({product, onSubmit}) => {
     const isValid = Object.keys(errors).length === 0
 
     return (
-        <fieldset>
-            <SelectField
-                label="Выберите продукт"
-                name="product"
-                defaultValue="Выбрать продукт"
-                value={productId}
-                error={errors.product}
-                options={Object.values(items).map(p => ({label: p.name, value: p._id}))}
-                onChange={onProductSelect}
-            />
-            <TextField
-                label="Или укажите свое название"
-                name="name"
-                value={data.name}
-                error={errors.name}
-                onChange={onChange}
-            />
-            <div className="d-flex">
-                <div className="col-12 col-md-4">
+        <fieldset className="d-flex flex-column">
+            <div className="d-flex align-items-end">
+                {
+                    select
+                        ? <SelectField
+                            label="Выберите"
+                            name="product"
+                            className="col-8 mb-4"
+                            value={productId}
+                            defaultValue="Выбрать продукт"
+                            error={errors.product}
+                            options={Object.values(items).map(p => ({label: p.name, value: p._id}))}
+                            onChange={onProductSelect}
+                        />
+                        : <TextField
+                            label="Свое"
+                            name="name"
+                            className="col-8 mb-4"
+                            value={data.name}
+                            error={errors.name}
+                            onChange={onChange}
+                        />
+                }
+                <div className="col-2">
                     <NumberField
-                        label="Белки/100"
+                        label="Вес"
+                        name="weight"
+                        value={data.weight}
+                        error={errors.weight}
+                        onChange={onChange}
+                    />
+                </div>
+                <div className="col-2 mb-4">
+                    <button
+                        className="btn btn-success mx-auto w-100"
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={!isValid}
+                    >
+                        <i className="bi bi-check"></i>
+                    </button>
+                </div>
+            </div>
+            <div className="d-flex align-items-end">
+                <div className="col-3">
+                    <NumberField
+                        label="ККАЛ/100"
+                        name="calories"
+                        value={data.calories}
+                        error={errors.calories}
+                        onChange={onChange}
+                    />
+                </div>
+                <div className="col-3">
+                    <NumberField
+                        label="Б/100"
                         name="proteins"
                         value={data.proteins}
                         error={errors.proteins}
                         onChange={onChange}
                     />
                 </div>
-                <div className="col-12 col-md-4">
+                <div className="col-3">
                     <NumberField
-                        label="Жиры/100"
+                        label="Ж/100"
                         name="fats"
                         value={data.fats}
                         error={errors.fats}
                         onChange={onChange}
                     />
                 </div>
-                <div className="col-12 col-md-4">
+                <div className="col-3">
                     <NumberField
-                        label="Углеводы/100"
+                        label="У/100"
                         name="carbohydrates"
                         value={data.carbohydrates}
                         error={errors.carbohydrates}
@@ -132,34 +172,13 @@ const Form = ({product, onSubmit}) => {
                     />
                 </div>
             </div>
-            <NumberField
-                label="ККАЛ/100"
-                name="calories"
-                value={data.calories}
-                error={errors.calories}
-                onChange={onChange}
-            />
-            <NumberField
-                label="Вес"
-                name="weight"
-                value={data.weight}
-                error={errors.weight}
-                onChange={onChange}
-            />
-            <button
-                className="btn btn-primary w-100 mx-auto"
-                type="button"
-                onClick={handleSubmit}
-                disabled={!isValid}
-            >
-                Добавить
-            </button>
         </fieldset>
     )
 }
 
 Form.propTypes = {
     product: PropTypes.object,
+    select: PropTypes.bool,
     onSubmit: PropTypes.func,
 }
 

@@ -13,7 +13,7 @@ const service = {
     },
     getByDate: async (date) => {
         if (date instanceof Date) {
-            const {data} = await httpService.get(entrypoint, {date: date.toISOString()})
+            const {data} = await httpService.get(entrypoint, {params: {date: date.toISOString()}})
             return data
         } else {
             throw new Error('Date must be an instance of Date::class')
