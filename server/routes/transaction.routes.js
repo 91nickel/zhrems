@@ -1,8 +1,9 @@
+
 const express = require('express')
 const Transaction = require('models/Transaction')
 const auth = require('middleware/auth.middleware')
 const log = require('middleware/log.middleware')
-
+const { getDateEnd, getDateStart } =require('utils/date')
 const router = express.Router({mergeParams: true})
 
 router.get('/:id?', auth, log, async (request, response) => {
@@ -23,14 +24,8 @@ router.get('/:id?', auth, log, async (request, response) => {
         }
         const filter = {user: user.localId}
         if (date) {
-            const dateStart = new Date(date)
-            const dateEnd = new Date(date)
-            dateStart.setHours(0)
-            dateStart.setMinutes(0)
-            dateStart.setSeconds(0)
-            dateEnd.setHours(23)
-            dateEnd.setMinutes(59)
-            dateEnd.setSeconds(59)
+            const dateStart = getDateStart(date)
+            const dateEnd = getDateEnd(date)
             filter.date = {$gte: dateStart.toISOString(), $lte: dateEnd.toISOString()}
         } else if (dateStart && dateEnd) {
             filter.date = {$gte: dateStart, $lte: dateEnd}
@@ -50,7 +45,15 @@ router.put('/', auth, log, async (request, response) => {
         }
         console.log(request.body.products)
         // const result = request.body.products.map(async p => await Transaction.create({}))
-        return response.status(201).json(/*transaction*/)
+        const transactions = request.body.products.map(async product => {
+            const fields = {
+                date: new Date(request.body.date),
+                user: request.body.user,
+                ...product,
+            }
+            return await Transaction.create(fields)
+        })
+        return response.status(201).json(Promise.all(transactions))
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }

@@ -23,17 +23,24 @@ const validateScheme = yup.object().shape({
 })
 
 const Form = ({onSubmit}) => {
+    const params = useParams()
     const dispatch = useDispatch()
 
-    const {id} = useParams()
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
 
     const transactions = useSelector(selector.get())
+        .filter(t => t.date === params.date)
 
-    let transaction
-    if (id)
-        transaction = useSelector(selector.byId(id))
+    let transaction = {}
+    if (params.date) {
+        transactions.forEach(t => {
+            if (!Object.values(transaction).length) {
+                transaction = {date: params.date, user: t.user, products: []}
+            }
+            transaction.products.push(t)
+        })
+    }
 
     const defaultShowForm = {select: false, new: false, meal: false}
     const [showForm, setShowForm] = useState(defaultShowForm)
@@ -44,7 +51,7 @@ const Form = ({onSubmit}) => {
         products: [],
     }
 
-    const startData = id
+    const startData = params.date
         ? createFields(transaction)
         : createFields(defaultData)
 
@@ -81,7 +88,7 @@ const Form = ({onSubmit}) => {
     }
 
     const onChange = target => {
-        console.log('onChange()', target)
+        // console.log('onChange()', target)
         const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
         setData(prevState => {
             const nextState = {...prevState, [target.name]: target.value}
@@ -124,12 +131,12 @@ const Form = ({onSubmit}) => {
     }
 
     function onProductAdd (product) {
-        console.log('onProductAdd()', product)
+        // console.log('onProductAdd()', product)
         setData({...data, products: [...data.products, product]})
     }
 
     function onProductDelete (index) {
-        console.log('onProductDelete()', index)
+        // console.log('onProductDelete()', index)
         setData({...data, products: data.products.filter((p, i) => i !== index)})
     }
 

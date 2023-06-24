@@ -32,7 +32,7 @@ const Card = ({data, onDelete}) => {
                     (userId === data.user || isAdmin)
                     &&
                     <div className="controls">
-                        <ControlsPanel id={id} prefix="/transactions/" onDelete={onDelete}/>
+                        <ControlsPanel id={data.date} prefix="/transactions/" onDelete={onDelete}/>
                     </div>
                 }
             </div>

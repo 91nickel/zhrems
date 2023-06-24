@@ -122,7 +122,7 @@ const App = () => {
                         >
                             <Route index element={<TransactionPage.List/>}/>
                             <Route path="create" element={<TransactionPage.Create/>}/>
-                            <Route path=":id/*">
+                            <Route path=":date/*">
                                 <Route index element={<TransactionPage.View/>}/>
                                 <Route path="update" element={<TransactionPage.Update/>}/>
                             </Route>

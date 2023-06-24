@@ -1,19 +1,42 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
 import Card from 'components/ui/transaction/card'
+import LoadingLayout from 'layouts/loading'
 
 const View = () => {
-    const {id} = useParams()
+    const params = useParams()
+    const date = new Date(params.date)
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const transaction = useSelector(selector.byId(id))
+    const journal = useSelector(selector.journal())
+    const allTransactions = useSelector(selector.byDate(date))
+
+    useEffect(() => {
+        if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+            dispatch(action.getByDate(date))
+    }, [])
+
+    if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+        return <LoadingLayout/>
+
+    // console.log('transactions', allTransactions, journal)
+
+    let transaction = {}
+    allTransactions.forEach(t => {
+        if (!Object.values(transaction).length) {
+            transaction = {date: params.date, user: t.user, products: []}
+        }
+        if (params.date === t.date)
+            transaction.products.push(t)
+    })
 
     const onDelete = () => {
-        dispatch(action.delete(id))
+        dispatch(action.delete(params.date))
             .unwrap()
             .then(() => navigate('..'))
             .catch(error => console.error(error.message))

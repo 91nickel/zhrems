@@ -4,6 +4,7 @@ const schema = new Schema(
     {
         date: {type: Date, required: true},
         user: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+        name: {type: String, required: true},
         product: {type: Schema.Types.ObjectId, ref: 'Product'},
         proteins: {type: Number, required: true},
         carbohydrates: {type: Number, required: true},
@@ -15,6 +16,5 @@ const schema = new Schema(
         timestamps: true,
     }
 )
-
 
 module.exports = model('Transaction', schema)

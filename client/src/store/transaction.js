@@ -15,7 +15,8 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            state.entities = [...state.entities, action.payload]
+            console.log('created', action.payload)
+            state.entities = [...state.entities, ...action.payload]
             state.success = `Successfully created transaction ${action.payload.value}`
         },
         updated: (state, action) => {

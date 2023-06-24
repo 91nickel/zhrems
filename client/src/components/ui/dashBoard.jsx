@@ -9,7 +9,7 @@ import TransactionCard from 'components/ui/transaction/card'
 import { selector, action } from 'store/transaction'
 import { selector as weightSelector, action as weightAction } from 'store/weight'
 import LoadingLayout from 'layouts/loading'
-import {getDateStart, getDateEnd} from 'utils/date'
+import { getDateStart, getDateEnd } from 'utils/date'
 
 const Dashboard = () => {
     const dispatch = useDispatch()
@@ -36,19 +36,31 @@ const Dashboard = () => {
 
     const journal = useSelector(selector.journal())
     const transactions = useSelector(selector.byDate(date))
+    let transactionsGrouped = {}
+    transactions.forEach(t => {
+        if (!transactionsGrouped[t.date]) {
+            transactionsGrouped[t.date] = {date: t.date, user: t.user, products: []}
+        }
+        transactionsGrouped[t.date].products.push(t)
+    })
+    console.log(transactionsGrouped)
+    Object.values(transactionsGrouped).forEach(group => {
+        group._id = group.products.map(p => p._id).join('|')
+    })
+
     const lastWeight = useSelector(weightSelector.last())
     const todayWeights = useSelector(weightSelector.byDate(date))
     const firstTodayWeight = todayWeights.length ? todayWeights[0] : null
     const lastTodayWeight = todayWeights.length ? todayWeights[todayWeights.length - 1] : null
     const hasTodayWeights = todayWeights.length > 0
-    const products = transactions.reduce((agr, transaction) => ([...agr, ...transaction.products]), [])
+    // const products = transactions.reduce((agr, transaction) => ([...agr, ...transaction.products]), [])
 
     const results = {
-        proteins: products.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: products.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: products.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: products.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: products.reduce((agr, data) => Math.round(agr + data.weight), 0),
+        proteins: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
+        fats: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
+        carbohydrates: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
+        calories: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
+        weight: transactions.reduce((agr, data) => Math.round(agr + data.weight), 0),
     }
 
     useEffect(() => {
@@ -114,7 +126,7 @@ const Dashboard = () => {
         <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-6">
                 {
-                    transactions.map(t => <TransactionCard key={'tr-' + t._id} data={t} onDelete={() => onDelete(t._id)} />)
+                    Object.values(transactionsGrouped).map(t => <TransactionCard key={'tr-' + t._id} data={t} onDelete={() => onDelete(t.date)}/>)
                 }
             </div>
         </div>
