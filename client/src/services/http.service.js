@@ -14,7 +14,7 @@ http.interceptors.request.use(
         const authExpired = hasAccessToken && +localStorageService.getTokenExpirationDate() < Date.now()
         const refreshToken = localStorageService.getRefreshToken()
 
-        console.log('http.service->request.interceptor.onFulfilled', {config, hasAccessToken, authExpired, refreshToken})
+        // console.log('http.service->request.interceptor.onFulfilled', {config, hasAccessToken, authExpired, refreshToken})
 
         if (refreshToken && authExpired) {
             try {

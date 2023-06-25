@@ -14,7 +14,6 @@ const Update = () => {
     const dispatch = useDispatch()
 
     const journal = useSelector(selector.journal())
-    const allTransactions = useSelector(selector.byDate(date))
 
     useEffect(() => {
         if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
@@ -26,16 +25,8 @@ const Update = () => {
 
     // console.log('transactions', allTransactions, journal)
 
-    let transaction = {}
-    allTransactions.forEach(t => {
-        if (!Object.values(transaction).length) {
-            transaction = {date: params.date, user: t.user, products: []}
-        }
-        if (params.date === t.date)
-            transaction.products.push(t)
-    })
-
     const onSubmit = payload => {
+        console.log('update.onSubmit()', payload)
         dispatch(action.update(payload))
             .unwrap()
             .then(() => {

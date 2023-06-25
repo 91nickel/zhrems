@@ -5,18 +5,19 @@ import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
 import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
+import { groupTransactions } from 'utils/groupTransactions'
 
 const Card = ({data, onDelete}) => {
-    const id = data._id
-    const date = new Date(data.date)
+
+    const {user, date, transactions} = groupTransactions(data)
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     const results = {
-        proteins: data.products.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: data.products.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: data.products.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: data.products.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: data.products.reduce((agr, data) => Math.round(agr + data.weight), 0),
+        proteins: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
+        fats: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
+        carbohydrates: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
+        calories: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
+        weight: transactions.reduce((agr, data) => Math.round(agr + data.weight), 0),
     }
 
     return (
@@ -29,10 +30,10 @@ const Card = ({data, onDelete}) => {
                     <h6 className="me-3">{date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</h6>
                 </div>
                 {
-                    (userId === data.user || isAdmin)
+                    (userId === user || isAdmin)
                     &&
                     <div className="controls">
-                        <ControlsPanel id={data.date} prefix="/transactions/" onDelete={onDelete}/>
+                        <ControlsPanel id={date.toISOString()} prefix="/transactions/" onDelete={onDelete}/>
                     </div>
                 }
             </div>
@@ -41,7 +42,7 @@ const Card = ({data, onDelete}) => {
                     <b>вес/ккал</b>
                 </div>
                 {
-                    data.products.map((p, i) => {
+                    transactions.map((p, i) => {
                         return (
                             <div key={'p' + i} className="d-flex">
                                 <span>{p.name}</span>
@@ -64,7 +65,7 @@ const Card = ({data, onDelete}) => {
 }
 
 Card.propTypes = {
-    data: PropTypes.object,
+    data: PropTypes.array,
     onDelete: PropTypes.func,
 }
 

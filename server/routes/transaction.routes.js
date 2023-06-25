@@ -1,9 +1,8 @@
-
 const express = require('express')
 const Transaction = require('models/Transaction')
 const auth = require('middleware/auth.middleware')
 const log = require('middleware/log.middleware')
-const { getDateEnd, getDateStart } =require('utils/date')
+const {getDateEnd, getDateStart} = require('utils/date')
 const router = express.Router({mergeParams: true})
 
 router.get('/:id?', auth, log, async (request, response) => {
@@ -40,36 +39,40 @@ router.get('/:id?', auth, log, async (request, response) => {
 router.put('/', auth, log, async (request, response) => {
     try {
         const user = request.user
-        if (request.body.user !== user.localId && !user.isAdmin) {
-            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
-        }
-        console.log(request.body.products)
-        // const result = request.body.products.map(async p => await Transaction.create({}))
-        const transactions = request.body.products.map(async product => {
-            const fields = {
-                date: new Date(request.body.date),
-                user: request.body.user,
-                ...product,
-            }
-            return await Transaction.create(fields)
+
+        if (!(request.body instanceof Array))
+            response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
+
+        const transactions = request.body.map(t => {
+            if (t.user !== user.localId && !user.isAdmin)
+                response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+            return Transaction.create(t)
         })
-        return response.status(201).json(Promise.all(transactions))
+
+        return response.status(201).json(await Promise.all(transactions))
+
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
-router.patch('/:id', auth, log, async (request, response) => {
+router.patch('/', auth, log, async (request, response) => {
     try {
-        const {id} = request.params
         const user = request.user
-        if (request.body.user !== user.localId && !user.isAdmin) {
-            response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
-        }
-        const transaction = await Transaction.findByIdAndUpdate(id, request.body, {new: true})
-        if (!transaction)
-            return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
-        return response.json(transaction)
+
+        if (!(request.body instanceof Array))
+            response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
+
+        const transactions = request.body.map(async t => {
+            if (t.user !== user.localId && !user.isAdmin)
+                response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+            if (t._id)
+                return Transaction.findByIdAndUpdate(t._id, )
+            else
+                return Transaction.create(t)
+        })
+
+        return response.json(await Promise.all(transactions))
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }

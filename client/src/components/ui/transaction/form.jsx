@@ -6,8 +6,9 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
-import { selector as userSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
+import { selector as userSelector } from 'store/user'
+import { selector as dateSelector, action as dateAction } from 'store/date'
 
 import DateTimeField from 'components/common/form/dateTimeField'
 import NumberField from 'components/common/form/numberField'
@@ -15,170 +16,160 @@ import SelectField from 'components/common/form/selectField'
 import ProductCard from 'components/ui/product/card'
 import ProductForm from './productForm'
 import MealForm from './mealForm'
+import { groupTransactions } from 'utils/groupTransactions'
 
 const validateScheme = yup.object().shape({
-    date: yup.date().required('Поле обязательно'),
-    user: yup.string().required('Поле обязательно'),
-    products: yup.array().required('Поле обязательно').min(1),
+    formDate: yup.date().required('Поле обязательно'),
+    formUser: yup.string().required('Поле обязательно'),
+    formTransactions: yup.array().required('Поле обязательно').min(1),
 })
 
-const Form = ({onSubmit}) => {
+
+// Структура объекта data
+// user
+// date
+// [{productsData1, productData2, ...}]
+
+const Form = ({onSubmit: onSuccess}) => {
     const params = useParams()
     const dispatch = useDispatch()
 
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
 
-    const transactions = useSelector(selector.get())
-        .filter(t => t.date === params.date)
-
-    let transaction = {}
-    if (params.date) {
-        transactions.forEach(t => {
-            if (!Object.values(transaction).length) {
-                transaction = {date: params.date, user: t.user, products: []}
-            }
-            transaction.products.push(t)
-        })
-    }
-
     const defaultShowForm = {select: false, new: false, meal: false}
     const [showForm, setShowForm] = useState(defaultShowForm)
 
-    const defaultData = {
-        user: userId,
-        date: Date.now(),
-        products: [],
-    }
+    const defaultUser = userId
+    const defaultDate = useSelector(dateSelector.get())
+    const defaultTransactions = []
 
-    const startData = params.date
-        ? createFields(transaction)
-        : createFields(defaultData)
-
-    const [data, setData] = useState(startData)
+    const [formUser, setFormUser] = useState('')
+    const [formDate, setFormDate] = useState(defaultDate)
+    const [formTransactions, setFormTransactions] = useState([])
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
 
-    useEffect(() => {
-        dispatch(action.clearMessages())
-    }, [])
+    const transactions = useSelector(selector.byDate(new Date(params.date)))
 
     useEffect(() => {
-        // dispatch(action.clearMessages())
-        // if (transaction)
-        //     setData({...data, ...createFields(transaction)})
+        dispatch(action.clearMessages())
+        if (params.date) {
+            // Вариант редактирования, когда есть стартовые данные
+            const {user, date} = groupTransactions(transactions)
+            setFormTransactions(transactions)
+            setFormUser(user)
+            setFormDate(date)
+        } else {
+            setFormTransactions(defaultTransactions)
+            setFormUser(defaultUser)
+            setFormDate(defaultDate)
+        }
     }, [])
 
     useEffect(() => {
         validate()
-    }, [data])
+    }, [formUser, formDate, formTransactions])
 
-    function toggleForm (formName) {
-        setShowForm({...showForm, ...defaultShowForm, [formName]: !showForm[formName]})
-    }
-
-    function createFields (transaction) {
-        const fields = {
-            ...transaction,
-            date: new Date(transaction.date),
-        }
-        fields.date.setSeconds(0)
-        return fields
-    }
-
-    const onChange = target => {
-        // console.log('onChange()', target)
-        const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
-        setData(prevState => {
-            const nextState = {...prevState, [target.name]: target.value}
-            if (autoUpdateFields.includes(target.name)) {
-                nextState.calories = nextState.proteins * 4 + nextState.fats * 9 + nextState.carbohydrates * 4
-            }
-            return nextState
-        })
-    }
-
-    const handleSubmit = event => {
-        event.preventDefault()
-        if (!validate() || !hasDifference())
-            return false
-        return onSubmit({...data, date: data.date.toISOString()})
-    }
-
-    const validate = () => {
-        validateScheme.validate(data)
+    function validate () {
+        validateScheme.validate({formUser, formDate, formTransactions})
             .then(() => setErrors({}))
             .catch(err => setErrors({[err.path]: err.message}))
 
         return Object.keys(errors).length === 0
     }
 
-    const hasDifference = () => {
-        if (!transaction) return true
-        let hasDifference = false
-        Object.keys(defaultData).forEach(key => {
-            // console.log(weight[key], data[key], weight[key] === data[key])
-            if (data[key] instanceof Date) {
-                if (data[key].toISOString() !== transaction[key])
-                    hasDifference = true
-            } else {
-                if (transaction[key] !== data[key])
-                    hasDifference = true
-            }
-        })
-        return hasDifference
+    function hasDifference () {
+        if (!params.date) return true
+        return !_.isEqual(transactions, formTransactions)
     }
 
-    function onProductAdd (product) {
-        // console.log('onProductAdd()', product)
-        setData({...data, products: [...data.products, product]})
+    function getTransactionsByDate () {
+        return groupTransactions(useSelector(selector.get())
+            .filter(t => t.date === params.date))
     }
 
-    function onProductDelete (index) {
-        // console.log('onProductDelete()', index)
-        setData({...data, products: data.products.filter((p, i) => i !== index)})
+    function onTransactionAdd (transaction) {
+        // console.log('onTransactionDelete()', transaction)
+        setFormTransactions([...formTransactions, {...transaction, date: formDate.toISOString(), user: formUser}])
+    }
+
+    function onTransactionDelete (index) {
+        const transaction = transactions[index]
+        const newTransactions = transactions.filter((t, i) => index !== i)
+        console.log('onTransactionDelete', index, transaction, newTransactions)
+        if (transaction?._id)
+            return dispatch(action.delete(transaction._id))
+                .unwrap()
+                .then(() => setFormTransactions(newTransactions))
+                .catch((e) => console.error(e))
+
+        return setFormTransactions(newTransactions)
     }
 
     function onMealAdd (meal) {
         console.log('onMealAdd()', meal)
     }
 
+    function onUserChange ({value}) {
+        // console.log('onUserChange()', value)
+        setFormUser(value)
+    }
+
+    function onDateChange ({value}) {
+        // console.log('onDateChange()', value)
+        setFormDate(value)
+    }
+
+    function onToggleForm (formName) {
+        setShowForm({...showForm, ...defaultShowForm, [formName]: !showForm[formName]})
+    }
+
+    function onSubmit (event) {
+        event.preventDefault()
+        if (!validate() || !hasDifference())
+            return false
+        return onSuccess(formTransactions)
+    }
+
     const isValid = Object.keys(errors).length === 0
 
+    // console.log(formUser, formDate, formTransactions)
+
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
             {globalSuccess && <div className="alert alert-success">{globalSuccess}</div>}
             {globalError && <div className="alert alert-danger">{globalError}</div>}
             <SelectField
                 label="Пользователь"
                 name="user"
-                value={data.user}
+                value={formUser}
                 error={errors.user}
                 options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
-                onChange={onChange}
+                onChange={onUserChange}
             />
             <DateTimeField
                 label="Дата/Время"
                 name="date"
-                value={data.date}
+                value={formDate}
                 error={errors.date}
-                onChange={onChange}
+                onChange={onDateChange}
             />
             <ul className="list-group mb-3">
                 {
-                    data.products.map((p, i) =>
+                    formTransactions.map((p, i) =>
                         <li key={`tr.pid.${i}`} className="list-group-item d-flex justify-content-between">
                             <span className="col-6">{p.name}</span>
                             <span>{p.weight}/{Math.round(p.weight * p.calories / 100)}</span>
-                            <button className="btn btn-close" onClick={() => onProductDelete(i)}></button>
+                            <button className="btn btn-close" onClick={() => onTransactionDelete(i)}></button>
                         </li>
                     )
                 }
             </ul>
             <div className="mb-3">
-                {showForm.select && <ProductForm onSubmit={onProductAdd} select={true}/>}
-                {showForm.new && <ProductForm onSubmit={onProductAdd} select={false}/>}
+                {showForm.select && <ProductForm onSubmit={onTransactionAdd} select={true}/>}
+                {showForm.new && <ProductForm onSubmit={onTransactionAdd} select={false}/>}
                 {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
             </div>
             <div className="d-flex justify-content-end mb-3">
@@ -186,7 +177,7 @@ const Form = ({onSubmit}) => {
                 <button
                     className="btn btn-danger me-1"
                     type="button"
-                    onClick={() => toggleForm('none')}
+                    onClick={() => onToggleForm('none')}
                 >
                     <i className="bi bi-x"></i>
                 </button>
@@ -194,21 +185,21 @@ const Form = ({onSubmit}) => {
                 <button
                     className={'btn me-1 ' + (showForm.select ? 'btn-outline-primary' : 'btn-primary')}
                     type="button"
-                    onClick={() => toggleForm('select')}
+                    onClick={() => onToggleForm('select')}
                 >
                     <i className="bi bi-check-square"></i>
                 </button>
                 <button
                     className={'btn me-1 ' + (showForm.new ? 'btn-outline-primary' : 'btn-primary')}
                     type="button"
-                    onClick={() => toggleForm('new')}
+                    onClick={() => onToggleForm('new')}
                 >
                     <i className="bi bi-plus"></i>
                 </button>
                 <button
                     className={'btn ' + (showForm.meal ? 'btn-outline-primary' : 'btn-primary')}
                     type="button"
-                    onClick={() => toggleForm('meal')}
+                    onClick={() => onToggleForm('meal')}
                 >
                     <i className="bi bi-list-ul"></i>
                 </button>

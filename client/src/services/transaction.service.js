@@ -24,7 +24,7 @@ const service = {
         return data
     },
     update: async (payload) => {
-        const {data} = await httpService.patch(entrypoint + payload._id, payload)
+        const {data} = await httpService.patch(entrypoint, payload)
         return data
     },
     delete: async (id) => {

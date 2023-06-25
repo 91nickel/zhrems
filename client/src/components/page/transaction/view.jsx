@@ -14,7 +14,7 @@ const View = () => {
     const dispatch = useDispatch()
 
     const journal = useSelector(selector.journal())
-    const allTransactions = useSelector(selector.byDate(date))
+    const transactions = useSelector(selector.byDate(date))
 
     useEffect(() => {
         if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
@@ -25,15 +25,6 @@ const View = () => {
         return <LoadingLayout/>
 
     // console.log('transactions', allTransactions, journal)
-
-    let transaction = {}
-    allTransactions.forEach(t => {
-        if (!Object.values(transaction).length) {
-            transaction = {date: params.date, user: t.user, products: []}
-        }
-        if (params.date === t.date)
-            transaction.products.push(t)
-    })
 
     const onDelete = () => {
         dispatch(action.delete(params.date))
@@ -52,7 +43,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Card {...{data: transaction, onDelete}} />
+                <Card {...{data: transactions, onDelete}} />
             </div>
         </div>
     )

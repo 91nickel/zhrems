@@ -20,7 +20,6 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
 
     function handleChangeDate ({target}) {
         const newData = {...data, date: target.value}
-
         setData(newData)
         onChange({name, value: createDateObject(newData)})
     }

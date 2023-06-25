@@ -7,11 +7,11 @@ import { selector, action } from 'store/transaction'
 import Form from 'components/ui/transaction/form'
 
 const Create = () => {
-    const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const onSubmit = payload => {
+        // console.log('onSubmit', payload)
         dispatch(action.create(payload))
             .unwrap()
             .then(() => {

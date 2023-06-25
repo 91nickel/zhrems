@@ -8,6 +8,7 @@ import { Navigate } from 'react-router-dom'
 import TransactionCard from 'components/ui/transaction/card'
 import { selector, action } from 'store/transaction'
 import { selector as weightSelector, action as weightAction } from 'store/weight'
+import { selector as dateSelector, action as dateAction } from 'store/date'
 import LoadingLayout from 'layouts/loading'
 import { getDateStart, getDateEnd } from 'utils/date'
 
@@ -17,9 +18,11 @@ const Dashboard = () => {
     // const [errors, setErrors] = useState({})
     // const isLoggedIn = useSelector(getUsersIsAuthorized())
     const [currentDate] = useState(new Date()) // дата сегодня
-    const [date, setDate] = useState(new Date()) // дата, с которой работаем
+    const date = useSelector(dateSelector.get())
+    // const [date, setDate] = useState(new Date()) // дата, с которой работаем
     const dateStart = getDateStart(date)
     const dateEnd = getDateEnd(date)
+
 
     const prevDateActive = true
     const nextDateActive =
@@ -36,17 +39,15 @@ const Dashboard = () => {
 
     const journal = useSelector(selector.journal())
     const transactions = useSelector(selector.byDate(date))
+    const transactionsIsLoading = useSelector(selector.isLoading())
+
     let transactionsGrouped = {}
     transactions.forEach(t => {
-        if (!transactionsGrouped[t.date]) {
-            transactionsGrouped[t.date] = {date: t.date, user: t.user, products: []}
-        }
-        transactionsGrouped[t.date].products.push(t)
+        if (!transactionsGrouped[t.date])
+            transactionsGrouped[t.date] = []
+        transactionsGrouped[t.date].push(t)
     })
-    console.log(transactionsGrouped)
-    Object.values(transactionsGrouped).forEach(group => {
-        group._id = group.products.map(p => p._id).join('|')
-    })
+    // console.log(transactionsGrouped)
 
     const lastWeight = useSelector(weightSelector.last())
     const todayWeights = useSelector(weightSelector.byDate(date))
@@ -64,31 +65,35 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+        // console.log('journal', journal, transactionsIsLoading)
+        if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined' && !transactionsIsLoading)
             dispatch(action.getByDate(date))
     }, [date])
 
     if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
         return <LoadingLayout/>
 
-    console.log('transactions', transactions, journal)
+    // console.log('transactions', transactions, journal)
 
     // if (isLoggedIn) {
     //     return <Navigate to="/" replace={true}/>
     // }
 
-    function onChangeDate (days) {
-        setDate(prevDate => {
-            prevDate.setDate(prevDate.getDate() + days)
-            return new Date(prevDate.getTime())
-        })
+    function onDateIncrement () {
+        dispatch(dateAction.increment())
     }
 
-    const onDelete = (id) => {
-        dispatch(action.delete(id))
-            .unwrap()
-            .then()
-            .catch(error => console.error(error.message))
+    function onDateDecrement () {
+        dispatch(dateAction.decrement())
+    }
+
+
+    const onDelete = date => {
+        // console.log('onDelete', date, transactions)
+        transactions.forEach(t => {
+            if (date === t.date)
+                dispatch(action.delete(t._id))
+        })
     }
 
     return (<>
@@ -96,7 +101,7 @@ const Dashboard = () => {
             <div className="col-1 d-flex justify-content-start">
                 <button
                     className="btn btn-success w-50"
-                    onClick={() => onChangeDate(-1)}
+                    onClick={onDateDecrement}
                     disabled={!prevDateActive}
                 >
                     <i className="bi bi-arrow-left"></i>
@@ -108,7 +113,7 @@ const Dashboard = () => {
             <div className="col-1 d-flex justify-content-end">
                 <button
                     className="btn btn-success w-50"
-                    onClick={() => onChangeDate(1)}
+                    onClick={onDateIncrement}
                     disabled={!nextDateActive}
                 >
                     <i className="bi bi-arrow-right"></i>
@@ -126,7 +131,9 @@ const Dashboard = () => {
         <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-6">
                 {
-                    Object.values(transactionsGrouped).map(t => <TransactionCard key={'tr-' + t._id} data={t} onDelete={() => onDelete(t.date)}/>)
+                    Object.values(transactionsGrouped)
+                        .map((t, i) =>
+                            <TransactionCard key={'tr-' + i} data={t} onDelete={onDelete}/>)
                 }
             </div>
         </div>

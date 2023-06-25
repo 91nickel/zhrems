@@ -128,7 +128,7 @@ const Form = ({product, onSubmit, select = true}) => {
                         className="btn btn-success mx-auto w-100"
                         type="button"
                         onClick={handleSubmit}
-                        disabled={!isValid}
+                        disabled={!isValid || (select && !productId)}
                     >
                         <i className="bi bi-check"></i>
                     </button>

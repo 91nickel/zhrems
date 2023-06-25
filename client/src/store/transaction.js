@@ -20,13 +20,12 @@ const slice = createSlice({
             state.success = `Successfully created transaction ${action.payload.value}`
         },
         updated: (state, action) => {
-            const updated = action.payload
-            state.entities = state.entities.map(prod => {
-                if (prod._id === updated._id)
-                    return updated
-                return prod
-            })
-            state.success = `Successfully updated transaction ${updated.name}`
+            const ids = action.payload.map(u => u._id)
+            state.entities = [
+                ...state.entities.filter(t => !ids.includes(t._id)),
+                ...action.payload,
+            ]
+            state.success = `Successfully updated`
         },
         deleted: (state, action) => {
             const id = action.payload
@@ -81,7 +80,7 @@ export const action = {
             } catch (error) {
                 console.log(error)
                 thunkAPI.dispatch(createFailed(error.message))
-                return thunkAPI.rejectWithValue()
+                return thunkAPI.rejectWithValue(error.message)
             }
         }
     ),
