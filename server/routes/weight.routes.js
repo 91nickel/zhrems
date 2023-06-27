@@ -21,7 +21,7 @@ router.get('/:id?', auth, log, async (request, response) => {
             return response.json(weight)
         }
 
-        const weights = await Weight.find({user: user.localId}).sort({date: 'desc'})
+        const weights = await Weight.find({user: user.localId}).sort({date: 'asc'})
         return response.json(weights)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})

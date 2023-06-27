@@ -40,6 +40,7 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
         value.setHours(+hours)
         value.setMinutes(+minutes)
         value.setSeconds(0)
+        value.setMilliseconds(0)
 
         return value
     }

@@ -50,8 +50,7 @@ const Form = ({onSubmit: onSuccess}) => {
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
-
-    const transactions = useSelector(selector.byDate(new Date(params.date)))
+    const transactions = useSelector(selector.byDateExact(params.date))
 
     useEffect(() => {
         dispatch(action.clearMessages())

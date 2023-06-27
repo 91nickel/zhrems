@@ -153,7 +153,7 @@ export const action = {
             try {
                 const content = await service.getByDate(date)
                 thunkAPI.dispatch(received(content))
-                thunkAPI.dispatch(journal({key: date.toLocaleDateString('ru-RU'), value: true}))
+                thunkAPI.dispatch(journal({key: date.toLocaleDateString('fr-CA'), value: true}))
                 return content
             } catch (error) {
                 thunkAPI.dispatch(requestFailed(error.message))
@@ -173,12 +173,27 @@ export const selector = {
     get: () => state => state.transaction.entities,
     journal: () => state => state.transaction.journal,
     byId: id => state => state.transaction.entities.find(u => u._id === id),
-    byDate: date => state => state.transaction.entities.filter(transaction => {
+    byDate: date => state => {
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)
-        const transactionDate = new Date(transaction.date)
-        return transactionDate >= dateStart && transactionDate <= dateEnd
-    }),
+        return state.transaction.entities.filter(t => {
+            const trDate = new Date(t.date)
+            return trDate >= dateStart && trDate <= dateEnd
+        })
+    },
+    byDateGrouped: date => state => {
+        const transactionsGrouped = {}
+        const dates = []
+        const dateStart = getDateStart(date)
+        const dateEnd = getDateEnd(date)
+        state.transaction.entities
+            .filter(t => {
+                const trDate = new Date(t.date)
+                return trDate >= dateStart && trDate <= dateEnd
+            })
+
+    },
+    byDateExact: date => state => state.transaction.entities.filter(t => t.date === date),
     isDataLoaded: () => state => state.transaction.isDataLoaded,
     isLoading: () => state => state.transaction.isLoading,
     error: () => state => state.transaction.error,

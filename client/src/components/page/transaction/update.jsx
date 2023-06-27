@@ -16,11 +16,11 @@ const Update = () => {
     const journal = useSelector(selector.journal())
 
     useEffect(() => {
-        if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+        if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
             dispatch(action.getByDate(date))
     }, [])
 
-    if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+    if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
         return <LoadingLayout/>
 
     // console.log('transactions', allTransactions, journal)

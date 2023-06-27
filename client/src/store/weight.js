@@ -150,7 +150,7 @@ export const action = {
 
 export const selector = {
     get: () => state => state.weight.entities,
-    last: () => state => state.weight.entities[0],
+    last: () => state => state.weight.entities[state.weight.entities.length -1],
     byDate: (date) => state => state.weight.entities.filter(weight => {
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)

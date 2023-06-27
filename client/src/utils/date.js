@@ -5,6 +5,7 @@ export function getDateStart (date) {
     newDate.setHours(0)
     newDate.setMinutes(0)
     newDate.setSeconds(0)
+    newDate.setMilliseconds(0)
     return newDate
 }
 
@@ -15,5 +16,6 @@ export function getDateEnd (date) {
     newDate.setHours(23)
     newDate.setMinutes(59)
     newDate.setSeconds(59)
+    newDate.setMilliseconds(999)
     return newDate
 }

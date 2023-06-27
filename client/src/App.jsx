@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify'
 import Layout from 'layouts'
 import CommonLoader from 'components/hoc/commonLoader'
 import AppLoader from 'components/hoc/appLoader'
+import DashboardLoader from 'components/hoc/dasboardLoader'
 
 import Dashboard from 'components/ui/dashBoard'
 import ProtectedRoute from 'components/common/protectedRoute'
@@ -45,13 +46,18 @@ const App = () => {
                         </Route>
 
                         <Route
-                            path="/dashboard"
+                            path="/dashboard/*"
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
-                                    <Dashboard/>
+                                    <DashboardLoader>
+                                        <Outlet />
+                                    </DashboardLoader>
                                 </ProtectedRoute>
                             }
-                        />
+                        >
+                            <Route index element={<Navigate to={(new Date).toLocaleDateString('fr-CA')}/>}/>
+                            <Route path=":date" element={<Dashboard/>}/>
+                        </Route>
 
                         <Route
                             path="/products/*"

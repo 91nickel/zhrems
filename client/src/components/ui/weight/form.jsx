@@ -63,6 +63,7 @@ const Form = ({onSubmit}) => {
             date: new Date(weight.date),
         }
         fields.date.setSeconds(0)
+        fields.date.setMilliseconds(0)
         return fields
     }
 

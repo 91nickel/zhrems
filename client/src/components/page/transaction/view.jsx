@@ -17,14 +17,14 @@ const View = () => {
     const transactions = useSelector(selector.byDate(date))
 
     useEffect(() => {
-        if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+        if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
             dispatch(action.getByDate(date))
     }, [])
 
-    if (typeof journal[date.toLocaleDateString('ru-RU')] === 'undefined')
+    if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
         return <LoadingLayout/>
 
-    // console.log('transactions', allTransactions, journal)
+    console.log('transactions', transactions, journal)
 
     const onDelete = () => {
         dispatch(action.delete(params.date))

@@ -44,9 +44,8 @@ const Card = ({data, onDelete}) => {
                 {
                     transactions.map((p, i) => {
                         return (
-                            <div key={'p' + i} className="d-flex">
+                            <div key={'p' + i} className="d-flex justify-content-between">
                                 <span>{p.name}</span>
-                                <span className="flex-grow-1"></span>
                                 <span>{p.weight}/{p.calories}</span>
                             </div>
                         )
