@@ -15,11 +15,11 @@ router.get('/:id?', auth, async (request, response) => {
         if (id) {
             const user = await User.findOne({_id: id})
             const account = await Account.findById(user.account)
-            const weight = await Weight.findOne({user: id}).sort({value: 'desc'})
+            // const weight = await Weight.findOne({user: id}).sort({value: 'desc'})
             return response.json({
                 ...user.toObject(),
                 isAdmin: account.admin,
-                weight: weight.value,
+                // weight: weight.value,
                 email: account.email,
             })
         }
@@ -38,12 +38,12 @@ router.get('/:id?', auth, async (request, response) => {
 
         const result = userList.map(async user => {
             const account = await Account.findById(user.account)
-            const weight = await Weight.findOne({user: user._id}).sort({createdAt: -1})
+            // const weight = await Weight.findOne({user: user._id}).sort({createdAt: -1})
             return {
                 ...user.toObject(),
                 email: account.email,
                 isAdmin: account.admin,
-                weight: weight.value,
+                // weight: weight.value,
             }
         })
 

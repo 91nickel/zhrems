@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const RadioField = ({label, name, value, error, onChange, options}) => {
+const RadioField = ({label, name, value, error, onChange, options, disabled}) => {
     const handleChange = ({target}) => {
         onChange({name: target.name, value: target.value})
     }
@@ -19,6 +19,7 @@ const RadioField = ({label, name, value, error, onChange, options}) => {
                             value={option.value}
                             checked={option.value === value}
                             onChange={handleChange}
+                            disabled={disabled}
                         />
                         <label
                             className="form-check-label"
@@ -30,7 +31,10 @@ const RadioField = ({label, name, value, error, onChange, options}) => {
         </div>
     )
 }
-RadioField.defaultProps = {}
+RadioField.defaultProps = {
+    disabled: false,
+}
+
 RadioField.propTypes = {
     label: PropTypes.string,
     options: PropTypes.arrayOf(
@@ -43,6 +47,7 @@ RadioField.propTypes = {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
     error: PropTypes.string,
+    disabled: PropTypes.bool,
 }
 
 export default RadioField

@@ -75,7 +75,8 @@ router.delete('/:id', auth, log, async (request, response) => {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
-        // await Weight.findByIdAndRemove(id)
+        await Weight.findByIdAndRemove(id)
+
         return response.json({})
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})

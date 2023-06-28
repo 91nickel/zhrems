@@ -5,8 +5,7 @@ import { Navigate } from 'react-router-dom'
 // import * as yup from 'yup'
 // import TextField from 'components/common/form/textField'
 // import CheckboxField from 'components/common/form/checkboxField'
-import FirstDayWeight from 'components/ui/weight/firstDayWeight'
-import LastDayWeight from 'components/ui/weight/lastDayWeight'
+import DashboardWeight from 'components/ui/weight/dashboardWeight'
 import TransactionCard from 'components/ui/transaction/card'
 import { selector, action } from 'store/transaction'
 import { selector as weightSelector, action as weightAction } from 'store/weight'
@@ -15,8 +14,6 @@ import LoadingLayout from 'layouts/loading'
 import { getDateStart, getDateEnd } from 'utils/date'
 import PropTypes from 'prop-types'
 import Card from './weight/card'
-import { groupTransactions } from '../../utils/groupTransactions'
-import { groupDayTransactions } from '../../utils/groupDayTransactions'
 
 const Dashboard = () => {
     const params = useParams()
@@ -28,11 +25,8 @@ const Dashboard = () => {
     const prevDate = useSelector(dateSelector.prev())
     const nextDate = useSelector(dateSelector.next())
     const dayTransactions = useSelector(selector.byDate(currentDate))
-    // const transactionsGrouped = groupDayTransactions(dayTransactions)
     const transactionsGrouped = useSelector(selector.byDateGrouped(currentDate))
-
-    // const dateStart = getDateStart(currentDate)
-    // const dateEnd = getDateEnd(currentDate)
+    const timeline = createTimeline()
 
     const dateString = currentDate.toLocaleString('ru-RU', {
         weekday: 'long',
@@ -40,16 +34,6 @@ const Dashboard = () => {
         month: 'long',
         day: 'numeric'
     })
-
-
-    // console.log(transactionsGrouped)
-
-    const lastWeight = useSelector(weightSelector.last())
-    const todayWeights = useSelector(weightSelector.byDate(currentDate))
-    const firstTodayWeight = todayWeights.length ? todayWeights[0] : null
-    const lastTodayWeight = todayWeights.length ? todayWeights[todayWeights.length - 1] : null
-    const hasTodayWeights = todayWeights.length > 0
-    // const products = transactions.reduce((agr, transaction) => ([...agr, ...transaction.products]), [])
 
     const results = {
         proteins: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
@@ -59,12 +43,41 @@ const Dashboard = () => {
         weight: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight), 0),
     }
 
-    const onDelete = date => {
+    function createTimeline () {
+        const timeline = {}
+        let times = new Array(48)
+            .fill(new Date())
+            .map((date, i) => {
+                date.setTime(getDateStart(currentDate).getTime() + 30 * 60 * 1000 * i)
+                return new Date(date)
+            })
+        const transactionDates = Object.keys(transactionsGrouped)
+            .map(dateStr => new Date(dateStr))
+        transactionDates.forEach(date => {
+            times = times.filter(time => {
+                if (Math.abs(+date - +time) < 30 * 60 * 1000 || Math.abs(+time - +date) < 30 * 60 * 1000)
+                    return false
+                return true
+            })
+        })
+        times = times.concat(transactionDates)
+
+        console.log(times)
+        // const transactions = transactionsGrouped.map(t => console.log(t))
+        return timeline
+    }
+
+    function onDeleteTransaction (date) {
         // console.log('onDelete', date, transactions)
         dayTransactions.forEach(t => {
             if (date === t.date)
                 dispatch(action.delete(t._id))
         })
+    }
+
+    function onDeleteWeight (id) {
+        // console.log('onDeleteWeight', id)
+        dispatch(weightAction.delete(id))
     }
 
     return (<>
@@ -99,13 +112,13 @@ const Dashboard = () => {
         </div>
         <div className="row justify-content-center mb-3">
             <div className="col-12 col-md-6">
-                <FirstDayWeight/>
+                <DashboardWeight type="start" onDelete={onDeleteWeight}/>
                 {
                     Object.values(transactionsGrouped)
                         .map((t, i) =>
-                            <TransactionCard key={'tr-' + i} data={t} onDelete={onDelete}/>)
+                            <TransactionCard key={'tr-' + i} data={t} onDelete={onDeleteTransaction}/>)
                 }
-                <LastDayWeight />
+                <DashboardWeight type="end" onDelete={onDeleteWeight}/>
             </div>
         </div>
         <div className="row justify-content-center mb-3">

@@ -101,7 +101,7 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.weight.delete', payload)
+                // console.log('store.weight.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -151,13 +151,21 @@ export const action = {
 export const selector = {
     get: () => state => state.weight.entities,
     last: () => state => state.weight.entities[state.weight.entities.length -1],
-    byDate: (date) => state => state.weight.entities.filter(weight => {
+    byDate: date => state => state.weight.entities.filter(weight => {
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)
         const weightDate = new Date(weight.date)
         return weightDate >= dateStart && weightDate <= dateEnd
     }),
     byId: id => state => state.weight.entities.find(u => u._id === id),
+    todayStart: () => state => {
+        const dateStart = getDateStart(new Date(state.date.current))
+        return state.weight.entities.find(w => w.date === dateStart.toISOString()) || null
+    },
+    todayEnd: () => state => {
+        const dateEnd = getDateEnd(new Date(state.date.current))
+        return state.weight.entities.find(w => w.date === dateEnd.toISOString()) || null
+    },
     isDataLoaded: () => state => state.weight.isDataLoaded,
     isLoading: () => state => state.weight.isLoading,
     error: () => state => state.weight.error,

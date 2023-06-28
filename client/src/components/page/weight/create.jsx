@@ -12,6 +12,7 @@ const Create = () => {
     const dispatch = useDispatch()
 
     const onSubmit = payload => {
+        // console.log(payload)
         dispatch(action.create(payload))
             .unwrap()
             .then(() => {
@@ -26,7 +27,7 @@ const Create = () => {
         <>
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
+                    <NavLink to="../.." className="btn btn-primary">
                         <i className="bi bi-caret-left"/>
                         Назад
                     </NavLink>

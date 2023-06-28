@@ -183,15 +183,18 @@ export const selector = {
     },
     byDateGrouped: date => state => {
         const transactionsGrouped = {}
-        const dates = []
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)
         state.transaction.entities
-            .filter(t => {
+            .forEach(t => {
                 const trDate = new Date(t.date)
-                return trDate >= dateStart && trDate <= dateEnd
+                if (trDate >= dateStart && trDate <= dateEnd) {
+                    if (!Object.keys(transactionsGrouped).includes(t.date))
+                        transactionsGrouped[t.date] = []
+                    transactionsGrouped[t.date].push(t)
+                }
             })
-
+        return transactionsGrouped
     },
     byDateExact: date => state => state.transaction.entities.filter(t => t.date === date),
     isDataLoaded: () => state => state.transaction.isDataLoaded,

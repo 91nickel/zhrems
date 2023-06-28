@@ -1,5 +1,6 @@
 import React from 'react'
 import { createSlice } from '@reduxjs/toolkit'
+import { getDateEnd, getDateStart } from '../utils/date'
 
 const slice = createSlice({
     name: 'date',
@@ -51,6 +52,8 @@ export const selector = {
     get: () => state => new Date(state.date.current),
     prev: () => state => new Date(state.date.prev),
     next: () => state => new Date(state.date.next),
+    todayStart: () => state => getDateStart(new Date(state.date.current)),
+    todayEnd: () => state => getDateEnd(new Date(state.date.current)),
 }
 
 export default slice.reducer

@@ -12,8 +12,13 @@ import { selector, action } from 'store/weight'
 import DateTimeField from 'components/common/form/dateTimeField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
+import DateField from 'components/common/form/dateField'
+import RadioField from 'components/common/form/radioField'
 
 const Form = ({onSubmit}) => {
+    const params = useParams()
+    console.log(params)
+
     const dispatch = useDispatch()
 
     const {id} = useParams()
@@ -28,15 +33,9 @@ const Form = ({onSubmit}) => {
 
     const lastWeight = weights[0]
 
-    const defaultData = {
-        value: lastWeight?.value || 50,
-        user: userId,
-        date: Date.now(),
-    }
-
     const startData = id
         ? createFields(weight)
-        : createFields(defaultData)
+        : createFields(getDefaultData())
 
     const [data, setData] = useState(startData)
     const [errors, setErrors] = useState({})
@@ -57,26 +56,48 @@ const Form = ({onSubmit}) => {
         validate()
     }, [data])
 
-    function createFields (weight) {
-        const fields = {
-            ...weight,
-            date: new Date(weight.date),
+    function getDefaultData () {
+        const data = {
+            value: lastWeight?.value || 50,
+            user: userId,
+            date: params.date ? new Date(params.date) : new Date,
         }
-        fields.date.setSeconds(0)
-        fields.date.setMilliseconds(0)
-        return fields
+        if (!params.date) {
+            data.date.setHours(0)
+            data.date.setMinutes(0)
+            data.date.setSeconds(0)
+            data.date.setMilliseconds(0)
+        }
+        return data
+    }
+
+    function createFields (weight) {
+        return {...weight, date: new Date(weight.date)}
     }
 
     const onChange = target => {
-        console.log('onChange()', target)
-        const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
         setData(prevState => {
+            const autoUpdateFields = ['proteins', 'fats', 'carbohydrates']
             const nextState = {...prevState, [target.name]: target.value}
             if (autoUpdateFields.includes(target.name)) {
                 nextState.calories = nextState.proteins * 4 + nextState.fats * 9 + nextState.carbohydrates * 4
             }
             return nextState
         })
+    }
+    const onChangeTime = ({name, value}) => {
+        const date = data.date
+        const [hours, minutes] = value.split(':')
+        date.setHours(hours)
+        date.setMinutes(minutes)
+        if (value === '00:00') {
+            date.setSeconds(0)
+            date.setMilliseconds(0)
+        } else if (value === '23:59') {
+            date.setSeconds(59)
+            date.setMilliseconds(999)
+        }
+        setData({...data, date})
     }
 
     const handleSubmit = event => {
@@ -103,7 +124,7 @@ const Form = ({onSubmit}) => {
     const hasDifference = () => {
         if (!weight) return true
         let hasDifference = false
-        Object.keys(defaultData).forEach(key => {
+        Object.keys(getDefaultData()).forEach(key => {
             // console.log(weight[key], data[key], weight[key] === data[key])
             if (data[key] instanceof Date) {
                 if (data[key].toISOString() !== weight[key])
@@ -115,6 +136,8 @@ const Form = ({onSubmit}) => {
         })
         return hasDifference
     }
+
+    console.log('formData', data)
 
     const isValid = Object.keys(errors).length === 0
 
@@ -130,12 +153,22 @@ const Form = ({onSubmit}) => {
                 options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
                 onChange={onChange}
             />
-            <DateTimeField
-                label="Дата/Время"
+            <DateField
+                label="Дата"
                 name="date"
                 value={data.date}
                 error={errors.date}
                 onChange={onChange}
+                disabled={!!params.date}
+            />
+            <RadioField
+                label="Период"
+                name="time"
+                value={data.date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
+                options={[{name: 'Начало дня', value: '00:00'}, {name: 'Конец дня', value: '23:59'}]}
+                error={errors.time}
+                onChange={onChangeTime}
+                disabled={!!params.date}
             />
             <NumberField
                 label="Вес"

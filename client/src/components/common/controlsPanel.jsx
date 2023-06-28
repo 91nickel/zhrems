@@ -11,7 +11,7 @@ function ControlsPanel ({id, prefix, onDelete}) {
     const [open, setOpen] = useState()
 
     return (
-        <ul className="list-group-horizontal list-unstyled d-flex justify-content-end">
+        <ul className="list-group-horizontal list-unstyled d-flex justify-content-end mb-0">
             <li className="list-item">
                 {
                     id &&
