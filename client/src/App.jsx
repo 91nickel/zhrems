@@ -12,7 +12,7 @@ import CommonLoader from 'components/hoc/commonLoader'
 import AppLoader from 'components/hoc/appLoader'
 import DashboardLoader from 'components/hoc/dasboardLoader'
 
-import Dashboard from 'components/ui/dashBoard'
+import Dashboard from 'components/ui/dashboard/dashBoard'
 import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
@@ -127,7 +127,7 @@ const App = () => {
                             }
                         >
                             <Route index element={<TransactionPage.List/>}/>
-                            <Route path="create" element={<TransactionPage.Create/>}/>
+                            <Route path="create/:date?" element={<TransactionPage.Create/>}/>
                             <Route path=":date/*">
                                 <Route index element={<TransactionPage.View/>}/>
                                 <Route path="update" element={<TransactionPage.Update/>}/>

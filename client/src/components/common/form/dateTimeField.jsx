@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const DateTimeField = ({label, name, placeholder, value, error, onChange, onInput}) => {
+const DateTimeField = ({label, name, placeholder, value, error, onChange, onInput, disabled}) => {
 
     const defaultData = {
         date: value.toLocaleDateString('fr-CA'),
@@ -54,6 +54,7 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
                 type="date"
                 placeholder={placeholder}
                 value={data.date}
+                disabled={disabled}
                 onChange={handleChangeDate}
                 onInput={handleChangeDate}
             />
@@ -63,6 +64,7 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
                 type="time"
                 placeholder={placeholder}
                 value={data.time}
+                disabled={disabled}
                 onChange={handleChangeTime}
                 onInput={handleChangeTime}
             />
@@ -72,6 +74,7 @@ const DateTimeField = ({label, name, placeholder, value, error, onChange, onInpu
 }
 DateTimeField.defaultProps = {
     placeholder: '',
+    disabled: false,
 }
 DateTimeField.propTypes = {
     label: PropTypes.string,
@@ -79,6 +82,7 @@ DateTimeField.propTypes = {
     placeholder: PropTypes.string,
     value: PropTypes.instanceOf(Date),
     error: PropTypes.string,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func,
     onInput: PropTypes.func,
 }

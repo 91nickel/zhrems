@@ -8,7 +8,7 @@ export function groupTransactions(transactions) {
         date: transactions.reduce((agrDate, t) => {
             const trDate = new Date(t.date)
             if (agrDate === '') return new Date(t.date)
-            if (agrDate.getTime() !== trDate.getTime()) throw new Error('Transactions with different date can not be processed by form')
+            // if (agrDate.getTime() !== trDate.getTime()) throw new Error('Transactions with different date can not be processed by form')
             return agrDate
         }, ''),
         transactions,

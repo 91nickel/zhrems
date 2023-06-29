@@ -47,7 +47,7 @@ const Update = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Form onSubmit={onSubmit}/>
+                <Form type="update" onSubmit={onSubmit}/>
             </div>
         </div>
     )

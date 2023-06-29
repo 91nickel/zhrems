@@ -3,7 +3,7 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/transaction'
-import Card from 'components/ui/transaction/card'
+import TransactionsGroup from 'components/ui/dashboard/transactionsGroup'
 import LoadingLayout from 'layouts/loading'
 
 const View = () => {
@@ -43,7 +43,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Card {...{data: transactions, onDelete}} />
+                <TransactionsGroup {...{data: transactions, onDelete}} />
             </div>
         </div>
     )

@@ -17,7 +17,7 @@ const slice = createSlice({
         created: (state, action) => {
             console.log('created', action.payload)
             state.entities = [...state.entities, ...action.payload]
-            state.success = `Successfully created transaction ${action.payload.value}`
+            state.success = `Добавлен прием пищи ${action.payload.map(t => t.name).join(', ')}`
         },
         updated: (state, action) => {
             const ids = action.payload.map(u => u._id)

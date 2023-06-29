@@ -17,6 +17,8 @@ import ProductCard from 'components/ui/product/card'
 import ProductForm from './productForm'
 import MealForm from './mealForm'
 import { groupTransactions } from 'utils/groupTransactions'
+import Transaction from '../dashboard/transaction'
+import TransactionsGroup from '../dashboard/transactionsGroup'
 
 const validateScheme = yup.object().shape({
     formDate: yup.date().required('Поле обязательно'),
@@ -30,9 +32,11 @@ const validateScheme = yup.object().shape({
 // date
 // [{productsData1, productData2, ...}]
 
-const Form = ({onSubmit: onSuccess}) => {
+const Form = ({type, onSubmit: onSuccess}) => {
     const params = useParams()
     const dispatch = useDispatch()
+    const globalError = useSelector(selector.error())
+    const globalSuccess = useSelector(selector.success())
 
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
@@ -41,29 +45,24 @@ const Form = ({onSubmit: onSuccess}) => {
     const [showForm, setShowForm] = useState(defaultShowForm)
 
     const defaultUser = userId
-    const defaultDate = useSelector(dateSelector.get())
+    const defaultDate = params.date ? new Date(params.date) : useSelector(dateSelector.get())
     const defaultTransactions = []
 
-    const [formUser, setFormUser] = useState('')
-    const [formDate, setFormDate] = useState(defaultDate)
-    const [formTransactions, setFormTransactions] = useState([])
-    const [errors, setErrors] = useState({})
-    const globalError = useSelector(selector.error())
-    const globalSuccess = useSelector(selector.success())
     const transactions = useSelector(selector.byDateExact(params.date))
+
+    const [formUser, setFormUser] = useState(defaultUser)
+    const [formDate, setFormDate] = useState(defaultDate)
+    const [formTransactions, setFormTransactions] = useState(defaultTransactions)
+
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         dispatch(action.clearMessages())
-        if (params.date) {
-            // Вариант редактирования, когда есть стартовые данные
+        if (type === 'update' && transactions.length) {
             const {user, date} = groupTransactions(transactions)
             setFormTransactions(transactions)
             setFormUser(user)
             setFormDate(date)
-        } else {
-            setFormTransactions(defaultTransactions)
-            setFormUser(defaultUser)
-            setFormDate(defaultDate)
         }
     }, [])
 
@@ -89,9 +88,10 @@ const Form = ({onSubmit: onSuccess}) => {
             .filter(t => t.date === params.date))
     }
 
-    function onTransactionAdd (transaction) {
-        // console.log('onTransactionDelete()', transaction)
-        setFormTransactions([...formTransactions, {...transaction, date: formDate.toISOString(), user: formUser}])
+    async function onTransactionAdd (transaction) {
+        console.log('onTransactionDelete()', transaction)
+        const transactions = await onSuccess([{...transaction, date: formDate.toISOString(), user: formUser}])
+        setFormTransactions([...formTransactions, ...transactions])
     }
 
     function onTransactionDelete (index) {
@@ -134,7 +134,7 @@ const Form = ({onSubmit: onSuccess}) => {
 
     const isValid = Object.keys(errors).length === 0
 
-    // console.log(formUser, formDate, formTransactions)
+    console.log(formUser, formDate, formTransactions)
 
     return (
         <form onSubmit={onSubmit}>
@@ -147,35 +147,22 @@ const Form = ({onSubmit: onSuccess}) => {
                 error={errors.user}
                 options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
                 onChange={onUserChange}
+                disabled={!isAdmin}
             />
             <DateTimeField
                 label="Дата/Время"
                 name="date"
                 value={formDate}
                 error={errors.date}
+                disabled={true}
                 onChange={onDateChange}
             />
-            <ul className="list-group mb-3">
-                {
-                    formTransactions.map((p, i) =>
-                        <li key={`tr.pid.${i}`} className="list-group-item d-flex justify-content-between">
-                            <span className="col-6">{p.name}</span>
-                            <span>{p.weight}/{Math.round(p.weight * p.calories / 100)}</span>
-                            <button className="btn btn-close" onClick={() => onTransactionDelete(i)}></button>
-                        </li>
-                    )
-                }
-            </ul>
-            <div className="mb-3">
-                {showForm.select && <ProductForm onSubmit={onTransactionAdd} select={true}/>}
-                {showForm.new && <ProductForm onSubmit={onTransactionAdd} select={false}/>}
-                {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
-            </div>
-            <div className="d-flex justify-content-end mb-3">
+            <TransactionsGroup data={formTransactions} onDelete={onTransactionDelete}/>
+            <div className="d-flex justify-content-end my-3">
                 {Object.values(showForm).find(v => v === true) &&
                 <button
-                    className="btn btn-danger me-1"
                     type="button"
+                    className="btn btn-danger me-1"
                     onClick={() => onToggleForm('none')}
                 >
                     <i className="bi bi-x"></i>
@@ -203,18 +190,28 @@ const Form = ({onSubmit: onSuccess}) => {
                     <i className="bi bi-list-ul"></i>
                 </button>
             </div>
-            <button
-                className="btn btn-primary w-100 mx-auto"
-                type="submit"
-                disabled={!isValid || !hasDifference()}
-            >
-                Сохранить
-            </button>
+            <div className="mb-3">
+                {showForm.select && <ProductForm onSubmit={onTransactionAdd} select={true}/>}
+                {showForm.new && <ProductForm onSubmit={onTransactionAdd} select={false}/>}
+                {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
+            </div>
+            {/*<button*/}
+            {/*    className="btn btn-primary w-100 mx-auto"*/}
+            {/*    type="submit"*/}
+            {/*    disabled={!isValid || !hasDifference()}*/}
+            {/*>*/}
+            {/*    Сохранить*/}
+            {/*</button>*/}
         </form>
     )
 }
 
+Form.defaultProperties = {
+    type: 'create',
+}
+
 Form.propTypes = {
+    type: PropTypes.string,
     onSubmit: PropTypes.func,
 }
 

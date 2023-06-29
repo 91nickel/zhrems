@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
 import { NavLink } from 'react-router-dom'
 
-const DashboardWeight = ({type, onDelete}) => {
+const Weight = ({type, onDelete}) => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const startDate = useSelector(dateSelector.todayStart())
     const endDate = useSelector(dateSelector.todayEnd())
@@ -44,13 +44,13 @@ const DashboardWeight = ({type, onDelete}) => {
 
 }
 
-DashboardWeight.defaultProps = {
+Weight.defaultProps = {
     type: 'start',
 }
 
-DashboardWeight.propTypes = {
+Weight.propTypes = {
     type: PropTypes.string,
     onDelete: PropTypes.func,
 }
 
-export default DashboardWeight
+export default Weight

@@ -79,7 +79,10 @@ const Form = ({product, onSubmit, select = true}) => {
     }
 
     function handleSubmit () {
-        onSubmit(data)
+        const payload = {...data}
+        if (productId)
+            payload.product = productId
+        onSubmit(payload)
         refresh()
     }
 

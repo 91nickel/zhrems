@@ -17,23 +17,22 @@ import RadioField from 'components/common/form/radioField'
 
 const Form = ({onSubmit}) => {
     const params = useParams()
-    console.log(params)
+    // console.log(params)
 
     const dispatch = useDispatch()
 
-    const {id} = useParams()
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
 
     const weights = useSelector(selector.get())
 
     let weight
-    if (id)
-        weight = useSelector(selector.byId(id))
+    if (params.id)
+        weight = useSelector(selector.byId(params.id))
 
     const lastWeight = weights[0]
 
-    const startData = id
+    const startData = params.id
         ? createFields(weight)
         : createFields(getDefaultData())
 
@@ -41,10 +40,6 @@ const Form = ({onSubmit}) => {
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
-
-    useEffect(() => {
-        dispatch(action.clearMessages())
-    }, [])
 
     useEffect(() => {
         dispatch(action.clearMessages())

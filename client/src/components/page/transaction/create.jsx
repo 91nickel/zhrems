@@ -12,14 +12,7 @@ const Create = () => {
 
     const onSubmit = payload => {
         // console.log('onSubmit', payload)
-        dispatch(action.create(payload))
-            .unwrap()
-            .then(() => {
-                setTimeout(() => navigate('../..', {replace: true}), 1000)
-            })
-            .catch(() => {
-                console.log('Failed')
-            })
+        return dispatch(action.create(payload)).unwrap()
     }
 
     return (
@@ -34,7 +27,7 @@ const Create = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Добавить прием пищи</h2>
-                    <Form onSubmit={onSubmit}/>
+                    <Form type="create" onSubmit={onSubmit}/>
                 </div>
             </div>
         </>
