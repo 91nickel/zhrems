@@ -10,7 +10,7 @@ import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
 
-import { selector, action } from 'store/transaction'
+import { selector, action } from 'store/feed'
 
 const Form = ({onSubmit}) => {
     const dispatch = useDispatch()

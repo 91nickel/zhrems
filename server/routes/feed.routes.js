@@ -1,5 +1,5 @@
 const express = require('express')
-const Transaction = require('models/Transaction')
+const Feed = require('models/Feed')
 const auth = require('middleware/auth.middleware')
 const log = require('middleware/log.middleware')
 const {getDateEnd, getDateStart} = require('utils/date')
@@ -12,14 +12,14 @@ router.get('/:id?', auth, log, async (request, response) => {
         const user = request.user
 
         if (id) {
-            const transaction = await Transaction.findById(id)
-            if (!transaction) {
+            const feed = await Feed.findById(id)
+            if (!feed) {
                 response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
             }
-            if (transaction.user !== user.localId && !user.isAdmin) {
+            if (feed.user !== user.localId && !user.isAdmin) {
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             }
-            return response.json(transaction)
+            return response.json(feed)
         }
         const filter = {user: user.localId}
         if (date) {
@@ -29,8 +29,8 @@ router.get('/:id?', auth, log, async (request, response) => {
         } else if (dateStart && dateEnd) {
             filter.date = {$gte: dateStart, $lte: dateEnd}
         }
-        const transactions = await Transaction.find(filter).sort({date: 'asc'})
-        return response.json(transactions)
+        const feeds = await Feed.find(filter).sort({date: 'asc'})
+        return response.json(feeds)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
@@ -43,13 +43,13 @@ router.put('/', auth, log, async (request, response) => {
         if (!(request.body instanceof Array))
             response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
 
-        const transactions = request.body.map(t => {
+        const feed = request.body.map(t => {
             if (t.user !== user.localId && !user.isAdmin)
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
-            return Transaction.create(t)
+            return Feed.create(t)
         })
 
-        return response.status(201).json(await Promise.all(transactions))
+        return response.status(201).json(await Promise.all(feed))
 
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
@@ -63,16 +63,16 @@ router.patch('/', auth, log, async (request, response) => {
         if (!(request.body instanceof Array))
             response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
 
-        const transactions = request.body.map(async t => {
+        const feeds = request.body.map(async t => {
             if (t.user !== user.localId && !user.isAdmin)
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             if (t._id)
-                return Transaction.findByIdAndUpdate(t._id, )
+                return Feed.findByIdAndUpdate(t._id, )
             else
-                return Transaction.create(t)
+                return Feed.create(t)
         })
 
-        return response.json(await Promise.all(transactions))
+        return response.json(await Promise.all(feeds))
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
@@ -83,9 +83,9 @@ router.delete('/:id', auth, log, async (request, response) => {
         const {id} = request.params
         const user = request.user
 
-        const transaction = await Transaction.findById(id)
+        const feed = await Feed.findById(id)
 
-        if (!transaction) {
+        if (!feed) {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         }
 
@@ -93,7 +93,7 @@ router.delete('/:id', auth, log, async (request, response) => {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
-        await Transaction.findByIdAndRemove(id)
+        await Feed.findByIdAndRemove(id)
         return response.json({})
 
     } catch (error) {

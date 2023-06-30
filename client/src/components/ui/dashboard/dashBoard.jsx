@@ -1,34 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Navigate } from 'react-router-dom'
 // import * as yup from 'yup'
 // import TextField from 'components/common/form/textField'
 // import CheckboxField from 'components/common/form/checkboxField'
 import Weight from './weight'
-import TransactionsGroup from './transactionsGroup'
-import { selector, action } from 'store/transaction'
-import { selector as weightSelector, action as weightAction } from 'store/weight'
-import { selector as dateSelector, action as dateAction } from 'store/date'
-import LoadingLayout from 'layouts/loading'
-import { getDateStart, getDateEnd } from 'utils/date'
-import PropTypes from 'prop-types'
-import Card from '../weight/card'
-import ModalTransactionEditor from 'components/modal/transactionEdit'
+import FeedsGroup from 'components/ui/dashboard/feedsGroup'
+
+import { action, selector } from 'store/feed'
+import { action as weightAction } from 'store/weight'
+import { selector as dateSelector } from 'store/date'
+import { selector as userSelector } from 'store/user'
+import { action as modalAction } from 'store/modal'
+
+import { getDateStart } from 'utils/date'
+import FEED_METHODS from 'components/modal/feed/methods'
+import WEIGHT_METHODS from 'components/modal/weight/methods'
 
 const Dashboard = () => {
     const params = useParams()
     const dispatch = useDispatch()
 
-    const [transactionInEditId, setTransactionInEditId] = useState('')
-
-    // const [errors, setErrors] = useState({})
-    // const isLoggedIn = useSelector(getUsersIsAuthorized())
+    const {userId} = useSelector(userSelector.authData())
     const currentDate = useSelector(dateSelector.get())
     const prevDate = useSelector(dateSelector.prev())
     const nextDate = useSelector(dateSelector.next())
-    const dayTransactions = useSelector(selector.byDate(currentDate))
-    const transactionsGrouped = useSelector(selector.byDateGrouped(currentDate))
+    const dayFeeds = useSelector(selector.byDate(currentDate))
     const timeline = createTimeline()
 
     const dateString = currentDate.toLocaleString('ru-RU', {
@@ -39,16 +36,15 @@ const Dashboard = () => {
     })
 
     const results = {
-        proteins: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: dayTransactions.reduce((agr, data) => Math.round(agr + data.weight), 0),
+        proteins: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
+        fats: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
+        carbohydrates: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
+        calories: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
+        weight: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight), 0),
     }
 
     function createTimeline () {
-        const timeline = {}
-        let times = new Array(24)
+        return new Array(24)
             .fill({})
             .map((obj, i) => {
                 const start = new Date()
@@ -57,26 +53,42 @@ const Dashboard = () => {
                 end.setTime(getDateStart(currentDate).getTime() + 60 * 60 * 1000 * (i + 1))
                 return {start, end}
             })
-        return times
     }
 
-    // function onDeleteTransactionGroup (date) {
-    //     // console.log('onDelete', date, transactions)
-    //     dayTransactions.forEach(t => {
-    //         if (date === t.date)
-    //             dispatch(action.delete(t._id))
-    //     })
-    // }
-
-    function onUpdateTransaction (id) {
-        console.log('onUpdateTransaction', id)
-        setTransactionInEditId(id)
-        // dispatch(action.delete(id))
+    function onAddFeed (method, date) {
+        // console.log('onAddFeed', method)
+        let modalParams
+        if (method === FEED_METHODS.NEW) {
+            modalParams = {title: 'Создать со своими параметрами', body: method}
+        } else if (method === FEED_METHODS.SELECT) {
+            modalParams = {title: 'Выбрать из списка', body: method}
+        } else if (method === FEED_METHODS.MEAL) {
+            modalParams = {title: 'Выбрать комбинацию', body: method}
+        }
+        dispatch(modalAction.open(modalParams, {method, date, user: userId}))
     }
 
-    function onDeleteTransaction (id) {
+    function onUpdateFeed (id) {
+        console.log('onUpdateFeed', id)
+        const modalParams = {title: 'Редактировать', body: FEED_METHODS.UPDATE}
+        dispatch(modalAction.open(modalParams, {id}))
+    }
+
+    function onDeleteFeed (id) {
         // console.log('onDelete', id)
         dispatch(action.delete(id))
+    }
+
+    function onAddWeight (date) {
+        console.log('onAddWeight', date)
+        const modalParams = {title: 'Добавить вес', body: WEIGHT_METHODS.ADD}
+        dispatch(modalAction.open(modalParams, {date: date.toISOString(), user: userId}))
+    }
+
+    function onUpdateWeight (id) {
+        console.log('onAddWeight', date)
+        const modalParams = {title: 'Редактировать вес', body: WEIGHT_METHODS.UPDATE}
+        dispatch(modalAction.open(modalParams, {id}))
     }
 
     function onDeleteWeight (id) {
@@ -117,11 +129,11 @@ const Dashboard = () => {
             {/*</div>*/}
             <div className="row justify-content-center mb-3">
                 <div className="col-12 col-md-6">
-                    <Weight type="start" onDelete={onDeleteWeight}/>
+                    <Weight type="start" onAdd={onAddWeight} onDelete={onDeleteWeight}/>
                     <ul className="list-group-flush p-0">
                         {
                             timeline.map(({start, end}) => {
-                                const trGroup = dayTransactions.filter(t => {
+                                const trGroup = dayFeeds.filter(t => {
                                     return new Date(t.date) >= start && new Date(t.date) < end
                                 })
                                 return (
@@ -133,19 +145,32 @@ const Dashboard = () => {
                                                     minute: '2-digit'
                                                 })}
                                             </p>
-                                            <NavLink
-                                                className="btn btn-outline-success btn-sm"
-                                                to={'/transactions/create/' + start.toISOString()}
-                                            >
-                                                <i className="bi bi-plus"/>
-                                            </NavLink>
+                                            <div>
+                                                <button
+                                                    className="btn btn-outline-success btn-sm mx-1"
+                                                    onClick={() => onAddFeed(FEED_METHODS.NEW, start.toISOString())}
+                                                >
+                                                    <i className="bi bi-plus"/>
+                                                </button>
+                                                <button
+                                                    className="btn btn-outline-success btn-sm mx-1"
+                                                    onClick={() => onAddFeed(FEED_METHODS.SELECT, start.toISOString())}>
+                                                    <i className="bi bi-check-square"/>
+                                                </button>
+                                                <button
+                                                    className="btn btn-outline-success btn-sm mx-1"
+                                                    onClick={() => onAddFeed(FEED_METHODS.MEAL, start.toISOString())}
+                                                >
+                                                    <i className="bi bi-list-ul"/>
+                                                </button>
+                                            </div>
                                         </div>
                                         {
                                             !!trGroup.length &&
-                                            <TransactionsGroup
+                                            <FeedsGroup
                                                 data={trGroup}
-                                                onUpdate={onUpdateTransaction}
-                                                onDelete={onDeleteTransaction}
+                                                onUpdate={onUpdateFeed}
+                                                onDelete={onDeleteFeed}
                                             />
                                         }
                                     </li>
@@ -170,17 +195,11 @@ const Dashboard = () => {
                     </p>
                 </div>
             </div>
-            <ModalTransactionEditor
-                id={transactionInEditId}
-                show={!!transactionInEditId}
-                onClose={() => setTransactionInEditId('')}
-            />
         </>
     )
 }
 
 Dashboard.propTypes = {
-    // datestr: PropTypes.string,
 }
 
 export default Dashboard

@@ -3,9 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import _ from 'lodash'
 import { selector as userSelector } from 'store/user'
-import { selector, action } from 'store/transaction'
+import { selector, action } from 'store/feed'
 import Pagination from 'components/common/pagination'
-// import Table from 'components/ui/transaction/table'
 import paginate from 'utils/paginate'
 
 const List = () => {

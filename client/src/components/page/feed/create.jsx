@@ -3,16 +3,16 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/transaction'
-import Form from 'components/ui/transaction/form'
+import { selector, action } from 'store/feed'
+import Form from 'components/ui/feed/form'
 
 const Create = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const onSubmit = payload => {
-        // console.log('onSubmit', payload)
-        return dispatch(action.create(payload)).unwrap()
+        console.log('onSubmit', payload)
+        // return dispatch(action.create(payload)).unwrap()
     }
 
     return (

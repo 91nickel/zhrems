@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/transaction'
-import TransactionsGroup from 'components/ui/dashboard/transactionsGroup'
+import { selector, action } from 'store/feed'
+import FeedsGroup from 'components/ui/dashboard/feedsGroup'
 import LoadingLayout from 'layouts/loading'
 
 const View = () => {
@@ -14,7 +13,7 @@ const View = () => {
     const dispatch = useDispatch()
 
     const journal = useSelector(selector.journal())
-    const transactions = useSelector(selector.byDate(date))
+    const feeds = useSelector(selector.byDate(date))
 
     useEffect(() => {
         if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
@@ -24,7 +23,7 @@ const View = () => {
     if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
         return <LoadingLayout/>
 
-    console.log('transactions', transactions, journal)
+    console.log('feeds', feeds, journal)
 
     const onDelete = () => {
         dispatch(action.delete(params.date))
@@ -43,7 +42,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <TransactionsGroup {...{data: transactions, onDelete}} />
+                <FeedsGroup {...{data: feeds, onDelete}} />
             </div>
         </div>
     )

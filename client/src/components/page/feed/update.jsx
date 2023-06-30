@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selector, action } from 'store/transaction'
+import { selector, action } from 'store/feed'
 import { selector as authSelector } from 'store/user'
-import Form from 'components/ui/transaction/form'
+import Form from 'components/ui/feed/form'
 import LoadingLayout from 'layouts/loading'
 
 const Update = () => {
@@ -22,8 +22,6 @@ const Update = () => {
 
     if (typeof journal[date.toLocaleDateString('fr-CA')] === 'undefined')
         return <LoadingLayout/>
-
-    // console.log('transactions', allTransactions, journal)
 
     const onSubmit = payload => {
         console.log('update.onSubmit()', payload)

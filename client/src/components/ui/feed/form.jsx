@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
-import { selector, action } from 'store/transaction'
+import { selector, action } from 'store/feed'
 import { selector as userSelector } from 'store/user'
 import { selector as dateSelector, action as dateAction } from 'store/date'
 
@@ -16,23 +16,22 @@ import SelectField from 'components/common/form/selectField'
 import ProductCard from 'components/ui/product/card'
 import ProductForm from './productForm'
 import MealForm from './mealForm'
-import { groupTransactions } from 'utils/groupTransactions'
-import Transaction from '../dashboard/transaction'
-import TransactionsGroup from '../dashboard/transactionsGroup'
+import { groupFeeds } from 'utils/groupFeeds'
+import Feed from '../dashboard/feed'
+import FeedsGroup from '../dashboard/feedsGroup'
 
 const validateScheme = yup.object().shape({
     formDate: yup.date().required('Поле обязательно'),
     formUser: yup.string().required('Поле обязательно'),
-    formTransactions: yup.array().required('Поле обязательно').min(1),
+    formFeeds: yup.array().required('Поле обязательно').min(1),
 })
-
 
 // Структура объекта data
 // user
 // date
 // [{productsData1, productData2, ...}]
 
-const Form = ({type, onSubmit: onSuccess}) => {
+const Form = ({type, startData, onSubmit: onSuccess}) => {
     const params = useParams()
     const dispatch = useDispatch()
     const globalError = useSelector(selector.error())
@@ -46,21 +45,21 @@ const Form = ({type, onSubmit: onSuccess}) => {
 
     const defaultUser = userId
     const defaultDate = params.date ? new Date(params.date) : useSelector(dateSelector.get())
-    const defaultTransactions = []
+    const defaultFeeds = []
 
-    const transactions = useSelector(selector.byDateExact(params.date))
+    const feeds = useSelector(selector.byDateExact(params.date))
 
     const [formUser, setFormUser] = useState(defaultUser)
     const [formDate, setFormDate] = useState(defaultDate)
-    const [formTransactions, setFormTransactions] = useState(defaultTransactions)
+    const [formFeeds, setFormFeeds] = useState(defaultFeeds)
 
     const [errors, setErrors] = useState({})
 
     useEffect(() => {
         dispatch(action.clearMessages())
-        if (type === 'update' && transactions.length) {
-            const {user, date} = groupTransactions(transactions)
-            setFormTransactions(transactions)
+        if (type === 'update' && feeds.length) {
+            const {user, date} = groupFeeds(feeds)
+            setFormFeeds(feeds)
             setFormUser(user)
             setFormDate(date)
         }
@@ -68,10 +67,10 @@ const Form = ({type, onSubmit: onSuccess}) => {
 
     useEffect(() => {
         validate()
-    }, [formUser, formDate, formTransactions])
+    }, [formUser, formDate, formFeeds])
 
     function validate () {
-        validateScheme.validate({formUser, formDate, formTransactions})
+        validateScheme.validate({formUser, formDate, formFeeds})
             .then(() => setErrors({}))
             .catch(err => setErrors({[err.path]: err.message}))
 
@@ -80,31 +79,31 @@ const Form = ({type, onSubmit: onSuccess}) => {
 
     function hasDifference () {
         if (!params.date) return true
-        return !_.isEqual(transactions, formTransactions)
+        return !_.isEqual(feeds, formFeeds)
     }
 
-    function getTransactionsByDate () {
-        return groupTransactions(useSelector(selector.get())
+    function getFeedsByDate () {
+        return groupFeeds(useSelector(selector.get())
             .filter(t => t.date === params.date))
     }
 
-    async function onTransactionAdd (transaction) {
-        console.log('onTransactionDelete()', transaction)
-        const transactions = await onSuccess([{...transaction, date: formDate.toISOString(), user: formUser}])
-        setFormTransactions([...formTransactions, ...transactions])
+    async function onFeedAdd (feed) {
+        console.log('onFeedAdd()', feed)
+        const feeds = await onSuccess([{...feed, date: formDate.toISOString(), user: formUser}])
+        setFormFeeds([...formFeeds, ...feeds])
     }
 
-    function onTransactionDelete (index) {
-        const transaction = transactions[index]
-        const newTransactions = transactions.filter((t, i) => index !== i)
-        console.log('onTransactionDelete', index, transaction, newTransactions)
-        if (transaction?._id)
-            return dispatch(action.delete(transaction._id))
+    function onFeedDelete (index) {
+        const feed = feeds[index]
+        const newFeeds = feeds.filter((t, i) => index !== i)
+        console.log('onFeedDelete', index, feed, newFeeds)
+        if (feed?._id)
+            return dispatch(action.delete(feed._id))
                 .unwrap()
-                .then(() => setFormTransactions(newTransactions))
+                .then(() => setFormFeeds(newFeeds))
                 .catch((e) => console.error(e))
 
-        return setFormTransactions(newTransactions)
+        return setFormFeeds(newFeeds)
     }
 
     function onMealAdd (meal) {
@@ -129,12 +128,12 @@ const Form = ({type, onSubmit: onSuccess}) => {
         event.preventDefault()
         if (!validate() || !hasDifference())
             return false
-        return onSuccess(formTransactions)
+        return onSuccess(formFeeds)
     }
 
     const isValid = Object.keys(errors).length === 0
 
-    console.log(formUser, formDate, formTransactions)
+    console.log(formUser, formDate, formFeeds)
 
     return (
         <form onSubmit={onSubmit}>
@@ -157,7 +156,7 @@ const Form = ({type, onSubmit: onSuccess}) => {
                 disabled={true}
                 onChange={onDateChange}
             />
-            <TransactionsGroup data={formTransactions} onDelete={onTransactionDelete}/>
+            <FeedsGroup data={formFeeds} onDelete={onFeedDelete}/>
             <div className="d-flex justify-content-end my-3">
                 {Object.values(showForm).find(v => v === true) &&
                 <button
@@ -173,26 +172,26 @@ const Form = ({type, onSubmit: onSuccess}) => {
                     type="button"
                     onClick={() => onToggleForm('select')}
                 >
-                    <i className="bi bi-check-square"></i>
+                    <i className="bi bi-check-square"/>
                 </button>
                 <button
                     className={'btn me-1 ' + (showForm.new ? 'btn-outline-primary' : 'btn-primary')}
                     type="button"
                     onClick={() => onToggleForm('new')}
                 >
-                    <i className="bi bi-plus"></i>
+                    <i className="bi bi-plus"/>
                 </button>
                 <button
                     className={'btn ' + (showForm.meal ? 'btn-outline-primary' : 'btn-primary')}
                     type="button"
                     onClick={() => onToggleForm('meal')}
                 >
-                    <i className="bi bi-list-ul"></i>
+                    <i className="bi bi-list-ul"/>
                 </button>
             </div>
             <div className="mb-3">
-                {showForm.select && <ProductForm onSubmit={onTransactionAdd} select={true}/>}
-                {showForm.new && <ProductForm onSubmit={onTransactionAdd} select={false}/>}
+                {showForm.select && <ProductForm onSubmit={onFeedAdd} select={true}/>}
+                {showForm.new && <ProductForm onSubmit={onFeedAdd} select={false}/>}
                 {showForm.meal && <MealForm onSubmit={onMealAdd}/>}
             </div>
             {/*<button*/}
@@ -208,10 +207,12 @@ const Form = ({type, onSubmit: onSuccess}) => {
 
 Form.defaultProperties = {
     type: 'create',
+    startData: {},
 }
 
 Form.propTypes = {
     type: PropTypes.string,
+    startData: PropTypes.object,
     onSubmit: PropTypes.func,
 }
 

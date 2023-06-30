@@ -17,9 +17,11 @@ import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
 import MealPage from 'components/page/meal'
 import WeightPage from 'components/page/weight'
-import TransactionPage from 'components/page/transaction'
+import FeedPage from 'components/page/feed'
 import UserPage from 'components/page/user'
 import NavBar from 'components/ui/navBar'
+import ModalWindows from 'components/modal/ModalWindows'
+
 import { selector as userSelector } from 'store/user'
 
 const App = () => {
@@ -117,7 +119,7 @@ const App = () => {
                         </Route>
 
                         <Route
-                            path="/transactions"
+                            path="/feeds"
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="product">
@@ -126,11 +128,11 @@ const App = () => {
                                 </ProtectedRoute>
                             }
                         >
-                            <Route index element={<TransactionPage.List/>}/>
-                            <Route path="create/:date?" element={<TransactionPage.Create/>}/>
+                            <Route index element={<FeedPage.List/>}/>
+                            <Route path="create/:date?" element={<FeedPage.Create/>}/>
                             <Route path=":date/*">
-                                <Route index element={<TransactionPage.View/>}/>
-                                <Route path="update" element={<TransactionPage.Update/>}/>
+                                <Route index element={<FeedPage.View/>}/>
+                                <Route path="update" element={<FeedPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
@@ -162,6 +164,7 @@ const App = () => {
 
                     </Routes>
                 </div>
+                <ModalWindows />
             </AppLoader>
             <ToastContainer/>
         </>

@@ -1,10 +1,10 @@
 import React from 'react'
 import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import service from 'services/transaction.service'
+import service from 'services/feed.service'
 import { getDateStart, getDateEnd } from 'utils/date'
 
 const slice = createSlice({
-    name: 'transaction',
+    name: 'feed',
     initialState: {
         entities: [],
         journal: {},
@@ -30,7 +30,7 @@ const slice = createSlice({
         deleted: (state, action) => {
             const id = action.payload
             state.entities = state.entities.filter(prod => prod._id !== id)
-            state.success = `Successfully deleted transaction with _id=${id}`
+            state.success = `Successfully deleted feed with _id=${id}`
         },
         requested: (state) => {
             state.isLoading = true
@@ -60,17 +60,17 @@ const slice = createSlice({
 
 const {created, updated, deleted, requested, received, requestFailed, messagesCleared, journal} = slice.actions
 
-const createRequested = createAction('transaction/createRequested')
-const createFailed = createAction('transaction/createFailed')
-const updateRequested = createAction('transaction/updateRequested')
-const updateFailed = createAction('transaction/updateFailed')
-const deleteRequested = createAction('transaction/deleteRequested')
-const deleteFailed = createAction('transaction/deleteFailed')
+const createRequested = createAction('feed/createRequested')
+const createFailed = createAction('feed/createFailed')
+const updateRequested = createAction('feed/updateRequested')
+const updateFailed = createAction('feed/updateFailed')
+const deleteRequested = createAction('feed/deleteRequested')
+const deleteFailed = createAction('feed/deleteFailed')
 
 export const action = {
 
     create: createAsyncThunk(
-        'transaction/create',
+        'feed/create',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(createRequested(payload))
             try {
@@ -86,7 +86,7 @@ export const action = {
     ),
 
     update: createAsyncThunk(
-        'transaction/update',
+        'feed/update',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(updateRequested(payload))
             try {
@@ -102,11 +102,11 @@ export const action = {
     ),
 
     delete: createAsyncThunk(
-        'transaction/delete',
+        'feed/delete',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.transaction.delete', payload)
+                console.log('store.feed.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -117,7 +117,7 @@ export const action = {
     ),
 
     getById: createAsyncThunk(
-        'transaction/getById',
+        'feed/getById',
         async (id, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -132,7 +132,7 @@ export const action = {
     ),
 
     get: createAsyncThunk(
-        'transaction/get',
+        'feed/get',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -147,7 +147,7 @@ export const action = {
     ),
 
     getByDate: createAsyncThunk(
-        'transaction/get',
+        'feed/get',
         async (date, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -170,37 +170,37 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.transaction.entities,
-    journal: () => state => state.transaction.journal,
-    byId: id => state => state.transaction.entities.find(u => u._id === id),
+    get: () => state => state.feed.entities,
+    journal: () => state => state.feed.journal,
+    byId: id => state => state.feed.entities.find(u => u._id === id),
     byDate: date => state => {
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)
-        return state.transaction.entities.filter(t => {
+        return state.feed.entities.filter(t => {
             const trDate = new Date(t.date)
             return trDate >= dateStart && trDate <= dateEnd
         })
     },
     byDateGrouped: date => state => {
-        const transactionsGrouped = {}
+        const feedsGrouped = {}
         const dateStart = getDateStart(date)
         const dateEnd = getDateEnd(date)
-        state.transaction.entities
+        state.feed.entities
             .forEach(t => {
                 const trDate = new Date(t.date)
                 if (trDate >= dateStart && trDate <= dateEnd) {
-                    if (!Object.keys(transactionsGrouped).includes(t.date))
-                        transactionsGrouped[t.date] = []
-                    transactionsGrouped[t.date].push(t)
+                    if (!Object.keys(feedsGrouped).includes(t.date))
+                        feedsGrouped[t.date] = []
+                    feedsGrouped[t.date].push(t)
                 }
             })
-        return transactionsGrouped
+        return feedsGrouped
     },
-    byDateExact: date => state => state.transaction.entities.filter(t => t.date === date),
-    isDataLoaded: () => state => state.transaction.isDataLoaded,
-    isLoading: () => state => state.transaction.isLoading,
-    error: () => state => state.transaction.error,
-    success: () => state => state.transaction.success,
+    byDateExact: date => state => state.feed.entities.filter(t => t.date === date),
+    isDataLoaded: () => state => state.feed.isDataLoaded,
+    isLoading: () => state => state.feed.isLoading,
+    error: () => state => state.feed.error,
+    success: () => state => state.feed.success,
 }
 
 export default slice.reducer

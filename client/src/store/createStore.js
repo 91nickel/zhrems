@@ -3,16 +3,18 @@ import UserReducer from 'store/user'
 import ProductReducer from 'store/product'
 import MealReducer from 'store/meal'
 import WeightReducer from 'store/weight'
-import TransactionReducer from 'store/transaction'
+import FeedReducer from 'store/feed'
 import DateReducer from 'store/date'
+import ModalReducer from 'store/modal'
 
 const rootReducer = combineReducers({
     user: UserReducer,
     product: ProductReducer,
     meal: MealReducer,
     weight: WeightReducer,
-    transaction: TransactionReducer,
+    feed: FeedReducer,
     date: DateReducer,
+    modal: ModalReducer,
 })
 
 export function createStore () {

@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-const Transaction = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
+const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
 
     const {_id: id, name, proteins, fats, carbohydrates, calories, weight} = data
 
@@ -47,10 +47,10 @@ const Transaction = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => 
     )
 }
 
-Transaction.propTypes = {
+Feed.propTypes = {
     data: PropTypes.object,
     onUpdate: PropTypes.func,
     onDelete: PropTypes.func,
 }
 
-export default Transaction
+export default Feed

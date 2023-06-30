@@ -5,25 +5,25 @@ import PropTypes from 'prop-types'
 import LoadingLayout from 'layouts/loading'
 import { action as userAction, selector as userSelector } from 'store/user'
 import { action as dateAction, selector as dateSelector } from 'store/date'
-import { action as transactionAction, selector as transactionSelector } from 'store/transaction'
+import { action as feedAction, selector as feedSelector } from 'store/feed'
 import { action as weightAction, selector as weightSelector } from 'store/weight'
 
 const DashboardLoader = ({children}) => {
     const {date} = useParams()
     const dispatch = useDispatch()
-    const journal = useSelector(transactionSelector.journal())
+    const journal = useSelector(feedSelector.journal())
     const currentDate = useSelector(dateSelector.get())
     // const prevDate = useSelector(dateSelector.prev())
     // const nextDate = useSelector(dateSelector.next())
-    const isTransactionsLoading = useSelector(transactionSelector.isLoading())
+    const isFeedsLoading = useSelector(feedSelector.isLoading())
     // const isWeightsLoading = useSelector(weightSelector.isLoading())
 
     useEffect(() => {
         // console.log('journal', journal, date, currentDate, isTransactionsLoading)
         if (date)
             dispatch(dateAction.set(new Date(date)))
-        if (typeof journal[date] === 'undefined' && !isTransactionsLoading)
-            dispatch(transactionAction.getByDate(new Date(date)))
+        if (typeof journal[date] === 'undefined' && !isFeedsLoading)
+            dispatch(feedAction.getByDate(new Date(date)))
     }, [date])
 
     if (!date)

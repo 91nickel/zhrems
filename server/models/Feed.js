@@ -17,4 +17,4 @@ const schema = new Schema(
     }
 )
 
-module.exports = model('Transaction', schema)
+module.exports = model('Feed', schema)

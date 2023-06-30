@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/weight'
-import Form from 'components/ui/weight/form'
+import WeightForm from 'components/ui/weight/weightForm'
 
 const Create = () => {
     const {id} = useParams()
@@ -35,7 +35,7 @@ const Create = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Добавить измерение веса</h2>
-                    <Form onSubmit={onSubmit}/>
+                    <WeightForm onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

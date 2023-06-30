@@ -9,14 +9,12 @@ import { action as userAction, selector as userSelector } from 'store/user'
 import { action as productAction, selector as productSelector } from 'store/product'
 import { action as mealAction, selector as mealSelector } from 'store/meal'
 import { action as weightAction, selector as weightSelector } from 'store/weight'
-// import { action as transactionAction, selector as transactionSelector } from 'store/transaction'
 
 const action = {
     user: userAction,
     product: productAction,
     meal: mealAction,
     weight: weightAction,
-    // transaction: transactionAction,
 }
 
 const selector = {
@@ -24,7 +22,6 @@ const selector = {
     product: productSelector,
     meal: mealSelector,
     weight: weightSelector,
-    // transaction: transactionSelector,
 }
 
 const CommonLoader = ({entity, children}) => {

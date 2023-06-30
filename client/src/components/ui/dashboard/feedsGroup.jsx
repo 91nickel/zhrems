@@ -2,23 +2,23 @@ import React from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/transaction'
+import { selector, action } from 'store/feed'
 import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
-import { groupTransactions } from 'utils/groupTransactions'
-import Transaction from './transaction'
+import { groupFeeds } from 'utils/groupFeeds'
+import Feed from './feed'
 
-const TransactionsGroup = ({data, onUpdate, onDelete}) => {
+const FeedsGroup = ({data, onUpdate, onDelete}) => {
 
-    const {user, date, transactions} = groupTransactions(data)
+    const {user, date, feeds} = groupFeeds(data)
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     const results = {
-        proteins: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: transactions.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: transactions.reduce((agr, data) => Math.round(agr + data.weight), 0),
+        proteins: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
+        fats: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
+        carbohydrates: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
+        calories: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
+        weight: feeds.reduce((agr, data) => Math.round(agr + data.weight), 0),
     }
 
     return (
@@ -26,11 +26,11 @@ const TransactionsGroup = ({data, onUpdate, onDelete}) => {
             <div className="card-body py-0 px-3">
                 <ul className="list-group-flush p-0">
                     {
-                        transactions.map((t, i) =>
-                            <Transaction data={t} onUpdate={onUpdate} onDelete={onDelete} key={'p' + i}/>)
+                        feeds.map((t, i) =>
+                            <Feed data={t} onUpdate={onUpdate} onDelete={onDelete} key={'p' + i}/>)
                     }
                     {
-                        !!transactions.length &&
+                        !!feeds.length &&
                         <li className="list-group-item px-0 d-flex justify-content-end fs-4">
                             <span className="badge bg-info mx-1">{results.proteins}</span>
                             <span className="badge bg-warning mx-1">{results.fats}</span>
@@ -45,10 +45,10 @@ const TransactionsGroup = ({data, onUpdate, onDelete}) => {
     )
 }
 
-TransactionsGroup.propTypes = {
+FeedsGroup.propTypes = {
     data: PropTypes.array,
     onDelete: PropTypes.func,
     onUpdate: PropTypes.func,
 }
 
-export default TransactionsGroup
+export default FeedsGroup

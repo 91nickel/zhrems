@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector as dateSelector } from 'store/date'
 import { selector as weightSelector } from 'store/weight'
-import { selector as transactionSelector } from 'store/transaction'
+import { selector as feedSelector } from 'store/feed'
 import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
 import { NavLink } from 'react-router-dom'
 
-const Weight = ({type, onDelete}) => {
+const Weight = ({type, onAdd, onDelete}) => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const startDate = useSelector(dateSelector.todayStart())
     const endDate = useSelector(dateSelector.todayEnd())
@@ -26,15 +26,33 @@ const Weight = ({type, onDelete}) => {
                         ?
                         <h3 className="d-flex justify-content-between">
                             <span>{displayWeight.value} кг</span>
-                            <ControlsPanel id={displayWeight._id} prefix="/weights/" onDelete={onDelete}/>
+                            <span>
+                                <button className="btn btn-sm btn-warning mx-1">
+                                    <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-danger mx-1" onClick={() => onDelete(displayWeight._id)}>
+                                    <i className="bi bi-x-square" style={{width: '1rem', height: '1rem'}}></i>
+                                </button>
+                            </span>
                         </h3>
                         :
                         <h3 className="d-flex justify-content-between">
                             <span>Не измерялся</span>
                             <span>
-                                <NavLink to={'/weights/create/' + displayDate.toISOString()} className="btn btn-success">
-                                    <i className="bi bi-plus" style={{width: '1rem', height: '1rem'}}></i>
-                                </NavLink>
+                                {
+                                    !!onAdd
+                                        ?
+                                        <button className="btn btn-success" onClick={() => onAdd(displayDate)}>
+                                            <i className="bi bi-plus" style={{width: '1rem', height: '1rem'}}></i>
+                                        </button>
+                                        :
+                                        <NavLink
+                                            to={'/weights/create/' + displayDate.toISOString()}
+                                            className="btn btn-success">
+                                            <i className="bi bi-plus" style={{width: '1rem', height: '1rem'}}></i>
+                                        </NavLink>
+                                }
                             </span>
                         </h3>
                 }
@@ -50,6 +68,7 @@ Weight.defaultProps = {
 
 Weight.propTypes = {
     type: PropTypes.string,
+    onAdd: PropTypes.func,
     onDelete: PropTypes.func,
 }
 

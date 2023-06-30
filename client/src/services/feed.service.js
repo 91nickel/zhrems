@@ -1,6 +1,6 @@
 import httpService from './http.service'
 
-const entrypoint = 'transaction/'
+const entrypoint = 'feed/'
 
 const service = {
     get: async () => {

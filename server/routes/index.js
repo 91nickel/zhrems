@@ -6,7 +6,7 @@ const router = express.Router({mergeParams: true})
 router.use('/auth', require('./auth.routes'))
 router.use('/product', require('./product.routes'))
 router.use('/meal', require('./meal.routes'))
-router.use('/transaction', require('./transaction.routes'))
+router.use('/feed', require('./feed.routes'))
 router.use('/weight', require('./weight.routes'))
 router.use('/user', require('./user.routes'))
 

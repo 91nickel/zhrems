@@ -15,58 +15,45 @@ import SelectField from 'components/common/form/selectField'
 import DateField from 'components/common/form/dateField'
 import RadioField from 'components/common/form/radioField'
 
-const Form = ({onSubmit}) => {
-    const params = useParams()
-    // console.log(params)
+const defaultData = {
+    value: 50,
+    user: '',
+    date: new Date(),
+}
+
+defaultData.date.setHours(0)
+defaultData.date.setMinutes(0)
+defaultData.date.setSeconds(0)
+defaultData.date.setMilliseconds(0)
+
+const WeightForm = ({startData, onlyValue, onSubmit}) => {
 
     const dispatch = useDispatch()
 
     const {userId, isAdmin} = useSelector(userSelector.authData())
+
     const users = useSelector(userSelector.get())
 
-    const weights = useSelector(selector.get())
+    const initialData = Object.keys(startData).length
+        ? createFields(startData)
+        : createFields(defaultData)
 
-    let weight
-    if (params.id)
-        weight = useSelector(selector.byId(params.id))
-
-    const lastWeight = weights[0]
-
-    const startData = params.id
-        ? createFields(weight)
-        : createFields(getDefaultData())
-
-    const [data, setData] = useState(startData)
+    const [data, setData] = useState(initialData)
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
 
     useEffect(() => {
         dispatch(action.clearMessages())
-        if (weight)
-            setData({...data, ...createFields(weight)})
+        // setData({...data, ...createFields(startData)})
     }, [])
 
     useEffect(() => {
         validate()
     }, [data])
 
-    function getDefaultData () {
-        const data = {
-            value: lastWeight?.value || 50,
-            user: userId,
-            date: params.date ? new Date(params.date) : new Date,
-        }
-        if (!params.date) {
-            data.date.setHours(0)
-            data.date.setMinutes(0)
-            data.date.setSeconds(0)
-            data.date.setMilliseconds(0)
-        }
-        return data
-    }
-
     function createFields (weight) {
+        console.log('createFields', weight, {...weight})
         return {...weight, date: new Date(weight.date)}
     }
 
@@ -117,15 +104,15 @@ const Form = ({onSubmit}) => {
     }
 
     const hasDifference = () => {
-        if (!weight) return true
         let hasDifference = false
-        Object.keys(getDefaultData()).forEach(key => {
+        Object.keys(defaultData).forEach(key => {
             // console.log(weight[key], data[key], weight[key] === data[key])
             if (data[key] instanceof Date) {
-                if (data[key].toISOString() !== weight[key])
+                console.log(data)
+                if (data[key].toISOString() !== startData[key])
                     hasDifference = true
             } else {
-                if (weight[key] !== data[key])
+                if (startData[key] !== data[key])
                     hasDifference = true
             }
         })
@@ -140,31 +127,41 @@ const Form = ({onSubmit}) => {
         <form onSubmit={handleSubmit}>
             {globalSuccess && <div className="alert alert-success">{globalSuccess}</div>}
             {globalError && <div className="alert alert-danger">{globalError}</div>}
-            <SelectField
-                label="Пользователь"
-                name="user"
-                value={data.user}
-                error={errors.user}
-                options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
-                onChange={onChange}
-            />
-            <DateField
-                label="Дата"
-                name="date"
-                value={data.date}
-                error={errors.date}
-                onChange={onChange}
-                disabled={!!params.date}
-            />
-            <RadioField
-                label="Период"
-                name="time"
-                value={data.date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
-                options={[{name: 'Начало дня', value: '00:00'}, {name: 'Конец дня', value: '23:59'}]}
-                error={errors.time}
-                onChange={onChangeTime}
-                disabled={!!params.date}
-            />
+            {
+                !onlyValue
+                &&
+                <SelectField
+                    label="Пользователь"
+                    name="user"
+                    value={data.user}
+                    error={errors.user}
+                    options={Object.values(users).map(p => ({label: p.name, value: p._id}))}
+                    onChange={onChange}
+                />
+            }
+            {
+                !onlyValue
+                &&
+                <DateField
+                    label="Дата"
+                    name="date"
+                    value={data.date}
+                    error={errors.date}
+                    onChange={onChange}
+                />
+            }
+            {
+                !onlyValue
+                &&
+                <RadioField
+                    label="Период"
+                    name="time"
+                    value={data.date.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}
+                    options={[{name: 'Начало дня', value: '00:00'}, {name: 'Конец дня', value: '23:59'}]}
+                    error={errors.time}
+                    onChange={onChangeTime}
+                />
+            }
             <NumberField
                 label="Вес"
                 name="value"
@@ -184,8 +181,15 @@ const Form = ({onSubmit}) => {
     )
 }
 
-Form.propTypes = {
+WeightForm.defaultProps = {
+    startData: {},
+    onlyValue: false,
+}
+
+WeightForm.propTypes = {
+    startData: PropTypes.object,
+    onlyValue: PropTypes.bool,
     onSubmit: PropTypes.func,
 }
 
-export default Form
+export default WeightForm
