@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
-import Form from 'components/ui/product/form'
+import ProductForm from 'components/ui/product/form'
 
 const Create = () => {
     const {id} = useParams()
@@ -34,7 +34,7 @@ const Create = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Добавление нового продукта</h2>
-                    <Form onSubmit={handleSubmit}/>
+                    <ProductForm onSubmit={handleSubmit}/>
                 </div>
             </div>
         </>

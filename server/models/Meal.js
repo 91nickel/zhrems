@@ -6,11 +6,8 @@ const schema = new Schema(
         desc: {type: String},
         image: {type: String},
         user: {type: Schema.Types.ObjectId, ref: 'User'},
-        // на 100 г
-        proteins: {type: Number, required: true},
-        carbohydrates: {type: Number, required: true},
-        fats: {type: Number, required: true},
-        calories: {type: Number, required: true},
+        products: {type: Array, required: true},
+        weight: {type: Number, required: true},
     },
     {
         timestamps: true,

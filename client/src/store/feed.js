@@ -151,6 +151,7 @@ export const action = {
         async (date, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
+                console.log('getByDate', date)
                 const content = await service.getByDate(date)
                 thunkAPI.dispatch(received(content))
                 thunkAPI.dispatch(journal({key: date.toLocaleDateString('fr-CA'), value: true}))

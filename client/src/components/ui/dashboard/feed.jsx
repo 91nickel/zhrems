@@ -36,12 +36,20 @@ const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
                 <span className="badge bg-light text-dark mx-1">{results.weight}</span>
             </span>
             <span>
-                <button className="btn btn-outline-warning btn-sm mx-1" onClick={onUpdate}>
-                    <i className="bi bi-pencil" style={{width: '10px', height: '10px'}}></i>
-                </button>
-                <button className="btn btn-outline-danger btn-sm mx-1" onClick={onDelete}>
-                    <i className="bi bi-x" style={{width: '10px', height: '10px'}}></i>
-                </button>
+                {
+                    handleUpdate
+                    &&
+                    <button className="btn btn-outline-warning btn-sm mx-1" onClick={onUpdate}>
+                        <i className="bi bi-pencil" style={{width: '10px', height: '10px'}}></i>
+                    </button>
+                }
+                {
+                    handleDelete
+                    &&
+                    <button className="btn btn-outline-danger btn-sm mx-1" onClick={onDelete}>
+                        <i className="bi bi-x" style={{width: '10px', height: '10px'}}></i>
+                    </button>
+                }
             </span>
         </li>
     )

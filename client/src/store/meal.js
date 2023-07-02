@@ -27,7 +27,7 @@ const slice = createSlice({
         },
         deleted: (state, action) => {
             const id = action.payload
-            state.entities = state.entities.filter(prod => prod._id !== id)
+            state.entities = state.entities.filter(m => m._id !== id)
             state.success = `Successfully deleted meal with _id=${id}`
         },
         requested: (state) => {
@@ -69,6 +69,7 @@ export const action = {
             thunkAPI.dispatch(createRequested(payload))
             try {
                 const content = await service.create(payload)
+                console.log('meal/create', content)
                 thunkAPI.dispatch(created(content))
                 return content
             } catch (error) {
@@ -85,6 +86,7 @@ export const action = {
             thunkAPI.dispatch(updateRequested(payload))
             try {
                 const content = await service.update(payload)
+                console.log(content)
                 thunkAPI.dispatch(updated(content))
                 return content
             } catch (error) {
@@ -101,8 +103,8 @@ export const action = {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
                 console.log('store.meal.delete', payload)
-                // const content = await service.delete(payload)
-                // thunkAPI.dispatch(deleted(content))
+                const content = await service.delete(payload)
+                thunkAPI.dispatch(deleted(payload))
             } catch (error) {
                 thunkAPI.dispatch(deleteFailed(error.message))
                 return thunkAPI.rejectWithValue(error.message)

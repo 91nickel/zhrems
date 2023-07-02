@@ -11,38 +11,35 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector, action } from 'store/product'
 import PropTypes from 'prop-types'
 
-const Form = ({onSubmit}) => {
+const defaultData = {
+    name: '',
+    desc: '',
+    proteins: 0,
+    fats: 0,
+    carbohydrates: 0,
+    calories: 0,
+    weight: 100,
+}
+
+const ProductForm = ({type, startData, onSubmit}) => {
     const dispatch = useDispatch()
 
     const {id} = useParams()
-    const product = useSelector(selector.byId(id))
+    // const product = useSelector(selector.byId(id))
 
-    const defaultData = {
-        name: '',
-        desc: '',
-        proteins: 0,
-        fats: 0,
-        carbohydrates: 0,
-        calories: 0,
-    }
-
-    const [data, setData] = useState({...defaultData})
+    const [data, setData] = useState(defaultData)
     const [errors, setErrors] = useState({})
     const globalError = useSelector(selector.error())
     const globalSuccess = useSelector(selector.success())
 
     useEffect(() => {
         dispatch(action.clearMessages())
-        setData(createFields())
+        setData({...data, ...startData })
     }, [])
 
     useEffect(() => {
         validate()
     }, [data])
-
-    function createFields () {
-        return {...data, ...(product ? product : {})}
-    }
 
     const handleChange = target => {
         // console.log(target)
@@ -81,11 +78,10 @@ const Form = ({onSubmit}) => {
     }
 
     const hasDifference = () => {
-        if (!product) return true
+        if (type === 'create') return true
         let hasDifference = false
         Object.keys(defaultData).forEach(key => {
-            // console.log(key, product[key], data[key])
-            if (product[key] !== data[key])
+            if (startData[key] !== data[key])
                 hasDifference = true
         })
         return hasDifference
@@ -142,13 +138,26 @@ const Form = ({onSubmit}) => {
                     />
                 </div>
             </div>
-            <NumberField
-                label="ККАЛ"
-                name="calories"
-                value={data.calories}
-                error={errors.calories}
-                onChange={handleChange}
-            />
+            <div className="d-flex">
+                <div className="col-12 col-md-6">
+                    <NumberField
+                        label="ККАЛ"
+                        name="calories"
+                        value={data.calories}
+                        error={errors.calories}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="col-12 col-md-6">
+                    <NumberField
+                        label="Вес по умолчанию"
+                        name="weight"
+                        value={data.weight}
+                        error={errors.weight}
+                        onChange={handleChange}
+                    />
+                </div>
+            </div>
             <button
                 className="btn btn-primary w-100 mx-auto"
                 type="submit"
@@ -160,8 +169,15 @@ const Form = ({onSubmit}) => {
     )
 }
 
-Form.propTypes = {
+ProductForm.defaultProps = {
+    type: 'create',
+    startData: {},
+}
+
+ProductForm.propTypes = {
+    type: PropTypes.string,
+    startData: PropTypes.object,
     onSubmit: PropTypes.func,
 }
 
-export default Form
+export default ProductForm

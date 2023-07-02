@@ -12,6 +12,7 @@ const schema = new Schema(
         carbohydrates: {type: Number, required: true},
         fats: {type: Number, required: true},
         calories: {type: Number, required: true},
+        weight: {type: Number, default: 100},
     },
     {
         timestamps: {createdAt: 'created_at'},

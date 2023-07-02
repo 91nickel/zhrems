@@ -8,7 +8,7 @@ import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
 import { NavLink } from 'react-router-dom'
 
-const Weight = ({type, onAdd, onDelete}) => {
+const Weight = ({type, onAdd, onUpdate, onDelete}) => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const startDate = useSelector(dateSelector.todayStart())
     const endDate = useSelector(dateSelector.todayEnd())
@@ -18,6 +18,12 @@ const Weight = ({type, onAdd, onDelete}) => {
     const displayWeight = type === 'start' ? startWeight : endWeight
     const displayDate = type === 'start' ? startDate : endDate
 
+    function format (value) {
+        const integer = value.toString().split('.')[0]
+        const fraction = value.toString().split('.')[1] || '0'
+        return `${integer}.${(fraction + '00').slice(0,3)}`.slice(-6)
+    }
+
     return (
         <div className="card mb-2">
             <div className="card-body container-fluid">
@@ -25,13 +31,16 @@ const Weight = ({type, onAdd, onDelete}) => {
                     displayWeight
                         ?
                         <h3 className="d-flex justify-content-between">
-                            <span>{displayWeight.value} кг</span>
+                            <span>{format(displayWeight.value)} кг</span>
                             <span>
-                                <button className="btn btn-sm btn-warning mx-1">
+                                <button
+                                    className="btn btn-sm btn-warning mx-1"
+                                    onClick={() => onUpdate(displayWeight._id)}>
                                     <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
                                 </button>
                                 <button
-                                    className="btn btn-sm btn-danger mx-1" onClick={() => onDelete(displayWeight._id)}>
+                                    className="btn btn-sm btn-danger mx-1"
+                                    onClick={() => onDelete(displayWeight._id)}>
                                     <i className="bi bi-x-square" style={{width: '1rem', height: '1rem'}}></i>
                                 </button>
                             </span>
@@ -69,6 +78,7 @@ Weight.defaultProps = {
 Weight.propTypes = {
     type: PropTypes.string,
     onAdd: PropTypes.func,
+    onUpdate: PropTypes.func,
     onDelete: PropTypes.func,
 }
 

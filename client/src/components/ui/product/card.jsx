@@ -27,7 +27,8 @@ const Card = ({data, onDelete}) => {
                 <div className="row">
                     <div className="col-6">
                         {data._id && <p>ID: {data._id}</p>}
-                        {data.desc && <p>{data.desc}</p>}
+                        {data.desc && <p>Описание: {data.desc}</p>}
+                        {data.weight && <p>Вес по умолчанию: {data.weight}</p>}
                     </div>
                     <div className="col-6">
                         <h5 className="energy d-flex justify-content-end ">

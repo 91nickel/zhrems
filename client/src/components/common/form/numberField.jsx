@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const NumberField = ({label, name, step, placeholder, value, error, onChange}) => {
+const NumberField = ({label, name, step, placeholder, value, error, className, onChange}) => {
 
     const handleChange = ({target}) => {
         onChange({name: target.name, value: +target.value})
@@ -16,7 +16,7 @@ const NumberField = ({label, name, step, placeholder, value, error, onChange}) =
     }
 
     return (
-        <div className="mb-4">
+        <div className={className}>
             <label htmlFor={name}>{label}</label>
             <div className="input-group has-validation">
                 <input
@@ -39,6 +39,7 @@ NumberField.defaultProps = {
     type: 'number',
     step: 1,
     placeholder: '',
+    className: 'mb-4',
 }
 NumberField.propTypes = {
     label: PropTypes.string,
@@ -47,6 +48,7 @@ NumberField.propTypes = {
     placeholder: PropTypes.string,
     value: PropTypes.number,
     step: PropTypes.number,
+    className: PropTypes.string,
     error: PropTypes.string,
     onChange: PropTypes.func,
     onInput: PropTypes.func,

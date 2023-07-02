@@ -15,15 +15,20 @@ const ModalWeightUpdate = ({id}) => {
     const weight = useSelector(selector.byId(id))
 
     function onSubmit (payload) {
-        return console.log('onSubmit()', payload)
-        dispatch(action.update([{...payload, date, user}]))
+        console.log('onSubmit()', payload)
+        dispatch(action.update(payload))
             .unwrap()
             .then(res => {
                 dispatch(modalAction.close())
             })
     }
 
-    return <WeightForm startData={weight} onSubmit={onSubmit}/>
+    return <WeightForm
+        type="update"
+        startData={weight}
+        onSubmit={onSubmit}
+        onlyValue={true}
+    />
 }
 
 ModalWeightUpdate.propTypes = {

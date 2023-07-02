@@ -10,6 +10,7 @@ import { action as weightAction, selector as weightSelector } from 'store/weight
 
 const DashboardLoader = ({children}) => {
     const {date} = useParams()
+
     const dispatch = useDispatch()
     const journal = useSelector(feedSelector.journal())
     const currentDate = useSelector(dateSelector.get())
@@ -20,14 +21,14 @@ const DashboardLoader = ({children}) => {
 
     useEffect(() => {
         // console.log('journal', journal, date, currentDate, isTransactionsLoading)
-        if (date)
-            dispatch(dateAction.set(new Date(date)))
+        if (!date) return
+        dispatch(dateAction.set(new Date(date)))
         if (typeof journal[date] === 'undefined' && !isFeedsLoading)
             dispatch(feedAction.getByDate(new Date(date)))
     }, [date])
 
     if (!date)
-        return <Navigate to={currentDate.toLocaleDateString('fr-CA')} />
+        return <Navigate to={currentDate.toLocaleDateString('fr-CA')}/>
 
     if (typeof journal[currentDate.toLocaleDateString('fr-CA')] === 'undefined')
         return <LoadingLayout/>

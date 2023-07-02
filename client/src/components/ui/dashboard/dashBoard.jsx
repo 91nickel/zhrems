@@ -86,7 +86,7 @@ const Dashboard = () => {
     }
 
     function onUpdateWeight (id) {
-        console.log('onAddWeight', date)
+        console.log('onAddWeight', id)
         const modalParams = {title: 'Редактировать вес', body: WEIGHT_METHODS.UPDATE}
         dispatch(modalAction.open(modalParams, {id}))
     }
@@ -129,7 +129,7 @@ const Dashboard = () => {
             {/*</div>*/}
             <div className="row justify-content-center mb-3">
                 <div className="col-12 col-md-6">
-                    <Weight type="start" onAdd={onAddWeight} onDelete={onDeleteWeight}/>
+                    <Weight type="start" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
                     <ul className="list-group-flush p-0">
                         {
                             timeline.map(({start, end}) => {
@@ -178,7 +178,7 @@ const Dashboard = () => {
                             })
                         }
                     </ul>
-                    <Weight type="end" onDelete={onDeleteWeight}/>
+                    <Weight type="end" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
                 </div>
             </div>
             <div className="row justify-content-center mb-3">

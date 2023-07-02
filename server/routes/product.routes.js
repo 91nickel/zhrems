@@ -79,7 +79,7 @@ router.delete('/:id', auth, async (request, response) => {
             return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
-        // await Product.findByIdAndRemove(id)
+        await Product.findByIdAndRemove(id)
         return response.json({})
 
     } catch (error) {

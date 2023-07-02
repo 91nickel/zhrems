@@ -75,7 +75,7 @@ const App = () => {
                             <Route path="create" element={<ProductPage.Create/>}/>
                             <Route path=":id/*">
                                 <Route index element={<ProductPage.View/>}/>
-                                <Route path=":id/update" element={<ProductPage.Update/>}/>
+                                <Route path="update" element={<ProductPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
@@ -94,7 +94,7 @@ const App = () => {
                             <Route path="create" element={<MealPage.Create/>}/>
                             <Route path=":id/*">
                                 <Route index element={<MealPage.View/>}/>
-                                <Route path=":id/update" element={<MealPage.Update/>}/>
+                                <Route path="update" element={<MealPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>

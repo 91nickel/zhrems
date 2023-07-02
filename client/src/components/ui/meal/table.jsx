@@ -1,24 +1,24 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
 import ControlsPanel from 'components/common/controlsPanel'
 
-const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
+import PropTypes from 'prop-types'
+
+const MealTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
     const columns = {
         name: {
             name: 'Имя',
             path: 'name',
             component: el => {
-                return <NavLink to={`/products/${el._id}`}>{el.name}</NavLink>
+                return <NavLink to={`/meals/${el._id}`}>{el.name}</NavLink>
             }
         },
         proteins: {path: 'proteins', name: 'Б'},
         fats: {path: 'fats', name: 'Ж'},
         carbohydrates: {path: 'carbohydrates', name: 'У'},
         calories: {path: 'calories', name: 'ККАЛ'},
-        weight: {path: 'weight', name: 'г/ПУ'},
         controls: {
             component: el => {
                 return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>
@@ -33,11 +33,11 @@ const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
     )
 }
 
-ProductTable.propTypes = {
+MealTable.propTypes = {
     products: PropTypes.array.isRequired,
     currentSort: PropTypes.object.isRequired,
     onSort: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 }
 
-export default ProductTable
+export default MealTable

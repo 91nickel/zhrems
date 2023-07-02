@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
-import Form from 'components/ui/product/form'
+
+import ProductForm from 'components/ui/product/form'
 
 const Update = () => {
     const {id} = useParams()
@@ -12,7 +13,7 @@ const Update = () => {
     const dispatch = useDispatch()
 
     const {userId, isAdmin} = useSelector(authSelector.authData())
-    // const product = useSelector(selector.byId(id))
+    const product = useSelector(selector.byId(id))
 
     const onSubmit = payload => {
         dispatch(action.update({_id: id, ...payload}))
@@ -33,7 +34,7 @@ const Update = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Редактирование продукта</h2>
-                    <Form onSubmit={onSubmit}/>
+                    <ProductForm type="update" startData={product} onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

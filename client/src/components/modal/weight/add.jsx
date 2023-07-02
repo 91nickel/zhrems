@@ -11,6 +11,7 @@ import { action as modalAction } from 'store/modal'
 
 
 const ModalWeightAdd = ({date, user}) => {
+    // console.log('ModalWeightAdd', date, user)
 
     const dispatch = useDispatch()
     const {userId, isAdmin} = useSelector(userSelector.authData())
@@ -18,6 +19,8 @@ const ModalWeightAdd = ({date, user}) => {
 
     const startData = {
         value: weights.length ? weights[0].value : 50,
+        date,
+        user: userId,
     }
 
     function onSubmit (payload) {
@@ -29,7 +32,12 @@ const ModalWeightAdd = ({date, user}) => {
             })
     }
 
-    return <WeightForm startData={startData} onSubmit={onSubmit} onlyValue={true}/>
+    return <WeightForm
+        type="create"
+        startData={startData}
+        onSubmit={onSubmit}
+        onlyValue={true}
+    />
 
     return 'Undefined type'
 }

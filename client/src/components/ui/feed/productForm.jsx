@@ -18,7 +18,7 @@ const defaultData = {
     carbohydrates: 0,
     fats: 0,
     calories: 0,
-    weight: 200,
+    weight: 100,
 }
 
 function createFields (fields) {

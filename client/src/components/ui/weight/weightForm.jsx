@@ -26,7 +26,8 @@ defaultData.date.setMinutes(0)
 defaultData.date.setSeconds(0)
 defaultData.date.setMilliseconds(0)
 
-const WeightForm = ({startData, onlyValue, onSubmit}) => {
+const WeightForm = ({type, startData, onlyValue, onSubmit}) => {
+    // console.log('WeightForm.startData', startData)
 
     const dispatch = useDispatch()
 
@@ -53,7 +54,7 @@ const WeightForm = ({startData, onlyValue, onSubmit}) => {
     }, [data])
 
     function createFields (weight) {
-        console.log('createFields', weight, {...weight})
+        // console.log('createFields', weight, {...weight})
         return {...weight, date: new Date(weight.date)}
     }
 
@@ -104,11 +105,11 @@ const WeightForm = ({startData, onlyValue, onSubmit}) => {
     }
 
     const hasDifference = () => {
+        if (type === 'create') return true
         let hasDifference = false
         Object.keys(defaultData).forEach(key => {
             // console.log(weight[key], data[key], weight[key] === data[key])
             if (data[key] instanceof Date) {
-                console.log(data)
                 if (data[key].toISOString() !== startData[key])
                     hasDifference = true
             } else {
@@ -119,7 +120,7 @@ const WeightForm = ({startData, onlyValue, onSubmit}) => {
         return hasDifference
     }
 
-    console.log('formData', data)
+    // console.log('formData', data, errors)
 
     const isValid = Object.keys(errors).length === 0
 
@@ -184,9 +185,11 @@ const WeightForm = ({startData, onlyValue, onSubmit}) => {
 WeightForm.defaultProps = {
     startData: {},
     onlyValue: false,
+    type: 'create',
 }
 
 WeightForm.propTypes = {
+    type: PropTypes.string,
     startData: PropTypes.object,
     onlyValue: PropTypes.bool,
     onSubmit: PropTypes.func,
