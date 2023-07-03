@@ -43,10 +43,11 @@ router.put('/', auth, log, async (request, response) => {
         if (!(request.body instanceof Array))
             response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
 
-        const feed = request.body.map(t => {
-            if (t.user !== user.localId && !user.isAdmin)
+        const feed = request.body.map(f => {
+            if (f.user !== user.localId && !user.isAdmin)
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
-            return Feed.create(t)
+            delete f._id
+            return Feed.create(f)
         })
 
         return response.status(201).json(await Promise.all(feed))
@@ -63,13 +64,13 @@ router.patch('/', auth, log, async (request, response) => {
         if (!(request.body instanceof Array))
             response.status(400).json({error: {message: 'BAD_REQUEST', code: 400}})
 
-        const feeds = request.body.map(async t => {
-            if (t.user !== user.localId && !user.isAdmin)
+        const feeds = request.body.map(async f => {
+            if (f.user !== user.localId && !user.isAdmin)
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
-            if (t._id)
-                return Feed.findByIdAndUpdate(t._id, )
+            if (f._id)
+                return Feed.findByIdAndUpdate(f._id, f, {new: true})
             else
-                return Feed.create(t)
+                return Feed.create(f)
         })
 
         return response.json(await Promise.all(feeds))

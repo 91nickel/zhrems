@@ -7,8 +7,8 @@ import PropTypes from 'prop-types'
 
 import { selector, action } from 'store/modal'
 
-import ModalFeedEdit from 'components/modal/feed/modalFeedEdit'
-import ModalFeedAdd from './feed/modalFeedAdd'
+import ModalFeedUpdate from 'components/modal/feed/modalFeedUpdate'
+import ModalFeedCreate from './feed/modalFeedCreate'
 import ModalWeightAdd from 'components/modal/weight/add'
 import ModalWeightUpdate from 'components/modal/weight/update'
 
@@ -34,11 +34,11 @@ const ModalWindows = ({children}) => {
             <Modal.Body>
                 {
                     modalParams.body === FEED_METHODS.UPDATE
-                    && <ModalFeedEdit {...componentParams} />
+                    && <ModalFeedUpdate {...componentParams} />
                 }
                 {
                     [FEED_METHODS.NEW, FEED_METHODS.SELECT, FEED_METHODS.MEAL].includes(modalParams.body)
-                    && <ModalFeedAdd {...componentParams} />
+                    && <ModalFeedCreate {...componentParams} />
                 }
                 {
                     modalParams.body === WEIGHT_METHODS.ADD

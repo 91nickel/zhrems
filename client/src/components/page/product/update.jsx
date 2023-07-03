@@ -16,9 +16,10 @@ const Update = () => {
     const product = useSelector(selector.byId(id))
 
     const onSubmit = payload => {
-        dispatch(action.update({_id: id, ...payload}))
+        console.log('onSubmit()', payload)
+        dispatch(action.update(payload))
             .unwrap()
-            .then(() => navigate('..'))
+            .then(() => navigate('../..'))
             .catch(error => console.error(error.message))
     }
 

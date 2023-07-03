@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 import _ from 'lodash'
 import * as yup from 'yup'
+import PropTypes from 'prop-types'
 
 import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 
-import { useDispatch, useSelector } from 'react-redux'
 import { selector, action } from 'store/product'
-import PropTypes from 'prop-types'
+
+import calculateCalories from 'utils/calculateCalories'
 
 const defaultData = {
     name: '',
@@ -47,7 +49,7 @@ const ProductForm = ({type, startData, onSubmit}) => {
         setData(prevState => {
             const nextState = {...prevState, [target.name]: target.value}
             if (autoUpdateFields.includes(target.name)) {
-                nextState.calories = nextState.proteins * 4 + nextState.fats * 9 + nextState.carbohydrates * 4
+                nextState.calories = calculateCalories(nextState)
             }
             return nextState
         })

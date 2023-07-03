@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import EnergyResults from '../../common/energyResult'
 
 const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
 
@@ -29,11 +30,7 @@ const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
             <span>{name}</span>
             <span className="flex-grow-1 ps-5"></span>
             <span>
-                <span className="badge bg-light text-info mx-1">{results.proteins}</span>
-                <span className="badge bg-light text-warning mx-1">{results.fats}</span>
-                <span className="badge bg-light text-success mx-1">{results.carbohydrates}</span>
-                <span className="badge bg-light text-danger mx-1">{results.calories}</span>
-                <span className="badge bg-light text-dark mx-1">{results.weight}</span>
+                <EnergyResults {...results} />
             </span>
             <span>
                 {

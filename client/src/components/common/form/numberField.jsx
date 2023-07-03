@@ -8,7 +8,7 @@ const NumberField = ({label, name, step, placeholder, value, error, className, o
     }
 
     const getInputClasses = () => {
-        const classes = ['form-control']
+        const classes = ['form-control', 'pe-1']
         if (error)
             classes.push('is-invalid')
 
@@ -17,7 +17,11 @@ const NumberField = ({label, name, step, placeholder, value, error, className, o
 
     return (
         <div className={className}>
-            <label htmlFor={name}>{label}</label>
+            {
+                label
+                &&
+                <label htmlFor={name}>{label}</label>
+            }
             <div className="input-group has-validation">
                 <input
                     className={getInputClasses()}

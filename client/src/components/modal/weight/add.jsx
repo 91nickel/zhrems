@@ -17,11 +17,9 @@ const ModalWeightAdd = ({date, user}) => {
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const weights = useSelector(selector.get())
 
-    const startData = {
-        value: weights.length ? weights[0].value : 50,
-        date,
-        user: userId,
-    }
+    const lastValue = weights.length ? weights[weights.length - 1].value : 50
+
+    const startData = {date, value: lastValue, user: userId}
 
     function onSubmit (payload) {
         console.log('onSubmit()', payload)

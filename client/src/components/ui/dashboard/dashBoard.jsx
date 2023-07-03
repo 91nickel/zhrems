@@ -16,6 +16,7 @@ import { action as modalAction } from 'store/modal'
 import { getDateStart } from 'utils/date'
 import FEED_METHODS from 'components/modal/feed/methods'
 import WEIGHT_METHODS from 'components/modal/weight/methods'
+import EnergyResults from '../../common/energyResult'
 
 const Dashboard = () => {
     const params = useParams()
@@ -186,11 +187,7 @@ const Dashboard = () => {
                     <p className="d-flex justify-content-between">
                         <span>Потребление за день:</span>
                         <span>
-                            <span className="badge bg-info mx-1">{results.proteins} г</span>
-                            <span className="badge bg-warning mx-1">{results.fats} г</span>
-                            <span className="badge bg-success mx-1">{results.carbohydrates} г</span>
-                            <span className="badge bg-danger mx-1">{results.calories} кКал</span>
-                            <span className="badge bg-dark mx-1">{results.weight} г</span>
+                            <EnergyResults {...results} />
                         </span>
                     </p>
                 </div>

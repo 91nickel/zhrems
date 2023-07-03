@@ -1,5 +1,5 @@
 const express = require('express')
-const Product = require('models/Product')
+const Section = require('models/Section')
 const auth = require('middleware/auth.middleware')
 const log = require('middleware/log.middleware')
 
@@ -11,19 +11,19 @@ router.get('/:id?', auth, log, async (request, response) => {
         const user = request.user
 
         if (id) {
-            const product = await Product.findById(id)
-            if (!product) {
+            const section = await Section.findById(id)
+            if (!section) {
                 response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
             }
-            if (product.user && product.user !== user.localId && !user.isAdmin) {
+            if (section.user && section.user !== user.localId && !user.isAdmin) {
                 response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
             }
-            return response.json(product)
+            return response.json(section)
         }
 
-        const products = await Product.find({$or: [{user: null}, {user: user.localId}]})
+        const sections = await Section.find({$or: [{user: null}, {user: user.localId}]})
 
-        return response.json(products)
+        return response.json(sections)
 
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
@@ -34,8 +34,8 @@ router.put('/', auth, log, async (request, response) => {
     try {
         const user = request.user
         const fields = {...request.body, user: user.isAdmin ? request.body.user || null : user.localId}
-        const product = await Product.create(fields)
-        return response.json(product)
+        const section = await Section.create(fields)
+        return response.json(section)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.' + error.message, code: 500}})
     }
@@ -49,11 +49,11 @@ router.patch('/:id', auth, log, async (request, response) => {
         if (!user.isAdmin && request.body.user !== user.localId) {
             return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
-        const product = await Product.findByIdAndUpdate(id, request.body, {new: true})
-        if (!product)
+        const section = await Section.findByIdAndUpdate(id, request.body, {new: true})
+        if (!section)
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
 
-        return response.json(product)
+        return response.json(section)
 
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later.', code: 500}})
@@ -64,9 +64,9 @@ router.delete('/:id', auth, log, async (request, response) => {
     try {
         const {id} = request.params
         const user = request.user
-        const product = await Product.findById(id)
+        const section = await Section.findById(id)
 
-        if (!product) {
+        if (!section) {
             return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
         }
 
@@ -74,7 +74,7 @@ router.delete('/:id', auth, log, async (request, response) => {
             return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
 
-        await Product.findByIdAndRemove(id)
+        await Section.findByIdAndRemove(id)
         return response.json({})
 
     } catch (error) {

@@ -14,14 +14,11 @@ const View = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     const meal = useSelector(mealSelector.byId(id))
-    const allProducts = useSelector(productSelector.get())
+    // const allProducts = useSelector(productSelector.get())
 
-    const products = meal.products.map(p => {
-        return {
-            ...allProducts.find(ap => ap._id === p._id),
-            ...p,
-        }
-    })
+    // const products = allProducts
+    //     .filter(fullProduct => meal.products.map(mp => mp._id).includes(fullProduct._id))
+    //     .map(fullProduct => ({...fullProduct, ...meal.products.find(mp => mp._id === fullProduct._id)}))
 
     function onDelete () {
         dispatch(action.delete(id))
@@ -45,7 +42,7 @@ const View = () => {
                 </div>
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
-                    <Card {...{data: meal, products, onDelete}} />
+                    <Card {...{data: meal, onDelete}} />
                 </div>
             </div>
         </>

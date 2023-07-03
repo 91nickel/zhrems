@@ -1,10 +1,14 @@
 import React from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/product'
-import ControlsPanel from 'components/common/controlsPanel'
+
 import PropTypes from 'prop-types'
+
+import { selector as authSelector } from 'store/user'
+
+import EnergyResults from 'components/common/energyResult'
+import ControlsPanel from 'components/common/controlsPanel'
+import calculateCalories from 'utils/calculateCalories'
 
 const Card = ({data, onDelete}) => {
     const id = data._id
@@ -32,10 +36,14 @@ const Card = ({data, onDelete}) => {
                     </div>
                     <div className="col-6">
                         <h5 className="energy d-flex justify-content-end ">
-                            <span className="badge bg-info mx-1">{data.proteins}</span>
-                            <span className="badge bg-warning mx-1">{data.fats}</span>
-                            <span className="badge bg-success mx-1">{data.carbohydrates}</span>
-                            {data.weight && <span className="badge bg-dark mx-1">{data.weight}</span>}
+                            <EnergyResults
+                                proteins={data.proteins}
+                                fats={data.fats}
+                                carbohydrates={data.carbohydrates}
+                                calories={calculateCalories(data)}
+                                weight={data.weight ? data.weight : 0}
+                                showZero={false}
+                            />
                         </h5>
                     </div>
                 </div>

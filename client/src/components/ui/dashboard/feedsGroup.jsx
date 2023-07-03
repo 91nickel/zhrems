@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
 import { groupFeeds } from 'utils/groupFeeds'
 import Feed from './feed'
+import EnergyResults from '../../common/energyResult'
 
 const FeedsGroup = ({data, onUpdate, onDelete}) => {
 
@@ -32,11 +33,7 @@ const FeedsGroup = ({data, onUpdate, onDelete}) => {
                     {
                         !!feeds.length &&
                         <li className="list-group-item px-0 d-flex justify-content-end fs-4">
-                            <span className="badge bg-info mx-1">{results.proteins}</span>
-                            <span className="badge bg-warning mx-1">{results.fats}</span>
-                            <span className="badge bg-success mx-1">{results.carbohydrates}</span>
-                            <span className="badge bg-danger mx-1">{results.calories}</span>
-                            <span className="badge bg-dark mx-1">{results.weight}</span>
+                            <EnergyResults {...results} />
                         </li>
                     }
                 </ul>

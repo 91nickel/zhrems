@@ -10,6 +10,7 @@ import { selector as productSelector, action as productAction} from 'store/produ
 import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
+import calculateCalories from 'utils/calculateCalories'
 
 const defaultData = {
     name: 'Какая-то еда',
@@ -37,7 +38,7 @@ const validateScheme = yup.object().shape({
     weight: yup.number().required('Поле обязательно').moreThan(0),
 })
 
-const ModalFeedForm = ({startData, select, onSubmit}) => {
+const ModalFeedFromProductForm = ({startData, select, onSubmit}) => {
 
     const products = useSelector(productSelector.get())
 
@@ -69,11 +70,18 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
         setData(createFields(product))
     }
 
-    function onChange (target) {
-        // console.log('onChange', target)
-        if (productId && target.name === 'name')
+    function onChange ({name, value}) {
+        // console.log('onChange', name, value)
+        if (productId && name === 'name')
             setProductId('')
-        setData({...data, [target.name]: target.value})
+        setData(prevState => ({...prevState, [name]: value}))
+    }
+
+    function onChangeAutocomplete ({name, value}) {
+        // console.log('onChangeAutocomplete', name, value)
+        const newState = {...data, [name]: value}
+        newState.calories = calculateCalories(newState)
+        setData(newState)
     }
 
     function handleSubmit (event) {
@@ -81,7 +89,7 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
         const payload = {...data}
         if (productId)
             payload.product = productId
-        onSubmit(payload)
+        onSubmit([payload])
         refresh()
     }
 
@@ -151,7 +159,7 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
                         name="proteins"
                         value={data.proteins}
                         error={errors.proteins}
-                        onChange={onChange}
+                        onChange={onChangeAutocomplete}
                     />
                 </div>
                 <div className="col-3">
@@ -160,7 +168,7 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
                         name="fats"
                         value={data.fats}
                         error={errors.fats}
-                        onChange={onChange}
+                        onChange={onChangeAutocomplete}
                     />
                 </div>
                 <div className="col-3">
@@ -169,7 +177,7 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
                         name="carbohydrates"
                         value={data.carbohydrates}
                         error={errors.carbohydrates}
-                        onChange={onChange}
+                        onChange={onChangeAutocomplete}
                     />
                 </div>
             </div>
@@ -177,15 +185,15 @@ const ModalFeedForm = ({startData, select, onSubmit}) => {
     )
 }
 
-ModalFeedForm.defaultProps = {
+ModalFeedFromProductForm.defaultProps = {
     startData: {},
     select: false,
 }
 
-ModalFeedForm.propTypes = {
+ModalFeedFromProductForm.propTypes = {
     startData: PropTypes.object,
     select: PropTypes.bool,
     onSubmit: PropTypes.func,
 }
 
-export default ModalFeedForm
+export default ModalFeedFromProductForm

@@ -12,6 +12,7 @@ import { selector as productSelector, action as productAction } from 'store/prod
 
 import PropTypes from 'prop-types'
 import SelectField from '../../common/form/selectField'
+import EnergyResults from '../../common/energyResult'
 
 const defaultData = {
     name: '',
@@ -57,13 +58,9 @@ const MealForm = ({type, startData, onSubmit}) => {
 
     let initialProducts = []
     if (startData.products?.length) {
-        initialProducts = startData.products.map(p => {
-            return {
-                ...p,
-                ...products.find(pr => pr._id === p._id),
-                weight: p.weight,
-            }
-        })
+        initialProducts = products
+            .filter(fullProduct => startData.products.map(mp => mp._id).includes(fullProduct._id))
+            .map(fullProduct => ({...fullProduct, ...startData.products.find(mp => mp._id === fullProduct._id)}))
     }
 
     useEffect(() => {
@@ -225,10 +222,14 @@ const MealForm = ({type, startData, onSubmit}) => {
                                 </div>
                                 <div className="results col-4 fs-7 pt-4">
                                     <div className="d-flex justify-content-end align-items-center">
-                                        <span className="badge bg-info">{p.proteins}</span>
-                                        <span className="badge bg-warning">{p.fats}</span>
-                                        <span className="badge bg-success">{p.carbohydrates}</span>
-                                        <span className="badge bg-danger">{p.calories}</span>
+                                        <EnergyResults
+                                            proteins={p.proteins}
+                                            fats={p.fats}
+                                            carbohydrates={p.carbohydrates}
+                                            calories={p.calories}
+                                            showZero={true}
+
+                                        />
                                     </div>
                                 </div>
                                 <div className="delete col-1 pt-4">

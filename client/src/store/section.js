@@ -1,10 +1,9 @@
 import React from 'react'
 import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import service from 'services/weight.service'
-import { getDateEnd, getDateStart } from '../utils/date'
+import service from 'services/section.service'
 
 const slice = createSlice({
-    name: 'weight',
+    name: 'section',
     initialState: {
         entities: [],
         isLoading: false,
@@ -14,8 +13,8 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            state.entities = [...state.entities, ...action.payload]
-            state.success = `Successfully created weight ${action.payload.value}`
+            state.entities.push(action.payload)
+            state.success = `Successfully created section ${action.payload.name}`
         },
         updated: (state, action) => {
             const updated = action.payload
@@ -24,12 +23,12 @@ const slice = createSlice({
                     return updated
                 return prod
             })
-            state.success = `Successfully updated weight ${updated.name}`
+            state.success = `Successfully updated section ${updated.name}`
         },
         deleted: (state, action) => {
             const id = action.payload
             state.entities = state.entities.filter(prod => prod._id !== id)
-            state.success = `Successfully deleted weight with _id=${id}`
+            state.success = `Successfully deleted section with _id=${id}`
         },
         requested: (state) => {
             state.isLoading = true
@@ -55,17 +54,17 @@ const slice = createSlice({
 
 const {created, updated, deleted, requested, received, requestFailed, messagesCleared} = slice.actions
 
-const createRequested = createAction('weight/createRequested')
-const createFailed = createAction('weight/createFailed')
-const updateRequested = createAction('weight/updateRequested')
-const updateFailed = createAction('weight/updateFailed')
-const deleteRequested = createAction('weight/deleteRequested')
-const deleteFailed = createAction('weight/deleteFailed')
+const createRequested = createAction('section/createRequested')
+const createFailed = createAction('section/createFailed')
+const updateRequested = createAction('section/updateRequested')
+const updateFailed = createAction('section/updateFailed')
+const deleteRequested = createAction('section/deleteRequested')
+const deleteFailed = createAction('section/deleteFailed')
 
 export const action = {
 
     create: createAsyncThunk(
-        'weight/create',
+        'section/create',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(createRequested(payload))
             try {
@@ -81,7 +80,7 @@ export const action = {
     ),
 
     update: createAsyncThunk(
-        'weight/update',
+        'section/update',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(updateRequested(payload))
             try {
@@ -97,11 +96,11 @@ export const action = {
     ),
 
     delete: createAsyncThunk(
-        'weight/delete',
+        'section/delete',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                // console.log('store.weight.delete', payload)
+                console.log('store.section.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -112,7 +111,7 @@ export const action = {
     ),
 
     getById: createAsyncThunk(
-        'weight/getById',
+        'section/getById',
         async (id, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -127,7 +126,7 @@ export const action = {
     ),
 
     get: createAsyncThunk(
-        'weight/get',
+        'section/get',
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
@@ -149,27 +148,12 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.weight.entities,
-    last: () => state => state.weight.entities[state.weight.entities.length -1],
-    byDate: date => state => state.weight.entities.filter(weight => {
-        const dateStart = getDateStart(date)
-        const dateEnd = getDateEnd(date)
-        const weightDate = new Date(weight.date)
-        return weightDate >= dateStart && weightDate <= dateEnd
-    }),
-    byId: id => state => state.weight.entities.find(u => u._id === id),
-    todayStart: () => state => {
-        const dateStart = getDateStart(new Date(state.date.current))
-        return state.weight.entities.find(w => w.date === dateStart.toISOString()) || null
-    },
-    todayEnd: () => state => {
-        const dateEnd = getDateEnd(new Date(state.date.current))
-        return state.weight.entities.find(w => w.date === dateEnd.toISOString()) || null
-    },
-    isDataLoaded: () => state => state.weight.isDataLoaded,
-    isLoading: () => state => state.weight.isLoading,
-    error: () => state => state.weight.error,
-    success: () => state => state.weight.success,
+    get: () => state => state.section.entities,
+    byId: id => state => state.section.entities.find(u => u._id === id),
+    isDataLoaded: () => state => state.section.isDataLoaded,
+    isLoading: () => state => state.section.isLoading,
+    error: () => state => state.section.error,
+    success: () => state => state.section.success,
 }
 
 export default slice.reducer

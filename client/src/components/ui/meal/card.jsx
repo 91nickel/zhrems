@@ -7,9 +7,8 @@ import ControlsPanel from 'components/common/controlsPanel'
 import PropTypes from 'prop-types'
 import FeedsGroup from '../dashboard/feedsGroup'
 
-const Card = ({data, products, onDelete}) => {
+const Card = ({data, onDelete}) => {
     const id = data._id
-    console.log('meal', data, products)
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     return (
@@ -24,7 +23,7 @@ const Card = ({data, products, onDelete}) => {
                     </div>
                 }
             </div>
-            <FeedsGroup data={products}/>
+            <FeedsGroup data={data.products}/>
         </div>
     )
 

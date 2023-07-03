@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import LoadingLayout from 'layouts/loading'
 import { action as userAction, selector as userSelector } from 'store/user'
 import { action as productAction, selector as productSelector } from 'store/product'
+import { action as mealAction, selector as mealSelector } from 'store/meal'
 import { action as weightAction, selector as weightSelector } from 'store/weight'
 
 const AppLoader = ({children}) => {
@@ -12,6 +13,7 @@ const AppLoader = ({children}) => {
     const isAuthorized = useSelector(userSelector.isAuthorized())
     const isProcessingAuth = useSelector(userSelector.isProcessingAuth())
     const isProductsLoading = useSelector(productSelector.isLoading())
+    const isMealsLoading = useSelector(mealSelector.isLoading())
     const isWeightsLoading = useSelector(weightSelector.isLoading())
     // const isUsersLoaded = useSelector(getUsersIsDataLoaded())
 
@@ -23,10 +25,11 @@ const AppLoader = ({children}) => {
         if (isAuthorized === true) {
             dispatch(productAction.get())
             dispatch(weightAction.get())
+            dispatch(mealAction.get())
         }
     }, [isAuthorized])
 
-    if (isProcessingAuth || isWeightsLoading || isProductsLoading)
+    if (isProcessingAuth || isWeightsLoading || isProductsLoading || isMealsLoading)
         return <LoadingLayout/>
 
     return children

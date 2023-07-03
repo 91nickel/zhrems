@@ -3,25 +3,26 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import PropTypes from 'prop-types'
 
-import ModalFeedForm from 'components/modal/feed/modalFeedForm'
+import ModalFeedFromProductForm from 'components/modal/feed/modalFeedFromProductForm'
 
 import { selector, action } from 'store/feed'
+import { action as modalAction } from 'store/modal'
 
-const ModalFeedEdit = ({id}) => {
+const ModalFeedUpdate = ({id}) => {
 
     const dispatch = useDispatch()
     const feed = useSelector(selector.byId(id))
 
     function onSubmit (payload) {
         console.log('onSubmit()', payload)
-        dispatch(action.update([payload]))
+        dispatch(action.update([{...feed, ...payload}]))
             .unwrap()
             .then(res => {
-                console.log('Success...', res)
+                dispatch(modalAction.close())
             })
     }
 
-    return <ModalFeedForm
+    return <ModalFeedFromProductForm
         select={!!feed.product}
         type="update"
         startData={feed}
@@ -29,8 +30,8 @@ const ModalFeedEdit = ({id}) => {
     />
 }
 
-ModalFeedEdit.propTypes = {
+ModalFeedUpdate.propTypes = {
     id: PropTypes.string,
 }
 
-export default ModalFeedEdit
+export default ModalFeedUpdate

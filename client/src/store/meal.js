@@ -150,8 +150,27 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.meal.entities,
-    byId: id => state => state.meal.entities.find(u => u._id === id),
+    get: () => state => {
+        return state.meal.entities.map(meal => {
+            const pids = meal.products.map(p => p._id)
+            return {
+                ...meal,
+                products: state.product.entities
+                    .filter(fp => pids.includes(fp._id))
+                    .map(fp => ({...fp, ...meal.products.find(mp => mp._id === fp._id)}))
+            }
+
+        })
+    },
+    byId: id => state => {
+        const meal = state.meal.entities.find(u => u._id === id)
+        return {
+            ...meal,
+            products: state.product.entities
+                .filter(fp => meal.products.map(mp => mp._id).includes(fp._id))
+                .map(fp => ({...fp, ...meal.products.find(mp => mp._id === fp._id)}))
+        }
+    },
     isDataLoaded: () => state => state.meal.isDataLoaded,
     isLoading: () => state => state.meal.isLoading,
     error: () => state => state.meal.error,

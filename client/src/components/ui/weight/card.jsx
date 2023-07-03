@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
+import EnergyResults from '../../common/energyResult'
 
 const Card = ({weight, onDelete}) => {
     const {id} = useParams()
@@ -27,13 +28,6 @@ const Card = ({weight, onDelete}) => {
                         {weight._id && <p>ID: {weight._id}</p>}
                         {weight.desc && <p>DESC: {weight.desc}</p>}
                         {weight.value && <p>VALUE: {weight.value}</p>}
-                    </div>
-                    <div className="col-6">
-                        <h5 className="energy d-flex justify-content-end ">
-                            <span className="badge bg-info mx-1">{weight.proteins}</span>
-                            <span className="badge bg-warning mx-1">{weight.fats}</span>
-                            <span className="badge bg-success mx-1">{weight.carbohydrates}</span>
-                        </h5>
                     </div>
                 </div>
             </div>
