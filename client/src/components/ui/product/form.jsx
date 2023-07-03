@@ -10,12 +10,15 @@ import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 
 import { selector, action } from 'store/product'
+import { selector as sectionSelector, action as sectionAction} from 'store/section'
 
 import calculateCalories from 'utils/calculateCalories'
+import SelectField from '../../common/form/selectField'
 
 const defaultData = {
     name: '',
     desc: '',
+    section: '',
     proteins: 0,
     fats: 0,
     carbohydrates: 0,
@@ -23,11 +26,20 @@ const defaultData = {
     weight: 100,
 }
 
+const validateScheme = yup.object().shape({
+    name: yup.string().required('Имя должно быть указано'),
+    proteins: yup.number().required('Поле обязательно'),
+    fats: yup.number().required('Поле обязательно'),
+    carbohydrates: yup.number().required('Поле обязательно'),
+    calories: yup.number().required('Поле обязательно'),
+})
+
 const ProductForm = ({type, startData, onSubmit}) => {
     const dispatch = useDispatch()
 
     const {id} = useParams()
-    // const product = useSelector(selector.byId(id))
+
+    const sections = useSelector(sectionSelector.get())
 
     const [data, setData] = useState(defaultData)
     const [errors, setErrors] = useState({})
@@ -61,15 +73,6 @@ const ProductForm = ({type, startData, onSubmit}) => {
             return false
         return onSubmit(data)
     }
-
-    const validateScheme = yup.object().shape({
-        name: yup.string().required('Имя должно быть указано'),
-        desc: yup.string(),
-        proteins: yup.number().required('Поле обязательно'),
-        fats: yup.number().required('Поле обязательно'),
-        carbohydrates: yup.number().required('Поле обязательно'),
-        calories: yup.number().required('Поле обязательно'),
-    })
 
     const validate = () => {
         validateScheme.validate(data)
@@ -109,6 +112,15 @@ const ProductForm = ({type, startData, onSubmit}) => {
                 name="desc"
                 value={data.desc}
                 error={errors.desc}
+                onChange={handleChange}
+            />
+            <SelectField
+                label="Раздел"
+                name="section"
+                value={data.section || ''}
+                error={errors.section}
+                defaultValue="Без раздела"
+                options={Object.values(sections).map(p => ({label: p.name, value: p._id}))}
                 onChange={handleChange}
             />
             <div className="d-flex">

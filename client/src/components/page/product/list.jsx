@@ -74,14 +74,22 @@ const List = () => {
         <>
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6 mt-5 d-flex justify-content-between">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
-                    <NavLink to="create" className="btn btn-success">
-                        <i className="bi bi-plus"/>
-                        Добавить
-                    </NavLink>
+                    <div>
+                        <NavLink to=".." className="btn btn-primary">
+                            <i className="bi bi-caret-left"/>
+                            Назад
+                        </NavLink>
+                    </div>
+                    <div className="d-flex flex-column">
+                        <NavLink to="create" className="btn btn-outline-success mb-1">
+                            <i className="bi bi-plus"/>
+                            Добавить продукт
+                        </NavLink>
+                        <NavLink to="sections/create" className="btn btn-outline-success">
+                            <i className="bi bi-plus"/>
+                            Добавить раздел
+                        </NavLink>
+                    </div>
                 </div>
             </div>
             <div className="row mt-3 justify-content-center">

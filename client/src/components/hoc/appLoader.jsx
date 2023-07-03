@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import LoadingLayout from 'layouts/loading'
 import { action as userAction, selector as userSelector } from 'store/user'
 import { action as productAction, selector as productSelector } from 'store/product'
+import { action as sectionAction, selector as sectionSelector } from 'store/section'
 import { action as mealAction, selector as mealSelector } from 'store/meal'
 import { action as weightAction, selector as weightSelector } from 'store/weight'
 
@@ -13,6 +14,7 @@ const AppLoader = ({children}) => {
     const isAuthorized = useSelector(userSelector.isAuthorized())
     const isProcessingAuth = useSelector(userSelector.isProcessingAuth())
     const isProductsLoading = useSelector(productSelector.isLoading())
+    const isSectionsLoading = useSelector(sectionSelector.isLoading())
     const isMealsLoading = useSelector(mealSelector.isLoading())
     const isWeightsLoading = useSelector(weightSelector.isLoading())
     // const isUsersLoaded = useSelector(getUsersIsDataLoaded())
@@ -24,12 +26,13 @@ const AppLoader = ({children}) => {
     useEffect(() => {
         if (isAuthorized === true) {
             dispatch(productAction.get())
+            dispatch(sectionAction.get())
             dispatch(weightAction.get())
             dispatch(mealAction.get())
         }
     }, [isAuthorized])
 
-    if (isProcessingAuth || isWeightsLoading || isProductsLoading || isMealsLoading)
+    if (isProcessingAuth || isWeightsLoading || isProductsLoading || isSectionsLoading || isMealsLoading)
         return <LoadingLayout/>
 
     return children

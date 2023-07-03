@@ -15,6 +15,7 @@ import DashboardLoader from 'components/hoc/dasboardLoader'
 import Dashboard from 'components/ui/dashboard/dashBoard'
 import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
+import SectionPage from 'components/page/section'
 import MealPage from 'components/page/meal'
 import WeightPage from 'components/page/weight'
 import FeedPage from 'components/page/feed'
@@ -76,6 +77,11 @@ const App = () => {
                             <Route path=":id/*">
                                 <Route index element={<ProductPage.View/>}/>
                                 <Route path="update" element={<ProductPage.Update/>}/>
+                            </Route>
+                            <Route path="sections/*">
+                                <Route index element={<SectionPage.List/>}/>
+                                <Route path="create" element={<SectionPage.Create/>}/>
+                                <Route path=":id/update" element={<SectionPage.Update/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>

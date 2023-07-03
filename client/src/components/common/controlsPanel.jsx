@@ -14,8 +14,8 @@ function ControlsPanel ({id, prefix, onDelete}) {
         <ul className="list-group-horizontal list-unstyled d-flex justify-content-end mb-0">
             <li className="list-item">
                 {
-                    id &&
-                    <NavLink to={prefix + id} className="btn btn-sm btn-success mx-1">
+                    false && id &&
+                    <NavLink to={prefix + id} className="btn btn-sm btn-outline-success mx-1">
                         <i className="bi bi-eye" style={{width: '1rem', height: '1rem'}}></i>
                     </NavLink>
                 }
@@ -23,14 +23,14 @@ function ControlsPanel ({id, prefix, onDelete}) {
             <li>
                 {
                     id &&
-                    <NavLink to={`${prefix}${id}/update`} className="btn btn-sm btn-warning mx-1">
+                    <NavLink to={`${prefix}${id}/update`} className="btn btn-sm btn-outline-warning mx-1">
                         <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
                     </NavLink>
                 }
             </li>
             <li>
                 <button
-                    className="btn btn-sm btn-danger mx-1"
+                    className="btn btn-sm btn-outline-danger mx-1"
                     onClick={() => onDelete(id)}>
                     <i className="bi bi-x-square" style={{width: '1rem', height: '1rem'}}></i>
                 </button>

@@ -5,7 +5,9 @@ import service from 'services/section.service'
 const slice = createSlice({
     name: 'section',
     initialState: {
-        entities: [],
+        entities: [
+            // {_id: '', name: 'Корневой'}
+        ],
         isLoading: false,
         isDataLoaded: false,
         success: null,
@@ -36,7 +38,7 @@ const slice = createSlice({
             state.success = null
         },
         received: (state, action) => {
-            state.entities = action.payload
+            state.entities = [...state.entities, ...action.payload]
             state.isLoading = false
             state.isDataLoaded = true
         },
