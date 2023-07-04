@@ -9,14 +9,21 @@ import { selector, action } from 'store/weight'
 import { selector as userSelector } from 'store/user'
 import { action as modalAction } from 'store/modal'
 
-const ModalWeightUpdate = ({id}) => {
+
+const ModalWeightCreate = ({date, user}) => {
+    // console.log('ModalWeightAdd', date, user)
 
     const dispatch = useDispatch()
-    const weight = useSelector(selector.byId(id))
+    const {userId, isAdmin} = useSelector(userSelector.authData())
+    const weights = useSelector(selector.get())
+
+    const lastValue = weights.length ? weights[weights.length - 1].value : 50
+
+    const startData = {date, value: lastValue, user: userId}
 
     function onSubmit (payload) {
         console.log('onSubmit()', payload)
-        dispatch(action.update(payload))
+        dispatch(action.create([{...payload, date, user}]))
             .unwrap()
             .then(res => {
                 dispatch(modalAction.close())
@@ -24,15 +31,18 @@ const ModalWeightUpdate = ({id}) => {
     }
 
     return <WeightForm
-        type="update"
-        startData={weight}
+        type="create"
+        startData={startData}
         onSubmit={onSubmit}
         onlyValue={true}
     />
+
+    return 'Undefined type'
 }
 
-ModalWeightUpdate.propTypes = {
-    id: PropTypes.string,
+ModalWeightCreate.propTypes = {
+    date: PropTypes.string,
+    user: PropTypes.string,
 }
 
-export default ModalWeightUpdate
+export default ModalWeightCreate

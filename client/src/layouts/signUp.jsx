@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import Form from 'components/ui/auth/signUp'
+import Form from 'components/ui/form/signUpForm'
 
 const SignUp = () => {
     return (

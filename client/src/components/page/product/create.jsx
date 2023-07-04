@@ -4,22 +4,18 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
-import ProductForm from 'components/ui/product/form'
+
+import ProductForm from 'components/ui/form/productForm'
 
 const Create = () => {
     const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const handleSubmit = payload => {
-        dispatch(action.create(payload))
+    async function onSubmit (payload) {
+        await dispatch(action.create(payload))
             .unwrap()
-            .then(() => {
-                setTimeout(() => navigate('..', {replace: true}), 1000)
-            })
-            .catch(() => {
-                console.log('Failed')
-            })
+        setTimeout(() => navigate('..', {replace: true}), 1000)
     }
 
     return (
@@ -34,7 +30,7 @@ const Create = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Добавление нового продукта</h2>
-                    <ProductForm onSubmit={handleSubmit}/>
+                    <ProductForm onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

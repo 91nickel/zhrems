@@ -3,19 +3,18 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import PropTypes from 'prop-types'
 
-import WeightForm from 'components/ui/form/weightForm'
+import FeedFromProductForm from 'components/ui/form/feedFromProductForm'
 
-import { selector, action } from 'store/weight'
-import { selector as userSelector } from 'store/user'
+import { selector, action } from 'store/feed'
 import { action as modalAction } from 'store/modal'
 
-const ModalWeightUpdate = ({id}) => {
+const ModalFeedUpdate = ({id}) => {
 
     const dispatch = useDispatch()
-    const weight = useSelector(selector.byId(id))
+    const feed = useSelector(selector.byId(id))
 
     function onSubmit (payload) {
-        console.log('onSubmit()', payload)
+        // console.log('onSubmit()', feed, payload)
         dispatch(action.update(payload))
             .unwrap()
             .then(res => {
@@ -23,16 +22,16 @@ const ModalWeightUpdate = ({id}) => {
             })
     }
 
-    return <WeightForm
+    return <FeedFromProductForm
         type="update"
-        startData={weight}
+        select={!!feed.product}
+        startData={feed}
         onSubmit={onSubmit}
-        onlyValue={true}
     />
 }
 
-ModalWeightUpdate.propTypes = {
+ModalFeedUpdate.propTypes = {
     id: PropTypes.string,
 }
 
-export default ModalWeightUpdate
+export default ModalFeedUpdate

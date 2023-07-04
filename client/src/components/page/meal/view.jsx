@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector as mealSelector, action as mealAction } from 'store/meal'
 import { selector as productSelector, action as productAction } from 'store/product'
-import Card from 'components/ui/meal/card'
+import MealCard from 'components/ui/card/mealCard'
 
 const View = () => {
     const {id} = useParams()
@@ -42,7 +42,7 @@ const View = () => {
                 </div>
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
-                    <Card {...{data: meal, onDelete}} />
+                    <MealCard {...{data: meal, onDelete}} />
                 </div>
             </div>
         </>

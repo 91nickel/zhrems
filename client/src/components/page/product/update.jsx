@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
 
-import ProductForm from 'components/ui/product/form'
+import ProductForm from 'components/ui/form/productForm'
 
 const Update = () => {
     const {id} = useParams()
@@ -15,13 +15,12 @@ const Update = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const product = useSelector(selector.byId(id))
 
-    const onSubmit = payload => {
+    async function onSubmit (payload) {
         console.log('onSubmit()', payload)
-        dispatch(action.update(payload))
-            .unwrap()
-            .then(() => navigate('../..'))
-            .catch(error => console.error(error.message))
+        await dispatch(action.update(payload)).unwrap()
+        navigate('../..')
     }
+
 
     return (
         <>

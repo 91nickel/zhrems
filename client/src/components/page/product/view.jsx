@@ -3,7 +3,7 @@ import { NavLink, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
-import Card from 'components/ui/product/card'
+import ProductCard from 'components/ui/card/productCard'
 import NotFound from 'layouts/404'
 
 const View = () => {
@@ -33,7 +33,7 @@ const View = () => {
             </div>
             <div className="w-100"></div>
             <div className="col-12 col-md-6 mt-5">
-                <Card {...{data: product, onDelete}} />
+                <ProductCard {...{data: product, onDelete}} />
             </div>
         </div>
     )

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import Button from 'components/common/buttons'
 import PropTypes from 'prop-types'
 
 import NavProfile from '../ui/navProfile'
@@ -12,28 +13,9 @@ function ControlsPanel ({id, prefix, onDelete}) {
 
     return (
         <ul className="list-group-horizontal list-unstyled d-flex justify-content-end mb-0">
-            <li className="list-item">
-                {
-                    false && id &&
-                    <NavLink to={prefix + id} className="btn btn-sm btn-outline-success mx-1">
-                        <i className="bi bi-eye" style={{width: '1rem', height: '1rem'}}></i>
-                    </NavLink>
-                }
-            </li>
+            {id && <li><Button.Update to={`${prefix}${id}/update`}/></li>}
             <li>
-                {
-                    id &&
-                    <NavLink to={`${prefix}${id}/update`} className="btn btn-sm btn-outline-warning mx-1">
-                        <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
-                    </NavLink>
-                }
-            </li>
-            <li>
-                <button
-                    className="btn btn-sm btn-outline-danger mx-1"
-                    onClick={() => onDelete(id)}>
-                    <i className="bi bi-x-square" style={{width: '1rem', height: '1rem'}}></i>
-                </button>
+                <Button.Delete onClick={() => onDelete(id)}/>
             </li>
         </ul>
     )

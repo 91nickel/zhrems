@@ -5,8 +5,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { action as mealAction, selector as mealSelector } from 'store/meal'
 
-import MealForm from 'components/ui/meal/form'
-import ProductForm from 'components/ui/product/form'
+import MealForm from 'components/ui/form/mealForm'
+import ProductForm from 'components/ui/form/productForm'
+import { action } from '../../../store/product'
 
 const Create = () => {
     const navigate = useNavigate()
@@ -14,12 +15,11 @@ const Create = () => {
 
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
-    const onSubmit = payload => {
+    async function onSubmit (payload) {
         console.log('Meal.create.onSubmit()', payload)
-        dispatch(mealAction.create(payload))
+        await dispatch(mealAction.create(payload))
             .unwrap()
-            .then(() => navigate('..'))
-            .catch(error => console.error(error.message))
+        navigate('..')
     }
 
     return (

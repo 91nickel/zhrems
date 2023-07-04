@@ -99,9 +99,9 @@ const Dashboard = () => {
                 <div className="col-1 d-flex justify-content-start">
                     <NavLink
                         to={`../${prevDate.toLocaleDateString('fr-CA')}`}
-                        className="btn btn-success w-50"
+                        className="btn btn-success"
                     >
-                        <i className="bi bi-arrow-left"></i>
+                        <i className="bi bi-arrow-left" style={{position: 'relative', top: '2px'}}/>
                     </NavLink>
                 </div>
                 <div className="col-10 col-md-4 d-flex justify-content-center">
@@ -110,9 +110,9 @@ const Dashboard = () => {
                 <div className="col-1 d-flex justify-content-end">
                     <NavLink
                         to={`../${nextDate.toLocaleDateString('fr-CA')}`}
-                        className="btn btn-success w-50"
+                        className="btn btn-success"
                     >
-                        <i className="bi bi-arrow-right"></i>
+                        <i className="bi bi-arrow-right" style={{position: 'relative', top: '2px'}}/>
                     </NavLink>
                 </div>
             </div>
@@ -144,17 +144,20 @@ const Dashboard = () => {
                                             </p>
                                             <div>
                                                 <button
+                                                    title="Записать с нуля"
                                                     className="btn btn-outline-success btn-sm mx-1"
                                                     onClick={() => onAddFeed(FEED_METHODS.NEW, start.toISOString())}
                                                 >
                                                     <i className="bi bi-plus"/>
                                                 </button>
                                                 <button
+                                                    title="Выбрать сохраненный"
                                                     className="btn btn-outline-success btn-sm mx-1"
                                                     onClick={() => onAddFeed(FEED_METHODS.SELECT, start.toISOString())}>
                                                     <i className="bi bi-check-square"/>
                                                 </button>
                                                 <button
+                                                    title="Выбрать комбинацию"
                                                     className="btn btn-outline-success btn-sm mx-1"
                                                     onClick={() => onAddFeed(FEED_METHODS.MEAL, start.toISOString())}
                                                 >

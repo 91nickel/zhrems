@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import UserForm from 'components/ui/user/userForm'
+import UserForm from 'components/ui/form/userForm'
 import { selector, action } from 'store/user'
 
 const Update = () => {
@@ -12,24 +12,19 @@ const Update = () => {
 
     const profile = useSelector(selector.byId(id))
     const {userId, isAdmin} = useSelector(selector.authData())
+
     // const product = useSelector(selector.byId(id))
 
-    const onSubmit = async formData => {
+    async function onSubmit (formData) {
         const payload = {}
         Object.keys(formData).forEach(key => {
             if ((typeof profile[key] !== 'undefined' && profile[key] !== formData[key]) || key === 'password')
                 payload[key] = formData[key]
         })
-        console.log('user.update.submit()', payload)
-        dispatch(action.update({_id: id, ...payload}))
-            .unwrap()
-            .then(result => {
-                navigate('..')
-            })
-            .catch(error => {
-                console.error(error.message)
-            })
+        await dispatch(action.update({_id: id, ...payload})).unwrap()
+        navigate('..')
     }
+
 
     return (
         <>

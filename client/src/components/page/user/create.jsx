@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import UserForm from 'components/ui/user/userForm'
+import UserForm from 'components/ui/form/userForm'
 import { selector, action } from 'store/user'
 
 const Create = () => {
@@ -10,15 +10,9 @@ const Create = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const handleSubmit = payload => {
-        dispatch(action.create(payload))
-            .unwrap()
-            .then(() => {
-                setTimeout(() => navigate('..', {replace: true}), 1000)
-            })
-            .catch(() => {
-                console.log('Failed')
-            })
+    async function onSubmit (payload) {
+        await dispatch(action.create(payload)).unwrap()
+        setTimeout(() => navigate('..', {replace: true}), 1000)
     }
 
     return (
@@ -33,7 +27,7 @@ const Create = () => {
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">
                     <h2>Добавление нового пользователя</h2>
-                    <UserForm onSubmit={handleSubmit}/>
+                    <UserForm onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

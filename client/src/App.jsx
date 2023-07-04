@@ -21,7 +21,7 @@ import WeightPage from 'components/page/weight'
 import FeedPage from 'components/page/feed'
 import UserPage from 'components/page/user'
 import NavBar from 'components/ui/navBar'
-import ModalWindows from 'components/modal/ModalWindows'
+import ModalWindows from 'components/modal/window'
 
 import { selector as userSelector } from 'store/user'
 
@@ -116,12 +116,6 @@ const App = () => {
                             }
                         >
                             <Route index element={<WeightPage.List/>}/>
-                            <Route path="create/:date?" element={<WeightPage.Create/>}/>
-                            <Route path=":id/*">
-                                <Route index element={<WeightPage.View/>}/>
-                                <Route path="update" element={<WeightPage.Update/>}/>
-                            </Route>
-                            <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
 
                         <Route
@@ -135,12 +129,6 @@ const App = () => {
                             }
                         >
                             <Route index element={<FeedPage.List/>}/>
-                            <Route path="create/:date?" element={<FeedPage.Create/>}/>
-                            <Route path=":date/*">
-                                <Route index element={<FeedPage.View/>}/>
-                                <Route path="update" element={<FeedPage.Update/>}/>
-                            </Route>
-                            <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
 
                         <Route

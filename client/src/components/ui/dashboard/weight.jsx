@@ -7,6 +7,7 @@ import { selector as feedSelector } from 'store/feed'
 import PropTypes from 'prop-types'
 import ControlsPanel from 'components/common/controlsPanel'
 import { NavLink } from 'react-router-dom'
+import Button from '../../common/buttons'
 
 const Weight = ({type, onAdd, onUpdate, onDelete}) => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
@@ -21,7 +22,7 @@ const Weight = ({type, onAdd, onUpdate, onDelete}) => {
     function format (value) {
         const integer = value.toString().split('.')[0]
         const fraction = value.toString().split('.')[1] || '0'
-        return `${integer}.${(fraction + '00').slice(0,3)}`.slice(-6)
+        return `${integer}.${(fraction + '00').slice(0, 3)}`.slice(-6)
     }
 
     return (
@@ -29,38 +30,20 @@ const Weight = ({type, onAdd, onUpdate, onDelete}) => {
             <div className="card-body container-fluid">
                 {
                     displayWeight
-                        ?
-                        <h3 className="d-flex justify-content-between">
+                        ? <h3 className="d-flex justify-content-between">
                             <span>{format(displayWeight.value)} кг</span>
                             <span>
-                                <button
-                                    className="btn btn-sm btn-warning mx-1"
-                                    onClick={() => onUpdate(displayWeight._id)}>
-                                    <i className="bi bi-pencil-square" style={{width: '1rem', height: '1rem'}}></i>
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger mx-1"
-                                    onClick={() => onDelete(displayWeight._id)}>
-                                    <i className="bi bi-x-square" style={{width: '1rem', height: '1rem'}}></i>
-                                </button>
+                                <Button.Update onClick={() => onUpdate(displayWeight._id)}/>
+                                <Button.Delete onClick={() => onDelete(displayWeight._id)}/>
                             </span>
                         </h3>
-                        :
-                        <h3 className="d-flex justify-content-between">
+                        : <h3 className="d-flex justify-content-between">
                             <span>Не измерялся</span>
                             <span>
                                 {
                                     !!onAdd
-                                        ?
-                                        <button className="btn btn-success" onClick={() => onAdd(displayDate)}>
-                                            <i className="bi bi-plus" style={{width: '1rem', height: '1rem'}}></i>
-                                        </button>
-                                        :
-                                        <NavLink
-                                            to={'/weights/create/' + displayDate.toISOString()}
-                                            className="btn btn-success">
-                                            <i className="bi bi-plus" style={{width: '1rem', height: '1rem'}}></i>
-                                        </NavLink>
+                                        ? <Button.Add onClick={() => onAdd(displayDate)}/>
+                                        : <Button.Add to={'/weights/create/' + displayDate.toISOString()}/>
                                 }
                             </span>
                         </h3>

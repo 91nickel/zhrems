@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
-import Table from 'components/ui/meal/table'
+import Table from 'components/ui/table/mealTable'
 import Pagination from 'components/common/pagination'
 
 import { action, selector } from 'store/meal'

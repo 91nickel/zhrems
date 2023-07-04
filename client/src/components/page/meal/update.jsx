@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link, NavLink, useNavigate, useParams } from 'react-router-dom'
 
-import MealForm from 'components/ui/meal/form'
+import MealForm from 'components/ui/form/mealForm'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
-import { selector as mealSelector, action as mealAction} from 'store/meal'
-import { selector as productSelector} from 'store/product'
+import { selector as mealSelector, action as mealAction } from 'store/meal'
+import { selector as productSelector } from 'store/product'
 
 const Update = () => {
     const {id} = useParams()
@@ -16,12 +16,10 @@ const Update = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const meal = useSelector(mealSelector.byId(id))
 
-    const onSubmit = payload => {
+    async function onSubmit (payload) {
         console.log('Meal.update.onSubmit()', payload)
-        dispatch(mealAction.update({_id: id, ...payload}))
-            .unwrap()
-            .then(() => navigate('..'))
-            .catch(error => console.error(error.message))
+        await dispatch(mealAction.update({_id: id, ...payload})).unwrap()
+        navigate('..')
     }
 
     return (

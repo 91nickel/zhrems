@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import _ from 'lodash'
 
 import Pagination from 'components/common/pagination'
-import Table from 'components/ui/section/table'
+import Table from 'components/ui/table/sectionTable'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
 

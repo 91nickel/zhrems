@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/section'
 
-import SectionForm from 'components/ui/section/form'
+import SectionForm from 'components/ui/form/sectionForm'
 
 const Update = () => {
     const {id} = useParams()
@@ -15,12 +15,10 @@ const Update = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
     const section = useSelector(selector.byId(id))
 
-    const onSubmit = payload => {
+    async function onSubmit (payload) {
         console.log('onSubmit()', payload)
-        dispatch(action.update(payload))
-            .unwrap()
-            .then(() => navigate('../..'))
-            .catch(error => console.error(error.message))
+        await dispatch(action.update(payload)).unwrap()
+        navigate('../..', {replace: true})
     }
 
     return (

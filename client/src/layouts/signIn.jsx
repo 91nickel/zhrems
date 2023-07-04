@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import Form from 'components/ui/auth/signIn'
+import Form from 'components/ui/form/signInForm'
 import PropTypes from 'prop-types'
 
 const SignIn = ({children}) => {
