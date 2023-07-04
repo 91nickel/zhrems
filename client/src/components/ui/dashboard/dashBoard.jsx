@@ -17,6 +17,8 @@ import { getDateStart } from 'utils/date'
 import FEED_METHODS from 'components/modal/feed/methods'
 import WEIGHT_METHODS from 'components/modal/weight/methods'
 import EnergyResults from '../../common/energyResult'
+import calculateTotalEnergy from '../../../utils/calculateTotalEnergy'
+import calculateAverageEnergy from '../../../utils/calculateAverageEnergy'
 
 const Dashboard = () => {
     const params = useParams()
@@ -36,13 +38,7 @@ const Dashboard = () => {
         day: 'numeric'
     })
 
-    const results = {
-        proteins: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: dayFeeds.reduce((agr, data) => Math.round(agr + data.weight), 0),
-    }
+    const results = calculateTotalEnergy(calculateAverageEnergy(dayFeeds))
 
     function createTimeline () {
         return new Array(24)

@@ -88,8 +88,10 @@ export const action = {
     update: createAsyncThunk(
         'feed/update',
         async (payload, thunkAPI) => {
+            console.log(payload)
             thunkAPI.dispatch(updateRequested(payload))
             try {
+                console.log(payload)
                 const content = await service.update(payload)
                 thunkAPI.dispatch(updated(content))
                 return content

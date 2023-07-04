@@ -14,6 +14,7 @@ import SelectField from 'components/common/form/selectField'
 
 import calculateCalories from 'utils/calculateCalories'
 import EnergyResults from '../../common/energyResult'
+import calculateAverageEnergy from '../../../utils/calculateAverageEnergy'
 
 const validateScheme = yup.object().shape({
     name: yup.string().required('Поле обязательно'),
@@ -67,6 +68,15 @@ const ModalFeedFromMealForm = ({onSubmit}) => {
         })
     }
 
+    function reduceFeeds () {
+        // console.log('extractFeeds', mealProducts)
+        return {
+            name: meals.find(m => m._id === mealId).name,
+            product: null,
+            ...calculateAverageEnergy(formFeeds)
+        }
+    }
+
     function onMealSelect ({value}) {
         // console.log('onMealSelect', value)
         const meal = meals.find(m => m._id === value)
@@ -100,12 +110,20 @@ const ModalFeedFromMealForm = ({onSubmit}) => {
 
     function handleSubmit (event) {
         event.preventDefault()
+        console.log(reduceFeeds(formFeeds))
+        onSubmit([reduceFeeds(formFeeds)])
+    }
+
+    function handleSubmitExplode (event) {
+        event.preventDefault()
         onSubmit(formFeeds)
     }
 
-    const isValid = formFeedsErrors.reduce((agr, errors) => {
+    const errorsCount = formFeedsErrors.reduce((agr, errors) => {
         return agr + Object.keys(errors).length
-    }, 0) === 0
+    }, 0)
+
+    const isValid = formFeeds.length > 0 && errorsCount === 0
 
     return (
         <form className="d-flex flex-column" onSubmit={handleSubmit}>
@@ -129,7 +147,8 @@ const ModalFeedFromMealForm = ({onSubmit}) => {
                                 formFeeds.map((feed, index) => {
                                     const errors = formFeedsErrors[index] || {}
                                     return (
-                                        <li key={'f-' + feed._id} className="list-group-item d-flex flex-wrap align-items-center">
+                                        <li key={'f-' + feed._id}
+                                            className="list-group-item d-flex flex-wrap align-items-center">
                                             <div className="name col-7 col-md-4">
                                                 {feed.name}
                                             </div>
@@ -186,13 +205,23 @@ const ModalFeedFromMealForm = ({onSubmit}) => {
                 </div>
             }
             <div className="d-flex align-items-end">
-                <div className="col-2 mb-4">
+                <div className="col-2 mb-4 me-1">
                     <button
                         className="btn btn-success mx-auto w-100"
                         type="submit"
                         disabled={!isValid}
                     >
                         <i className="bi bi-check"></i>
+                    </button>
+                </div>
+                <div className="col-2 mb-4">
+                    <button
+                        className="btn btn-primary mx-auto w-100"
+                        type="button"
+                        disabled={!isValid}
+                        onClick={handleSubmitExplode}
+                    >
+                        <i className="bi bi-list-ul"></i>
                     </button>
                 </div>
             </div>

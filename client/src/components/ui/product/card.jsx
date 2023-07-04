@@ -42,7 +42,7 @@ const Card = ({data, onDelete}) => {
                                 carbohydrates={data.carbohydrates}
                                 calories={calculateCalories(data)}
                                 weight={data.weight ? data.weight : 0}
-                                showZero={false}
+                                showZero={true}
                             />
                         </h5>
                     </div>

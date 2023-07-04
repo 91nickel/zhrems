@@ -4,23 +4,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/feed'
 import PropTypes from 'prop-types'
-import ControlsPanel from 'components/common/controlsPanel'
-import { groupFeeds } from 'utils/groupFeeds'
 import Feed from './feed'
-import EnergyResults from '../../common/energyResult'
+import EnergyResults from 'components/common/energyResult'
+import { groupFeeds } from 'utils/groupFeeds'
+import calculateTotalEnergy from 'utils/calculateTotalEnergy'
+import calculateAverageEnergy from 'utils/calculateAverageEnergy'
 
 const FeedsGroup = ({data, onUpdate, onDelete}) => {
 
     const {user, date, feeds} = groupFeeds(data)
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
-    const results = {
-        proteins: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: feeds.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: feeds.reduce((agr, data) => Math.round(agr + data.weight), 0),
-    }
+    const results = calculateTotalEnergy(calculateAverageEnergy(feeds))
 
     return (
         <div key={data._id} className="card mt-1">

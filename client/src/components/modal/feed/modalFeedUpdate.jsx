@@ -14,8 +14,8 @@ const ModalFeedUpdate = ({id}) => {
     const feed = useSelector(selector.byId(id))
 
     function onSubmit (payload) {
-        console.log('onSubmit()', payload)
-        dispatch(action.update([{...feed, ...payload}]))
+        // console.log('onSubmit()', feed, payload)
+        dispatch(action.update(payload))
             .unwrap()
             .then(res => {
                 dispatch(modalAction.close())
@@ -23,8 +23,8 @@ const ModalFeedUpdate = ({id}) => {
     }
 
     return <ModalFeedFromProductForm
-        select={!!feed.product}
         type="update"
+        select={!!feed.product}
         startData={feed}
         onSubmit={onSubmit}
     />

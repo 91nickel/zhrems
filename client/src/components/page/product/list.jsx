@@ -85,9 +85,12 @@ const List = () => {
                             <i className="bi bi-plus"/>
                             Добавить продукт
                         </NavLink>
-                        <NavLink to="sections/create" className="btn btn-outline-success">
+                        <NavLink to="sections/create" className="btn btn-outline-success mb-1">
                             <i className="bi bi-plus"/>
                             Добавить раздел
+                        </NavLink>
+                        <NavLink to="sections" className="btn btn-outline-success mb-1">
+                            Список разделов
                         </NavLink>
                     </div>
                 </div>

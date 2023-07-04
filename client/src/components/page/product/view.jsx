@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
 import Card from 'components/ui/product/card'
+import NotFound from 'layouts/404'
 
 const View = () => {
     const {id} = useParams()
@@ -18,6 +19,9 @@ const View = () => {
             .then(() => navigate('..'))
             .catch(error => console.error(error.message))
     }
+
+    if (!product)
+        return <NotFound />
 
     return (
         <div className="row justify-content-center">

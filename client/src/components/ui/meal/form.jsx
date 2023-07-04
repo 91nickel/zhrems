@@ -13,6 +13,7 @@ import { selector as productSelector, action as productAction } from 'store/prod
 import PropTypes from 'prop-types'
 import SelectField from '../../common/form/selectField'
 import EnergyResults from '../../common/energyResult'
+import calculateAverageEnergy from '../../../utils/calculateAverageEnergy'
 
 const defaultData = {
     name: '',
@@ -157,13 +158,7 @@ const MealForm = ({type, startData, onSubmit}) => {
         return hasDifference
     }
 
-    const results = {
-        proteins: products.reduce((agr, data) => Math.round(agr + data.weight * data.proteins / 100), 0),
-        fats: products.reduce((agr, data) => Math.round(agr + data.weight * data.fats / 100), 0),
-        carbohydrates: products.reduce((agr, data) => Math.round(agr + data.weight * data.carbohydrates / 100), 0),
-        calories: products.reduce((agr, data) => Math.round(agr + data.weight * data.calories / 100), 0),
-        weight: products.reduce((agr, data) => Math.round(agr + data.weight), 0),
-    }
+    const results = calculateAverageEnergy(products)
 
     const isValid = Object.keys(formErrors).length === 0
         && Object.values(formProductsErrors).reduce((agr, err) => agr + Object.keys(err).length, 0) === 0
@@ -228,7 +223,6 @@ const MealForm = ({type, startData, onSubmit}) => {
                                             carbohydrates={p.carbohydrates}
                                             calories={p.calories}
                                             showZero={true}
-
                                         />
                                     </div>
                                 </div>

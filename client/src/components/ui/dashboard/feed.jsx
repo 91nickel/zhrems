@@ -1,19 +1,14 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import EnergyResults from '../../common/energyResult'
+import EnergyResults from 'components/common/energyResult'
+import calculateTotalEnergy from 'utils/calculateTotalEnergy'
 
 const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
 
-    const {_id: id, name, proteins, fats, carbohydrates, calories, weight} = data
+    const {_id: id, name} = data
 
-    const results = {
-        proteins: Math.round(proteins / 100 * weight),
-        fats: Math.round(fats / 100 * weight),
-        carbohydrates: Math.round(carbohydrates / 100 * weight),
-        calories: Math.round(calories / 100 * weight),
-        weight: Math.round(weight),
-    }
+    const results = calculateTotalEnergy(data)
 
     function onUpdate (e) {
         e.preventDefault()

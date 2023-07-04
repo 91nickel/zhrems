@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
-import { selector as productSelector, action as productAction} from 'store/product'
+import { selector as productSelector, action as productAction } from 'store/product'
 
 import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
@@ -22,10 +22,7 @@ const defaultData = {
 }
 
 function createFields (fields) {
-    // console.log('createFields', defaultData, fields)
-    const newFields = {...defaultData}
-    Object.keys(defaultData).forEach(key => newFields[key] = fields[key] || defaultData[key])
-    return newFields
+    return {...defaultData, ...fields}
 }
 
 const validateScheme = yup.object().shape({
@@ -44,7 +41,7 @@ const ModalFeedFromProductForm = ({startData, select, onSubmit}) => {
 
     const initialData = Object.keys(startData).length
         ? createFields(startData)
-        : createFields(defaultData)
+        : defaultData
 
     const [productId, setProductId] = useState(startData?.product || '')
     const [data, setData] = useState(initialData)
