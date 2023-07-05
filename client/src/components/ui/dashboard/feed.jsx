@@ -3,12 +3,15 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import EnergyResults from 'components/common/energyResult'
 import calculateTotalEnergy from 'utils/calculateTotalEnergy'
+import Button from '../../common/buttons'
 
 const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
 
     const {_id: id, name} = data
 
     const results = calculateTotalEnergy(data)
+
+    const hasExternalHandlers = !!handleUpdate || !!handleDelete
 
     function onUpdate (e) {
         e.preventDefault()
@@ -21,28 +24,23 @@ const Feed = ({data, onUpdate: handleUpdate, onDelete: handleDelete}) => {
     }
 
     return (
-        <li className="list-group-item d-flex justify-content-between px-0">
-            <span>{name}</span>
-            <span className="flex-grow-1 ps-5"></span>
-            <span>
-                <EnergyResults {...results} />
-            </span>
-            <span>
-                {
-                    handleUpdate
-                    &&
-                    <button className="btn btn-outline-warning btn-sm mx-1" onClick={onUpdate}>
-                        <i className="bi bi-pencil" style={{width: '10px', height: '10px'}}></i>
-                    </button>
-                }
-                {
-                    handleDelete
-                    &&
-                    <button className="btn btn-outline-danger btn-sm mx-1" onClick={onDelete}>
-                        <i className="bi bi-x" style={{width: '10px', height: '10px'}}></i>
-                    </button>
-                }
-            </span>
+        <li className="list-group-item d-flex justify-content-between ps-3 pe-0">
+            <div className="col">{name}</div>
+            <div className="col d-flex justify-content-end">
+                <div>
+                    <EnergyResults {...results} />
+                </div>
+            </div>
+            {
+                hasExternalHandlers
+                && <div className="col-2 d-flex justify-content-end">
+                    <div>
+                        {!!handleUpdate && <Button.Update onClick={onUpdate}/>}
+                        {!!handleDelete && <Button.Delete onClick={onDelete}/>}
+                    </div>
+                </div>
+            }
+
         </li>
     )
 }

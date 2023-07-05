@@ -5,6 +5,7 @@ import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
 import ProductCard from 'components/ui/card/productCard'
 import NotFound from 'layouts/404'
+import Button from '../../common/buttons'
 
 const View = () => {
     const {id} = useParams()
@@ -24,18 +25,14 @@ const View = () => {
         return <NotFound />
 
     return (
-        <div className="row justify-content-center">
-            <div className="col-12 col-md-6 mt-5 d-flex justify-content-between">
-                <NavLink to=".." className="btn btn-primary">
-                    <i className="bi bi-caret-left"/>
-                    Назад
-                </NavLink>
+        <>
+            <div className="row mb-3">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to=".." />
+                </div>
             </div>
-            <div className="w-100"></div>
-            <div className="col-12 col-md-6 mt-5">
-                <ProductCard {...{data: product, onDelete}} />
-            </div>
-        </div>
+            <ProductCard {...{data: product, onDelete}} />
+        </>
     )
 }
 

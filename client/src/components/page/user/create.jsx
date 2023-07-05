@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import UserForm from 'components/ui/form/userForm'
 import { selector, action } from 'store/user'
+import Button from '../../common/buttons'
 
 const Create = () => {
     const {id} = useParams()
@@ -19,10 +20,7 @@ const Create = () => {
         <>
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
+                    <Button.Back to=".." />
                 </div>
                 <div className="w-100"></div>
                 <div className="col-12 col-md-6 mt-5">

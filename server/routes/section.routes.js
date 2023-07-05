@@ -34,6 +34,7 @@ router.put('/', auth, log, async (request, response) => {
     try {
         const user = request.user
         const fields = {...request.body, user: user.isAdmin ? request.body.user || null : user.localId}
+        delete fields._id
         const section = await Section.create(fields)
         return response.json(section)
     } catch (error) {

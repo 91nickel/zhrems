@@ -12,12 +12,10 @@ function ControlsPanel ({id, prefix, onDelete}) {
     const [open, setOpen] = useState()
 
     return (
-        <ul className="list-group-horizontal list-unstyled d-flex justify-content-end mb-0">
-            {id && <li><Button.Update to={`${prefix}${id}/update`}/></li>}
-            <li>
-                <Button.Delete onClick={() => onDelete(id)}/>
-            </li>
-        </ul>
+        <div className="d-flex justify-content-end mb-0">
+            {id && <Button.Update to={`${prefix}${id}/update`}/>}
+            <Button.Delete onClick={() => onDelete(id)}/>
+        </div>
     )
 }
 

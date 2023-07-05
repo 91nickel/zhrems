@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import _ from 'lodash'
@@ -11,6 +11,7 @@ import SearchString from 'components/ui/searchString'
 import paginate from 'utils/paginate'
 
 import { action, selector } from 'store/user'
+import Button from '../../common/buttons'
 
 const List = () => {
 
@@ -74,31 +75,37 @@ const List = () => {
     const crop = paginate(sortedUsers, currentPage, pageSize)
 
     return (
-        <div className="row mt-3 justify-content-center">
-            <div className="col-12 col-md-6 d-flex flex-column">
-                <SearchStatus
-                    value={count}
-                />
-                <SearchString
-                    query={searchQuery}
-                    onSubmit={searchHandler.onSubmit}
-                />
-                <Table
-                    users={crop}
-                    currentSort={currentSort}
-                    onDelete={tableHandler.onDelete}
-                    onSort={tableHandler.onSort}
-                />
-                <div className="d-flex justify-content-center">
-                    <Pagination
-                        currentPage={currentPage}
-                        pageSize={pageSize}
-                        itemsCount={count}
-                        onChange={paginationHandler.onChange}
-                    />
+        <>
+            <div className="row justify-content-between">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to=".."/>
+                </div>
+                <div className="col-6 col-lg-3">
+                    <NavLink to="create" className="btn btn-sm btn-outline-success">
+                        <i className="bi bi-plus"/>
+                        Пользователь
+                    </NavLink>
                 </div>
             </div>
-        </div>
+            <SearchString
+                query={searchQuery}
+                onSubmit={searchHandler.onSubmit}
+            />
+            <Table
+                users={crop}
+                currentSort={currentSort}
+                onDelete={tableHandler.onDelete}
+                onSort={tableHandler.onSort}
+            />
+            <div className="d-flex justify-content-center">
+                <Pagination
+                    currentPage={currentPage}
+                    pageSize={pageSize}
+                    itemsCount={count}
+                    onChange={paginationHandler.onChange}
+                />
+            </div>
+        </>
     )
 }
 

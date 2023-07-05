@@ -20,7 +20,7 @@ router.get('/:id?', auth, log, async (request, response) => {
             return response.json(meal)
         }
 
-        const meals = await Meal.find({$or: [{user: null}, {user: user._id}]})
+        const meals = await Meal.find({$or: [{user: null}, {user: user.localId}]})
         return response.json(meals)
     } catch (error) {
         response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
@@ -30,7 +30,8 @@ router.get('/:id?', auth, log, async (request, response) => {
 router.put('/', auth, log, async (request, response) => {
     try {
         const user = request.user
-        const fields = {...request.body, user: user.isAdmin ? user._id : request.body.user}
+        const fields = {...request.body, user: user.isAdmin ? user.localId : request.body.user}
+        delete fields._id
         const meal = await Meal.create(fields)
         return response.json(meal)
     } catch (error) {

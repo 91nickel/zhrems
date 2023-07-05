@@ -1,12 +1,18 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+
+import PropTypes from 'prop-types'
+
+import { selector as userSelector } from 'store/user'
 
 import Table, { TableHeader, TableBody } from 'components/common/table'
 import ControlsPanel from 'components/common/controlsPanel'
 
-import PropTypes from 'prop-types'
-
 const MealTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
+
+    const users = useSelector(userSelector.get())
+
     const columns = {
         name: {
             name: 'Имя',
@@ -15,10 +21,14 @@ const MealTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
                 return <NavLink to={`/meals/${el._id}`}>{el.name}</NavLink>
             }
         },
-        proteins: {path: 'proteins', name: 'Б'},
-        fats: {path: 'fats', name: 'Ж'},
-        carbohydrates: {path: 'carbohydrates', name: 'У'},
-        calories: {path: 'calories', name: 'ККАЛ'},
+        user: {
+            name: 'Пользователь',
+            path: 'user',
+            component: el => {
+                const user = users.find(u => u._id === el.user)
+                return user && <NavLink to={`/users/${user._id}`}>{user.name}</NavLink>
+            },
+        },
         controls: {
             component: el => {
                 return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>

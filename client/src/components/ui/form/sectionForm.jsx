@@ -23,18 +23,16 @@ const SectionForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
     const dispatch = useDispatch()
 
     const {userId, isAdmin} = useSelector(userSelector.authData())
-
     const users = useSelector(userSelector.get())
+    const globalError = useSelector(selector.error())
+    const globalSuccess = useSelector(selector.success())
 
-    const initialData = Object.keys(startData).length
-        ? startData
-        : {user: isAdmin ? '' : userId, name: ''}
+    const defaultData = {name: '', user: userId}
+
+    const initialData = Object.keys(startData).length ? startData : defaultData
 
     const [data, setData] = useState(initialData)
     const [errors, setErrors] = useState({})
-
-    const globalError = useSelector(selector.error())
-    const globalSuccess = useSelector(selector.success())
 
     useEffect(() => {
         dispatch(action.clearMessages())
@@ -60,7 +58,10 @@ const SectionForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
         event.preventDefault()
         if (!validate() || !hasDifference())
             return false
-        return handleSubmit(data)
+        return handleSubmit({
+            ...data,
+            user: data.user ? data.user : null,
+        })
     }
 
     function hasDifference () {
@@ -78,7 +79,7 @@ const SectionForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
     const isValid = Object.keys(errors).length === 0
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
             {globalSuccess && <div className="alert alert-success">{globalSuccess}</div>}
             {globalError && <div className="alert alert-danger">{globalError}</div>}
             {

@@ -5,50 +5,47 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
+import { selector as productSelector } from 'store/product'
+import { selector as userSelector } from 'store/user'
+
 import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
 import CheckboxField from 'components/common/form/checkboxField'
 
-import { selector as productSelector, action as productAction } from 'store/product'
-
 import calculateCalories from 'utils/calculateCalories'
-
-const defaultData = {
-    name: 'Какая-то еда',
-    proteins: 0,
-    carbohydrates: 0,
-    fats: 0,
-    calories: 0,
-    weight: 200,
-    save: false,
-}
-
-function createFields (fields) {
-    return {...defaultData, ...fields}
-}
 
 const validateScheme = yup.object().shape({
     name: yup.string().required('Поле обязательно'),
-    product: yup.string(),
+    user: yup.string().required('Поле обязательно'),
     proteins: yup.number().required('Белки обязательно'),
     carbohydrates: yup.number().required('Углеводы обязательно'),
     fats: yup.number().required('Жиры обязательно'),
     calories: yup.number().required('Энергетическая ценность обязательна'),
     weight: yup.number().required('Поле обязательно').moreThan(0),
-    save: yup.bool(),
 })
 
-const FeedFromProductForm = ({startData, select, onSubmit}) => {
+const FeedFromProductForm = ({startData, select, onSubmit: handleSubmit}) => {
 
+    const {userId} = useSelector(userSelector.authData())
     const products = useSelector(productSelector.get())
 
-    const initialData = Object.keys(startData).length
-        ? createFields(startData)
-        : defaultData
+    const defaultData = {
+        name: 'Какая-то еда',
+        product: '',
+        user: userId,
+        proteins: 0,
+        carbohydrates: 0,
+        fats: 0,
+        calories: 0,
+        weight: 200,
+    }
+
+    const initialData = Object.keys(startData).length ? {...defaultData, ...startData} : defaultData
 
     const [productId, setProductId] = useState(startData?.product || '')
     const [data, setData] = useState(initialData)
+    const [save, setSave] = useState(false)
     const [errors, setErrors] = useState({})
 
     useEffect(() => {
@@ -63,12 +60,18 @@ const FeedFromProductForm = ({startData, select, onSubmit}) => {
         return Object.keys(errors).length === 0
     }
 
-    function onProductSelect (target) {
+    function onProductSelect ({value: pid}) {
         // console.log('onProductSelect', target)
-        const pid = target.value
         const product = products.find(p => p._id === pid)
         setProductId(pid)
-        setData(createFields(product))
+        setData(prevState => {
+            return {
+                ...prevState,
+                ...product,
+                weight: Object.keys(startData).length ? prevState.weight : product.weight,
+                user: userId,
+            }
+        })
     }
 
     function onChange ({name, value}) {
@@ -85,12 +88,11 @@ const FeedFromProductForm = ({startData, select, onSubmit}) => {
         setData(newState)
     }
 
-    function handleSubmit (event) {
+    function onSubmit (event) {
         event.preventDefault()
-        const payload = {...data}
-        if (productId)
-            payload.product = productId
-        onSubmit([payload])
+        handleSubmit([
+            {...data, product: productId ? productId : null, save},
+        ])
         refresh()
     }
 
@@ -100,9 +102,12 @@ const FeedFromProductForm = ({startData, select, onSubmit}) => {
     }
 
     const isValid = Object.keys(errors).length === 0
+    const hasDifference = Object.keys(startData).length === 0 || !_.isEqual(startData, data) || save
+
+    console.log(data, startData, errors, isValid, hasDifference)
 
     return (
-        <form className="d-flex flex-column" onSubmit={handleSubmit}>
+        <form className="d-flex flex-column" onSubmit={onSubmit}>
             <div className="d-flex align-items-end">
                 {
                     select
@@ -139,7 +144,7 @@ const FeedFromProductForm = ({startData, select, onSubmit}) => {
                         title="Сохранить"
                         className="btn btn-success mx-auto w-100"
                         type="submit"
-                        disabled={!isValid || (select && !productId)}
+                        disabled={!isValid || (select && !productId) || !hasDifference}
                     >
                         <i className="bi bi-check"></i>
                     </button>
@@ -152,9 +157,9 @@ const FeedFromProductForm = ({startData, select, onSubmit}) => {
                     && <CheckboxField
                         label=""
                         name="save"
-                        value={data.save}
+                        value={save}
                         error={errors.save}
-                        onChange={onChange}
+                        onChange={({value}) => setSave(value)}
                     >
                         Сохранить в продуктах
                     </CheckboxField>

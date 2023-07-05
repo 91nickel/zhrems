@@ -6,6 +6,7 @@ import { selector as userSelector } from 'store/user'
 import { selector, action } from 'store/feed'
 import Pagination from 'components/common/pagination'
 import paginate from 'utils/paginate'
+import Button from '../../common/buttons'
 
 const List = () => {
 
@@ -70,16 +71,19 @@ const List = () => {
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5 d-flex justify-content-between">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
-                    <NavLink to="create" className="btn btn-success">
-                        <i className="bi bi-plus"/>
-                        Добавить
-                    </NavLink>
+            <div className="row justify-content-center mt-3">
+                <div className="col-12 col-md-6">
+                    <div className="row justify-content-between">
+                        <div className="col-6 col-lg-3">
+                            <Button.Back to=".." />
+                        </div>
+                        <div className="col-6 col-lg-3">
+                            <NavLink to="create" className="btn btn-sm btn-outline-success">
+                                <i className="bi bi-plus"/>
+                                Прием пищи
+                            </NavLink>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="row mt-3 justify-content-center">

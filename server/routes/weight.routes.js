@@ -35,7 +35,7 @@ router.put('/', auth, log, async (request, response) => {
         if (request.body.user !== user.localId && !user.isAdmin) {
             response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
         }
-
+        delete request.body._id
         const weight = await Weight.create(request.body)
         return response.json(weight)
     } catch (error) {

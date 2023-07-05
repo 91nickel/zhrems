@@ -5,27 +5,31 @@ import PropTypes from 'prop-types'
 
 import FeedFromProductForm from 'components/ui/form/feedFromProductForm'
 
-import { selector, action } from 'store/feed'
+import { selector as feedSelector, action as feedAction } from 'store/feed'
+import { selector as productSelector, action as productAction } from 'store/product'
 import { action as modalAction } from 'store/modal'
 
 const ModalFeedUpdate = ({id}) => {
 
     const dispatch = useDispatch()
-    const feed = useSelector(selector.byId(id))
+    const feed = useSelector(feedSelector.byId(id))
+    const product = useSelector(productSelector.byId(feed.product))
 
-    function onSubmit (payload) {
-        // console.log('onSubmit()', feed, payload)
-        dispatch(action.update(payload))
-            .unwrap()
-            .then(res => {
-                dispatch(modalAction.close())
-            })
+    async function onSubmit ([payload]) {
+        console.log('onSubmit()', payload)
+        payload._id = id
+        if (payload.save) {
+            const product = await dispatch(productAction.create({...payload, _id: null})).unwrap()
+            payload.product = product._id
+        }
+        await dispatch(feedAction.update([payload])).unwrap()
+        dispatch(modalAction.close())
     }
 
     return <FeedFromProductForm
         type="update"
-        select={!!feed.product}
-        startData={feed}
+        select={!!product}
+        startData={{...feed, product: product?._id}}
         onSubmit={onSubmit}
     />
 }

@@ -8,6 +8,7 @@ import { action as mealAction, selector as mealSelector } from 'store/meal'
 import MealForm from 'components/ui/form/mealForm'
 import ProductForm from 'components/ui/form/productForm'
 import { action } from '../../../store/product'
+import Button from '../../common/buttons'
 
 const Create = () => {
     const navigate = useNavigate()
@@ -24,19 +25,14 @@ const Create = () => {
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
-                </div>
-                <div className="w-100"></div>
-                <div className="col-12 col-md-6 mt-5">
-                    <h2>Добавление новой комбинации</h2>
-                    <MealForm type="create" startData={{}} onSubmit={onSubmit}/>
+            <div className="row">
+                <div className="col-12 col-lg-3">
+                    <Button.Back to=".." />
                 </div>
             </div>
+            <div className="w-100"></div>
+            <h2>Добавление новой комбинации</h2>
+            <MealForm type="create" startData={{}} onSubmit={onSubmit}/>
         </>
     )
 }

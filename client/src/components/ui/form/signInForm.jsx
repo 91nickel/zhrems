@@ -19,10 +19,11 @@ const validateScheme = yup.object().shape({
 const SignInForm = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    const globalError = useSelector(selector.authErrors())
+
     const [data, setData] = useState({email: '', password: '', stayOn: false})
     const [errors, setErrors] = useState({})
-    const globalError = useSelector(selector.authErrors())
-    const isAuthorized = useSelector(selector.isAuthorized())
 
     useEffect(() => {
         validate()
@@ -48,9 +49,6 @@ const SignInForm = () => {
     }
 
     const isValid = Object.keys(errors).length === 0
-
-    if (isAuthorized === true)
-        return <Navigate to="/dashboard" replace={true}/>
 
     return (
         <form className="aa" onSubmit={onSubmit}>

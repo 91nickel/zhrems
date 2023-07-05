@@ -15,17 +15,6 @@ import SelectField from 'components/common/form/selectField'
 import DateField from 'components/common/form/dateField'
 import RadioField from 'components/common/form/radioField'
 
-const defaultData = {
-    value: 50,
-    user: '',
-    date: new Date(),
-}
-
-defaultData.date.setHours(0)
-defaultData.date.setMinutes(0)
-defaultData.date.setSeconds(0)
-defaultData.date.setMilliseconds(0)
-
 const validateScheme = yup.object().shape({
     date: yup.date().required('Поле обязательно'),
     user: yup.string().required('Поле обязательно'),
@@ -36,10 +25,21 @@ const WeightForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
     // console.log('WeightForm.startData', startData)
 
     const dispatch = useDispatch()
-
     const {userId, isAdmin} = useSelector(userSelector.authData())
-
     const users = useSelector(userSelector.get())
+    const globalError = useSelector(selector.error())
+    const globalSuccess = useSelector(selector.success())
+
+    const defaultData = {
+        value: 50,
+        user: userId,
+        date: new Date(),
+    }
+
+    defaultData.date.setHours(0)
+    defaultData.date.setMinutes(0)
+    defaultData.date.setSeconds(0)
+    defaultData.date.setMilliseconds(0)
 
     const initialData = Object.keys(startData).length
         ? createFields(startData)
@@ -47,8 +47,6 @@ const WeightForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
 
     const [data, setData] = useState(initialData)
     const [errors, setErrors] = useState({})
-    const globalError = useSelector(selector.error())
-    const globalSuccess = useSelector(selector.success())
 
     useEffect(() => {
         dispatch(action.clearMessages())

@@ -1,27 +1,43 @@
 import React, { useEffect, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+
+import _ from 'lodash'
+
 import { selector as authSelector } from 'store/user'
-import { selector, action } from 'store/product'
-import ProductCard from 'components/ui/card/productCard'
+import { selector as productSelector, action as productAction } from 'store/product'
+import { selector as sectionSelector } from 'store/section'
+
 import Table from 'components/ui/table/productTable'
 import Pagination from 'components/common/pagination'
-import _ from 'lodash'
+import SectionFilter from 'components/common/sectionFilter'
+import SearchStatus from 'components/ui/searchStatus'
+import SearchString from 'components/ui/searchString'
+import Button from 'components/common/buttons'
+import CheckboxField from 'components/common/form/checkboxField'
+
 import paginate from 'utils/paginate'
-import SearchStatus from '../../ui/searchStatus'
-import SearchString from '../../ui/searchString'
+
+const defaultSection = {
+    '_id': '',
+    'name': 'Все',
+}
 
 const List = () => {
 
-    const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const pageSize = 10
+    const products = useSelector(productSelector.get())
+    const sections = useSelector(sectionSelector.get())
+    const {userId} = useSelector(authSelector.authData())
+
+    const pageSize = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
+    const [currentSection, setCurrentSection] = useState(defaultSection)
+    const [onlyMy, setOnlyMy] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
-    const products = useSelector(selector.get())
 
     useEffect(() => {
         setCurrentPage(1)
@@ -38,7 +54,7 @@ const List = () => {
             setCurrentSort(item)
         },
         onDelete: function (id) {
-            dispatch(action.delete(id))
+            dispatch(productAction.delete(id))
         },
     }
 
@@ -48,20 +64,32 @@ const List = () => {
         },
     }
 
+    const filterHandler = {
+        onSelect: function (value) {
+            setCurrentSection(value)
+            if (currentPage !== 1)
+                setCurrentPage(1)
+        },
+    }
+
     function filter (data) {
-        if (!data)
-            return []
-        let filteredData
-        // if (currentProfession) {
-        //     filteredUsers = data.filter(u => u.profession === currentProfession._id)
-        // } else
+        if (!data) return []
+
+        let filteredData = [...data]
+
+        if (currentSection._id) {
+            filteredData = data.filter(p => p.section === currentSection._id)
+        }
+
+        if (onlyMy) {
+            filteredData = data.filter(p => p.user === userId)
+        }
+
         if (!!searchQuery) {
             const regexp = new RegExp(searchQuery, 'ig')
-            const searchResults = data.filter(u => regexp.test(u.name))
-            filteredData = searchResults.length > 0 ? searchResults : data
-        } else {
-            filteredData = data
+            filteredData = filteredData.filter(p => regexp.test(p.name))
         }
+
         return filteredData
     }
 
@@ -72,38 +100,46 @@ const List = () => {
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5 d-flex justify-content-between">
-                    <div>
-                        <NavLink to=".." className="btn btn-primary">
-                            <i className="bi bi-caret-left"/>
-                            Назад
-                        </NavLink>
-                    </div>
-                    <div className="d-flex flex-column">
-                        <NavLink to="create" className="btn btn-outline-success mb-1">
-                            <i className="bi bi-plus"/>
-                            Добавить продукт
-                        </NavLink>
-                        <NavLink to="sections/create" className="btn btn-outline-success mb-1">
-                            <i className="bi bi-plus"/>
-                            Добавить раздел
-                        </NavLink>
-                        <NavLink to="sections" className="btn btn-outline-success mb-1">
-                            Список разделов
-                        </NavLink>
-                    </div>
+            <div className="row">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to=".."/>
+                </div>
+                <div className="col-6 col-lg-3">
+                    <NavLink to="create" className="btn btn-sm btn-outline-success mb-1 w-100">
+                        <i className="bi bi-plus "/>
+                        Продукт
+                    </NavLink>
+                </div>
+                <div className="col-6 col-lg-3">
+                    <NavLink to="sections/create" className="btn btn-sm btn-outline-success mb-1 w-100">
+                        <i className="bi bi-plus"/>
+                        Раздел
+                    </NavLink>
+                </div>
+                <div className="col-6 col-lg-3">
+                    <NavLink to="sections" className="btn btn-sm btn-outline-success mb-1 w-100">
+                        <i className="bi bi-list-ol"/>
+                        Разделы
+                    </NavLink>
                 </div>
             </div>
-            <div className="row mt-3 justify-content-center">
-                <div className="col-12 col-md-6 d-flex flex-column">
-                    <SearchStatus
-                        value={count}
-                    />
+            <div className="row">
+                <div className="col-12">
+                    {/*<SearchStatus value={count}/>*/}
                     <SearchString
                         query={searchQuery}
                         onSubmit={searchHandler.onSubmit}
                     />
+                    <SectionFilter
+                        currentItem={currentSection}
+                        items={[defaultSection, ...sections]}
+                        namePath="name"
+                        valuePath="_id"
+                        onSelect={filterHandler.onSelect}
+                    />
+                    <CheckboxField onChange={({value}) => {setOnlyMy(value)}} value={onlyMy} name="my">
+                        Показать только мои
+                    </CheckboxField>
                     <Table
                         products={crop}
                         currentSort={currentSort}

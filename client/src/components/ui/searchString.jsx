@@ -14,9 +14,7 @@ const SearchString = ({query, onSubmit}) => {
     }
 
     return (
-        <form className="mt-3">
-            <TextField {...fieldConfig} />
-        </form>
+        <TextField {...fieldConfig} />
     )
 }
 

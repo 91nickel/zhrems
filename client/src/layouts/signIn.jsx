@@ -1,25 +1,25 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import Form from 'components/ui/form/signInForm'
-import PropTypes from 'prop-types'
+import { Navigate, NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selector } from 'store/user'
+import SignInForm from 'components/ui/form/signInForm'
 
-const SignIn = ({children}) => {
+const SignIn = () => {
+
+    const isAuthorized = useSelector(selector.isAuthorized())
+
+    if (isAuthorized === true)
+        return <Navigate to="/dashboard" replace={true}/>
+
     return (
         <div className="row justify-content-center mt-3">
             <div className="col-12 col-md-6 col-lg-4">
                 <h2>Авторизация</h2>
-                <Form/>
+                <SignInForm/>
                 <p>Dont have account? <NavLink to="../signUp" role="button">Sign Up</NavLink></p>
             </div>
         </div>
     )
-}
-
-SignIn.propTypes = {
-    children: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.node),
-        PropTypes.node,
-    ]),
 }
 
 export default SignIn

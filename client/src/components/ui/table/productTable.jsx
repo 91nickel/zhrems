@@ -8,11 +8,12 @@ import Table, { TableHeader, TableBody } from 'components/common/table'
 import ControlsPanel from 'components/common/controlsPanel'
 import EnergyResults from 'components/common/energyResult'
 
-import {selector as userSelector} from 'store/user'
-import {selector as sectionSelector} from 'store/section'
+import { selector as userSelector } from 'store/user'
+import { selector as sectionSelector } from 'store/section'
 
 const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
 
+    const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
     const sections = useSelector(sectionSelector.get())
 
@@ -26,6 +27,7 @@ const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
         },
         section: {
             name: 'Раздел',
+            path: 'section',
             component: el => {
                 const section = sections.find(s => s._id === el.section)
                 return section && <NavLink to={`/products/section/${section._id}`}>{section.name}</NavLink>
@@ -33,20 +35,26 @@ const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
         },
         user: {
             name: 'Пользователь',
+            path: 'user',
             component: el => {
                 const user = users.find(u => u._id === el.user)
-                return user && <NavLink to={`/users/${user._id}`}>{user.name}</NavLink>
+                return user
+                    ? <NavLink to={`/users/${user._id}`}>{user.name}</NavLink>
+                    : 'Default'
             },
         },
-        energy: {
-            name: 'Б/Ж/У/К/В',
-            component: el => {
-                return <EnergyResults {...el} />
-            }
-        },
+        // energy: {
+        //     name: 'Б/Ж/У/К/В',
+        //     component: el => {
+        //         return <EnergyResults {...el} />
+        //     }
+        // },
         controls: {
             component: el => {
-                return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>
+                if (el.user === userId || isAdmin) {
+                    return <ControlsPanel id={el._id} prefix="" onDelete={onDelete}/>
+                }
+                return ''
             }
         },
     }

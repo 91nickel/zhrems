@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector as mealSelector, action as mealAction } from 'store/meal'
 import { selector as productSelector } from 'store/product'
+import Button from '../../common/buttons'
 
 const Update = () => {
     const {id} = useParams()
@@ -24,19 +25,13 @@ const Update = () => {
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
-                </div>
-                <div className="w-100"></div>
-                <div className="col-12 col-md-6 mt-5">
-                    <h2>Редактирование комбинации</h2>
-                    <MealForm type="update" startData={meal} onSubmit={onSubmit}/>
+            <div className="row">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to=".." />
                 </div>
             </div>
+            <h2>Редактирование комбинации</h2>
+            <MealForm type="update" startData={meal} onSubmit={onSubmit}/>
         </>
     )
 }

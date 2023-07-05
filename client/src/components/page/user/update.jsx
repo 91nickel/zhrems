@@ -2,46 +2,44 @@ import React from 'react'
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { selector as userSelector, action as userAction } from 'store/user'
+
+import Button from 'components/common/buttons'
 import UserForm from 'components/ui/form/userForm'
-import { selector, action } from 'store/user'
+import NotFound from 'layouts/404'
 
 const Update = () => {
     const {id} = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const profile = useSelector(selector.byId(id))
-    const {userId, isAdmin} = useSelector(selector.authData())
+    const profile = useSelector(userSelector.byId(id))
+    const {userId, isAdmin} = useSelector(userSelector.authData())
 
-    // const product = useSelector(selector.byId(id))
-
-    async function onSubmit (formData) {
-        const payload = {}
-        Object.keys(formData).forEach(key => {
-            if ((typeof profile[key] !== 'undefined' && profile[key] !== formData[key]) || key === 'password')
-                payload[key] = formData[key]
-        })
-        await dispatch(action.update({_id: id, ...payload})).unwrap()
-        navigate('..')
+    async function onSubmit (payload) {
+        return console.log(payload)
+        // const payload = {}
+        // Object.keys(formData).forEach(key => {
+        //     if ((typeof profile[key] !== 'undefined' && profile[key] !== formData[key]) || key === 'password')
+        //         payload[key] = formData[key]
+        // })
+        // await dispatch(action.update({_id: id, ...payload})).unwrap()
+        // navigate('..')
     }
 
+    if (!profile)
+        return <NotFound />
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
+            <div className="row mb-3">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to="/" />
                 </div>
-                <div className="w-100"></div>
-                <div className="col-12 col-md-6 mt-5 d-flex justify-content-center">
-                    <div className="card w-100">
-                        <div className="card-body">
-                            <UserForm onSubmit={onSubmit}/>
-                        </div>
-                    </div>
+            </div>
+            <div className="card w-100">
+                <div className="card-body">
+                    <UserForm type="update" startData={profile} onSubmit={onSubmit}/>
                 </div>
             </div>
         </>

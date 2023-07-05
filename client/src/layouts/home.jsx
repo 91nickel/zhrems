@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import {selector} from 'store/user'
 
 function Home () {
+
     const isAuthorized = useSelector(selector.isAuthorized())
 
     if (isAuthorized)

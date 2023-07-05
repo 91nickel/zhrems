@@ -24,6 +24,7 @@ import NavBar from 'components/ui/navBar'
 import ModalWindows from 'components/modal/window'
 
 import { selector as userSelector } from 'store/user'
+import MainWrapper from './layouts/mainWrapper'
 
 const App = () => {
     const isAuthorized = useSelector(userSelector.isAuthorized())
@@ -31,11 +32,9 @@ const App = () => {
         <>
             <AppLoader>
                 <div className="container">
-                    <div className="row justify-content-center">
-                        <div className="col-12 col-md-6 mt-5">
-                            {isAuthorized && <NavBar/>}
-                        </div>
-                    </div>
+                    <MainWrapper>
+                        {isAuthorized && <NavBar/>}
+                    </MainWrapper>
                     <Routes>
 
                         <Route path="/" index element={<Layout.Home/>}/>
@@ -53,7 +52,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <DashboardLoader>
-                                        <Outlet />
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </DashboardLoader>
                                 </ProtectedRoute>
                             }
@@ -67,7 +68,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="product">
-                                        <Outlet/>
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </CommonLoader>
                                 </ProtectedRoute>
                             }
@@ -91,7 +94,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="meal">
-                                        <Outlet/>
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </CommonLoader>
                                 </ProtectedRoute>
                             }
@@ -110,7 +115,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="weight">
-                                        <Outlet/>
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </CommonLoader>
                                 </ProtectedRoute>
                             }
@@ -123,7 +130,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="product">
-                                        <Outlet/>
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </CommonLoader>
                                 </ProtectedRoute>
                             }
@@ -136,7 +145,9 @@ const App = () => {
                             element={
                                 <ProtectedRoute redirectTo="/auth/signIn">
                                     <CommonLoader entity="user">
-                                        <Outlet/>
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
                                     </CommonLoader>
                                 </ProtectedRoute>
                             }

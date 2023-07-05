@@ -74,7 +74,11 @@ const ProductForm = ({type, startData, onSubmit: handleSubmit}) => {
         event.preventDefault()
         if (!validate() || !hasDifference())
             return false
-        return handleSubmit(data)
+        return handleSubmit({
+            ...data,
+            user: data.user ? data.user : null,
+            section: data.section ? data.section : null,
+        })
     }
 
     function validate () {

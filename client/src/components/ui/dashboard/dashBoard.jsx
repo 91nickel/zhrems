@@ -104,7 +104,7 @@ const Dashboard = () => {
                         <i className="bi bi-arrow-left" style={{position: 'relative', top: '2px'}}/>
                     </NavLink>
                 </div>
-                <div className="col-10 col-md-4 d-flex justify-content-center">
+                <div className="col-10 d-flex justify-content-center">
                     <h3>{dateString}</h3>
                 </div>
                 <div className="col-1 d-flex justify-content-end">
@@ -116,86 +116,69 @@ const Dashboard = () => {
                     </NavLink>
                 </div>
             </div>
-            {/*<div className="row justify-content-center mb-3">*/}
-            {/*    <div className="col-6 col-md-3">*/}
-            {/*        <NavLink className="btn btn-primary w-100" to="/weights/create">Взвеситься</NavLink>*/}
-            {/*    </div>*/}
-            {/*    <div className="col-6 col-md-3">*/}
-            {/*        <NavLink className="btn btn-success w-100" to="/transactions/create">Поесть</NavLink>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-            <div className="row justify-content-center mb-3">
-                <div className="col-12 col-md-6">
-                    <Weight type="start" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
-                    <ul className="list-group-flush p-0">
-                        {
-                            timeline.map(({start, end}) => {
-                                const trGroup = dayFeeds.filter(t => {
-                                    return new Date(t.date) >= start && new Date(t.date) < end
-                                })
-                                return (
-                                    <li className="list-group-item px-0 py-1" key={start.toISOString()}>
-                                        <div className="d-flex justify-content-between">
-                                            <p className="fs-6 mb-0">
-                                                {start.toLocaleTimeString('ru-RU', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
-                                            </p>
-                                            <div>
-                                                <button
-                                                    title="Записать с нуля"
-                                                    className="btn btn-outline-success btn-sm mx-1"
-                                                    onClick={() => onAddFeed(FEED_METHODS.NEW, start.toISOString())}
-                                                >
-                                                    <i className="bi bi-plus"/>
-                                                </button>
-                                                <button
-                                                    title="Выбрать сохраненный"
-                                                    className="btn btn-outline-success btn-sm mx-1"
-                                                    onClick={() => onAddFeed(FEED_METHODS.SELECT, start.toISOString())}>
-                                                    <i className="bi bi-check-square"/>
-                                                </button>
-                                                <button
-                                                    title="Выбрать комбинацию"
-                                                    className="btn btn-outline-success btn-sm mx-1"
-                                                    onClick={() => onAddFeed(FEED_METHODS.MEAL, start.toISOString())}
-                                                >
-                                                    <i className="bi bi-list-ul"/>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {
-                                            !!trGroup.length &&
-                                            <FeedsGroup
-                                                data={trGroup}
-                                                onUpdate={onUpdateFeed}
-                                                onDelete={onDeleteFeed}
-                                            />
-                                        }
-                                    </li>
-                                )
-                            })
-                        }
-                    </ul>
-                    <Weight type="end" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
-                </div>
-            </div>
-            <div className="row justify-content-center mb-3">
-                <div className="col-12 col-md-6">
-                    <p className="d-flex justify-content-between">
-                        <span>Потребление за день:</span>
-                        <span>
-                            <EnergyResults {...results} />
-                        </span>
-                    </p>
-                </div>
-            </div>
+            <Weight type="start" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
+            <ul className="list-group-flush p-0">
+                {
+                    timeline.map(({start, end}) => {
+                        const trGroup = dayFeeds.filter(t => {
+                            return new Date(t.date) >= start && new Date(t.date) < end
+                        })
+                        return (
+                            <li className="list-group-item px-0 py-1" key={start.toISOString()}>
+                                <div className="d-flex justify-content-between">
+                                    <p className="fs-6 mb-0">
+                                        {start.toLocaleTimeString('ru-RU', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                    <div>
+                                        <button
+                                            title="Записать с нуля"
+                                            className="btn btn-outline-success btn-sm mx-1"
+                                            onClick={() => onAddFeed(FEED_METHODS.NEW, start.toISOString())}
+                                        >
+                                            <i className="bi bi-plus"/>
+                                        </button>
+                                        <button
+                                            title="Выбрать сохраненный"
+                                            className="btn btn-outline-success btn-sm mx-1"
+                                            onClick={() => onAddFeed(FEED_METHODS.SELECT, start.toISOString())}>
+                                            <i className="bi bi-check-square"/>
+                                        </button>
+                                        <button
+                                            title="Выбрать комбинацию"
+                                            className="btn btn-outline-success btn-sm mx-1"
+                                            onClick={() => onAddFeed(FEED_METHODS.MEAL, start.toISOString())}
+                                        >
+                                            <i className="bi bi-list-ul"/>
+                                        </button>
+                                    </div>
+                                </div>
+                                {
+                                    !!trGroup.length &&
+                                    <FeedsGroup
+                                        data={trGroup}
+                                        onUpdate={onUpdateFeed}
+                                        onDelete={onDeleteFeed}
+                                    />
+                                }
+                            </li>
+                        )
+                    })
+                }
+            </ul>
+            <Weight type="end" onAdd={onAddWeight} onUpdate={onUpdateWeight} onDelete={onDeleteWeight}/>
+            <p className="d-flex justify-content-between">
+                <span>Потребление за день:</span>
+                <span>
+                    <EnergyResults {...results} />
+                </span>
+            </p>
         </>
     )
 }
 
-Dashboard.propTypes = {
-}
+Dashboard.propTypes = {}
 
 export default Dashboard

@@ -6,6 +6,7 @@ import { selector as authSelector } from 'store/user'
 import { selector, action } from 'store/product'
 
 import ProductForm from 'components/ui/form/productForm'
+import Button from '../../common/buttons'
 
 const Create = () => {
     const {id} = useParams()
@@ -20,19 +21,14 @@ const Create = () => {
 
     return (
         <>
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-6 mt-5">
-                    <NavLink to=".." className="btn btn-primary">
-                        <i className="bi bi-caret-left"/>
-                        Назад
-                    </NavLink>
-                </div>
-                <div className="w-100"></div>
-                <div className="col-12 col-md-6 mt-5">
-                    <h2>Добавление нового продукта</h2>
-                    <ProductForm onSubmit={onSubmit}/>
+            <div className="row mb-3">
+                <div className="col-6 col-lg-3">
+                    <Button.Back to=".." />
                 </div>
             </div>
+            <div className="w-100"></div>
+            <h2>Добавление нового продукта</h2>
+            <ProductForm onSubmit={onSubmit}/>
         </>
     )
 }

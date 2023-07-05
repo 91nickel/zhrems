@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import * as yup from 'yup'
 
-import TextField from 'components/common/form/textField'
-import NumberField from 'components/common/form/numberField'
-
 import { selector as mealSelector, action as mealAction } from 'store/meal'
 import { selector as productSelector, action as productAction } from 'store/product'
+import { selector as userSelector } from 'store/user'
 
-import PropTypes from 'prop-types'
-import SelectField from '../../common/form/selectField'
-import EnergyResults from '../../common/energyResult'
-import calculateAverageEnergy from '../../../utils/calculateAverageEnergy'
-import { selector as userSelector } from '../../../store/user'
+import TextField from 'components/common/form/textField'
+import NumberField from 'components/common/form/numberField'
+import SelectField from 'components/common/form/selectField'
+import EnergyResults from 'components/common/energyResult'
+import calculateAverageEnergy from 'utils/calculateAverageEnergy'
+
 
 const defaultData = {
     name: '',
+    user: '',
     desc: '',
     weight: 100,
 }
@@ -119,7 +120,12 @@ const MealForm = ({type, startData, onSubmit: handleSubmit}) => {
         event.preventDefault()
         if (!validate() || !validateProducts() || !hasDifference())
             return false
-        return handleSubmit({...formData, products: formProducts.map(p => ({_id: p._id, weight: p.weight}))})
+
+        return handleSubmit({
+            ...formData,
+            user: formData.user ? formData.user : null,
+            products: formProducts.map(p => ({_id: p._id, weight: p.weight})),
+        })
     }
 
     function validate () {

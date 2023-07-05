@@ -11,13 +11,15 @@ import { selector as mealSelector, action as mealAction } from 'store/meal'
 import TextField from 'components/common/form/textField'
 import NumberField from 'components/common/form/numberField'
 import SelectField from 'components/common/form/selectField'
+import EnergyResults from 'components/common/energyResult'
 
+import calculateAverageEnergy from 'utils/calculateAverageEnergy'
 import calculateCalories from 'utils/calculateCalories'
-import EnergyResults from '../../common/energyResult'
-import calculateAverageEnergy from '../../../utils/calculateAverageEnergy'
+import { selector as userSelector } from '../../../store/user'
 
 const validateScheme = yup.object().shape({
     name: yup.string().required('Поле обязательно'),
+    user: yup.string().required('Поле обязательно'),
     product: yup.string(),
     proteins: yup.number().required('Белки обязательно'),
     carbohydrates: yup.number().required('Углеводы обязательно'),
@@ -27,6 +29,8 @@ const validateScheme = yup.object().shape({
 })
 
 const FeedFromMealForm = ({onSubmit}) => {
+
+    const {userId} = useSelector(userSelector.authData())
 
     const meals = useSelector(mealSelector.get())
     const products = useSelector(productSelector.get())
@@ -64,7 +68,7 @@ const FeedFromMealForm = ({onSubmit}) => {
     function extractFeeds ({products: mealProducts}) {
         // console.log('extractFeeds', mealProducts)
         return mealProducts.map(p => {
-            return {...products.find(prod => prod._id === p._id), ...p, product: p._id}
+            return {...products.find(prod => prod._id === p._id), ...p, product: p._id, user: userId}
         })
     }
 
@@ -73,6 +77,7 @@ const FeedFromMealForm = ({onSubmit}) => {
         return {
             name: meals.find(m => m._id === mealId).name,
             product: null,
+            user: userId,
             ...calculateAverageEnergy(formFeeds)
         }
     }
