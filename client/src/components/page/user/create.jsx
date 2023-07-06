@@ -3,18 +3,23 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import UserForm from 'components/ui/form/userForm'
-import { selector, action } from 'store/user'
-import Button from '../../common/buttons'
+import { selector as userSelector, action as userAction } from 'store/user'
+import Button from 'components/common/buttons'
+import Forbidden from 'layouts/403'
 
 const Create = () => {
-    const {id} = useParams()
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const {userId, isAdmin} = useSelector(userSelector.authData())
 
     async function onSubmit (payload) {
-        await dispatch(action.create(payload)).unwrap()
+        await dispatch(userAction.create(payload)).unwrap()
         setTimeout(() => navigate('..', {replace: true}), 1000)
     }
+
+    if (!isAdmin)
+        return <Forbidden/>
 
     return (
         <>

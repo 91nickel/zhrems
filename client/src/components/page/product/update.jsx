@@ -7,6 +7,8 @@ import { selector, action } from 'store/product'
 
 import ProductForm from 'components/ui/form/productForm'
 import Button from '../../common/buttons'
+import NotFound from '../../../layouts/404'
+import Forbidden from '../../../layouts/403'
 
 const Update = () => {
     const {id} = useParams()
@@ -17,11 +19,16 @@ const Update = () => {
     const product = useSelector(selector.byId(id))
 
     async function onSubmit (payload) {
-        console.log('onSubmit()', payload)
+        // console.log('onSubmit()', payload)
         await dispatch(action.update(payload)).unwrap()
         navigate('../..')
     }
 
+    if (!product)
+        return <NotFound />
+
+    if (product.user !== userId && !isAdmin)
+        return <Forbidden/>
 
     return (
         <>

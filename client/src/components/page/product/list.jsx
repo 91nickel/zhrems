@@ -17,6 +17,7 @@ import Button from 'components/common/buttons'
 import CheckboxField from 'components/common/form/checkboxField'
 
 import paginate from 'utils/paginate'
+import OnlyMySelector from '../../common/onlyMySelector'
 
 const defaultSection = {
     '_id': '',
@@ -30,12 +31,12 @@ const List = () => {
     const products = useSelector(productSelector.get())
     const sections = useSelector(sectionSelector.get())
     const {userId} = useSelector(authSelector.authData())
+    const settings = useSelector(authSelector.settings())
 
     const pageSize = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
     const [currentSection, setCurrentSection] = useState(defaultSection)
-    const [onlyMy, setOnlyMy] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
 
@@ -81,7 +82,7 @@ const List = () => {
             filteredData = data.filter(p => p.section === currentSection._id)
         }
 
-        if (onlyMy) {
+        if (settings.onlyMy) {
             filteredData = data.filter(p => p.user === userId)
         }
 
@@ -100,7 +101,7 @@ const List = () => {
 
     return (
         <>
-            <div className="row">
+            <div className="row justify-content-between">
                 <div className="col-6 col-lg-3">
                     <Button.Back to=".."/>
                 </div>
@@ -108,18 +109,6 @@ const List = () => {
                     <NavLink to="create" className="btn btn-sm btn-outline-success mb-1 w-100">
                         <i className="bi bi-plus "/>
                         Продукт
-                    </NavLink>
-                </div>
-                <div className="col-6 col-lg-3">
-                    <NavLink to="sections/create" className="btn btn-sm btn-outline-success mb-1 w-100">
-                        <i className="bi bi-plus"/>
-                        Раздел
-                    </NavLink>
-                </div>
-                <div className="col-6 col-lg-3">
-                    <NavLink to="sections" className="btn btn-sm btn-outline-success mb-1 w-100">
-                        <i className="bi bi-list-ol"/>
-                        Разделы
                     </NavLink>
                 </div>
             </div>
@@ -137,9 +126,7 @@ const List = () => {
                         valuePath="_id"
                         onSelect={filterHandler.onSelect}
                     />
-                    <CheckboxField onChange={({value}) => {setOnlyMy(value)}} value={onlyMy} name="my">
-                        Показать только мои
-                    </CheckboxField>
+                    <OnlyMySelector />
                     <Table
                         products={crop}
                         currentSort={currentSort}

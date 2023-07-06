@@ -19,7 +19,7 @@ http.interceptors.request.use(
         if (refreshToken && authExpired) {
             try {
                 const data = await authService.refresh()
-                console.log('token refresh result', data)
+                // console.log('token refresh result', data)
                 localStorageService.setTokens(data)
             } catch (error) {
                 console.error('Auth refresh failed', error)
@@ -35,7 +35,7 @@ http.interceptors.request.use(
         return config
     },
     function (error) {
-        console.log('http.service->request.interceptor.onRejected', )
+        // console.log('http.service->request.interceptor.onRejected', )
         return Promise.reject(error)
     }
 )
@@ -46,7 +46,7 @@ http.interceptors.response.use(
         return response
     },
     function (error) {
-        console.log('http.service.response.interceptor.onRejected')
+        // console.log('http.service.response.interceptor.onRejected')
         const expectedErrors = error.response && error.response.status >= 400 && error.response.status < 500
         if (!expectedErrors) {
             console.error(error)

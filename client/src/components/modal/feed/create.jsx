@@ -18,7 +18,7 @@ const ModalFeedCreate = ({method, date, user}) => {
     const dispatch = useDispatch()
 
     async function onSubmit (payload) {
-        console.log('onSubmit()', payload)
+        // console.log('onSubmit()', payload)
         if (method === FEED_METHODS.NEW && payload[0].save) {
             const productPayload = {...payload[0], user, _id: null}
             const product = await dispatch(productAction.create(productPayload)).unwrap()

@@ -4,21 +4,21 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import _ from 'lodash'
 
+import { action, selector } from 'store/user'
+
 import Pagination from 'components/common/pagination'
 import Table from 'components/ui/table/userTable'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
+import Button from 'components/common/buttons'
 import paginate from 'utils/paginate'
-
-import { action, selector } from 'store/user'
-import Button from '../../common/buttons'
 
 const List = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    const pageSize = 10
+    const pageSize = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
     const [searchQuery, setSearchQuery] = useState('')

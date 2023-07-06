@@ -104,7 +104,7 @@ const FeedFromProductForm = ({startData, select, onSubmit: handleSubmit}) => {
     const isValid = Object.keys(errors).length === 0
     const hasDifference = Object.keys(startData).length === 0 || !_.isEqual(startData, data) || save
 
-    console.log(data, startData, errors, isValid, hasDifference)
+    // console.log(data, startData, errors, isValid, hasDifference)
 
     return (
         <form className="d-flex flex-column" onSubmit={onSubmit}>

@@ -115,7 +115,6 @@ const FeedFromMealForm = ({onSubmit}) => {
 
     function handleSubmit (event) {
         event.preventDefault()
-        console.log(reduceFeeds(formFeeds))
         onSubmit([reduceFeeds(formFeeds)])
     }
 

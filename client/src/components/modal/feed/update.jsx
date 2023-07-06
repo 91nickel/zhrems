@@ -16,7 +16,7 @@ const ModalFeedUpdate = ({id}) => {
     const product = useSelector(productSelector.byId(feed.product))
 
     async function onSubmit ([payload]) {
-        console.log('onSubmit()', payload)
+        // console.log('onSubmit()', payload)
         payload._id = id
         if (payload.save) {
             const product = await dispatch(productAction.create({...payload, _id: null})).unwrap()

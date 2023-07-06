@@ -32,7 +32,7 @@ const TextField = ({label, type, name, placeholder, value, error, onChange, onIn
                 />
                 {
                     type === 'password' &&
-                    (<button className="btn btn-outline-secondary" onClick={toggleShowPassword}>
+                    (<button type="button" className="btn btn-outline-secondary" onClick={toggleShowPassword}>
                         <i className={'bi' + (showPassword ? ' bi-eye-slash' : ' bi-eye')}/>
                     </button>)
                 }

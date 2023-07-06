@@ -69,7 +69,6 @@ export const action = {
             thunkAPI.dispatch(createRequested(payload))
             try {
                 const content = await service.create(payload)
-                console.log('meal/create', content)
                 thunkAPI.dispatch(created(content))
                 return content
             } catch (error) {
@@ -86,7 +85,6 @@ export const action = {
             thunkAPI.dispatch(updateRequested(payload))
             try {
                 const content = await service.update(payload)
-                console.log(content)
                 thunkAPI.dispatch(updated(content))
                 return content
             } catch (error) {
@@ -102,7 +100,6 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.meal.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -150,8 +147,12 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => {
-        return state.meal.entities.map(meal => {
+    get: () => state => state.meal.entities
+        .filter(m => {
+            return state.user.settings.onlyMy
+                ? m.user === state.user.auth.userId
+                : m
+        }).map(meal => {
             const pids = meal.products.map(p => p._id)
             return {
                 ...meal,
@@ -159,17 +160,17 @@ export const selector = {
                     .filter(fp => pids.includes(fp._id))
                     .map(fp => ({...fp, ...meal.products.find(mp => mp._id === fp._id)}))
             }
-
-        })
-    },
+        }),
     byId: id => state => {
         const meal = state.meal.entities.find(u => u._id === id)
-        return {
-            ...meal,
-            products: state.product.entities
-                .filter(fp => meal.products.map(mp => mp._id).includes(fp._id))
-                .map(fp => ({...fp, ...meal.products.find(mp => mp._id === fp._id)}))
-        }
+        return meal
+            ? {
+                ...meal,
+                products: state.product.entities
+                    .filter(fp => meal.products.map(mp => mp._id).includes(fp._id))
+                    .map(fp => ({...fp, ...meal.products.find(mp => mp._id === fp._id)}))
+            }
+            : null
     },
     isDataLoaded: () => state => state.meal.isDataLoaded,
     isLoading: () => state => state.meal.isLoading,

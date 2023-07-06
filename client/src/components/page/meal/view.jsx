@@ -3,9 +3,9 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector as mealSelector, action as mealAction } from 'store/meal'
-import { selector as productSelector, action as productAction } from 'store/product'
 import MealCard from 'components/ui/card/mealCard'
-import Button from '../../common/buttons'
+import Button from 'components/common/buttons'
+import NotFound from '../../../layouts/404'
 
 const View = () => {
     const {id} = useParams()
@@ -15,19 +15,16 @@ const View = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     const meal = useSelector(mealSelector.byId(id))
-    // const allProducts = useSelector(productSelector.get())
-
-    // const products = allProducts
-    //     .filter(fullProduct => meal.products.map(mp => mp._id).includes(fullProduct._id))
-    //     .map(fullProduct => ({...fullProduct, ...meal.products.find(mp => mp._id === fullProduct._id)}))
 
     function onDelete () {
-        return onsole.log('onDelete')
-        dispatch(action.delete(id))
+        dispatch(mealAction.delete(id))
             .unwrap()
             .then(res => navigate('..'))
             .catch(e => console.error(e))
     }
+
+    if (!meal)
+        return <NotFound />
 
     return (
         <>

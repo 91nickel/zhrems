@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 // import PropTypes from 'prop-types'
 import { selector, action } from 'store/user'
+import OnlyMySelector from '../common/onlyMySelector'
 
 function NavProfile () {
 
@@ -29,8 +30,11 @@ function NavProfile () {
                     />
                 </div>
                 <div className={'w-100 dropdown-menu' + (isOpened ? ' show' : '')}>
-                    <Link to={`/users/${user._id}`} className="dropdown-item">Profile</Link>
-                    <Link to={`/auth/signOut`} className="dropdown-item">Logout</Link>
+                    <div className="ps-3">
+                        <OnlyMySelector>only my</OnlyMySelector>
+                    </div>
+                    <Link to={`/users/${user._id}`} className="dropdown-item">Профиль</Link>
+                    <Link to={`/auth/signOut`} className="dropdown-item">Выход</Link>
                 </div>
             </div>
             }

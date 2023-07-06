@@ -14,7 +14,7 @@ const SectionsTable = ({sections, currentSort, onSort, onDelete, ...rest}) => {
     const {userId, isAdmin} = useSelector(userSelector.authData())
     const users = useSelector(userSelector.get())
 
-    console.log(sections, users)
+    // console.log(sections, users)
 
     const columns = {
         date: {

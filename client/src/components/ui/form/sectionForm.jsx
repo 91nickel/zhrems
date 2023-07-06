@@ -74,7 +74,7 @@ const SectionForm = ({type, startData, onlyValue, onSubmit: handleSubmit}) => {
         return hasDifference
     }
 
-    console.log('formData', data, errors)
+    // console.log('formData', data, errors)
 
     const isValid = Object.keys(errors).length === 0
 

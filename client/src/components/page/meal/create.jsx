@@ -17,7 +17,7 @@ const Create = () => {
     const {userId, isAdmin} = useSelector(authSelector.authData())
 
     async function onSubmit (payload) {
-        console.log('Meal.create.onSubmit()', payload)
+        // console.log('Meal.create.onSubmit()', payload)
         await dispatch(mealAction.create(payload))
             .unwrap()
         navigate('..')

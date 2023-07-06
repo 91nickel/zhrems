@@ -69,7 +69,7 @@ const UserForm = ({type, startData, onSubmit: handleSubmit}) => {
 
     const isValid = Object.keys(errors).length === 0
 
-    console.log(data, errors)
+    // console.log(data, errors)
 
     return (
         <form className="aa" onSubmit={onSubmit}>

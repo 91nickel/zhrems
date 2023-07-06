@@ -66,7 +66,7 @@ const Dashboard = () => {
     }
 
     function onUpdateFeed (id) {
-        console.log('onUpdateFeed', id)
+        // console.log('onUpdateFeed', id)
         const modalParams = {title: 'Редактировать', body: FEED_METHODS.UPDATE}
         dispatch(modalAction.open(modalParams, {id}))
     }
@@ -77,13 +77,13 @@ const Dashboard = () => {
     }
 
     function onAddWeight (date) {
-        console.log('onAddWeight', date)
+        // console.log('onAddWeight', date)
         const modalParams = {title: 'Добавить вес', body: WEIGHT_METHODS.ADD}
         dispatch(modalAction.open(modalParams, {date: date.toISOString(), user: userId}))
     }
 
     function onUpdateWeight (id) {
-        console.log('onAddWeight', id)
+        // console.log('onAddWeight', id)
         const modalParams = {title: 'Редактировать вес', body: WEIGHT_METHODS.UPDATE}
         dispatch(modalAction.open(modalParams, {id}))
     }

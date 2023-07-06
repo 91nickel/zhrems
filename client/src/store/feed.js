@@ -15,7 +15,7 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            console.log('created', action.payload)
+            // console.log('created', action.payload)
             state.entities = [...state.entities, ...action.payload]
             state.success = `Добавлен прием пищи ${action.payload.map(t => t.name).join(', ')}`
         },
@@ -88,10 +88,8 @@ export const action = {
     update: createAsyncThunk(
         'feed/update',
         async (payload, thunkAPI) => {
-            console.log(payload)
             thunkAPI.dispatch(updateRequested(payload))
             try {
-                console.log(payload)
                 const content = await service.update(payload)
                 thunkAPI.dispatch(updated(content))
                 return content
@@ -108,7 +106,6 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.feed.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -153,7 +150,6 @@ export const action = {
         async (date, thunkAPI) => {
             thunkAPI.dispatch(requested())
             try {
-                console.log('getByDate', date)
                 const content = await service.getByDate(date)
                 thunkAPI.dispatch(received(content))
                 thunkAPI.dispatch(journal({key: date.toLocaleDateString('fr-CA'), value: true}))

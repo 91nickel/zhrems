@@ -100,7 +100,6 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.product.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -148,7 +147,11 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.product.entities,
+    get: () => state => state.product.entities.filter(p => {
+        return state.user.settings.onlyMy
+            ? p.user === state.user.auth.userId
+            : p
+    }),
     byId: id => state => state.product.entities.find(u => u._id === id),
     isDataLoaded: () => state => state.product.isDataLoaded,
     isLoading: () => state => state.product.isLoading,

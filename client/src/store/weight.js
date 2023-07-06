@@ -14,7 +14,7 @@ const slice = createSlice({
     },
     reducers: {
         created: (state, action) => {
-            state.entities = [...state.entities, ...action.payload]
+            state.entities = [...state.entities, action.payload]
             state.success = `Successfully created weight ${action.payload.value}`
         },
         updated: (state, action) => {

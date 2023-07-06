@@ -3,10 +3,11 @@ import { createAction, createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import userService from 'services/user.service'
 import authService from 'services/auth.service'
-import productService from 'services/product.service'
 import localStorageService from 'services/localStorage.service'
 
 import generateAuthError from 'utils/generateAuthError'
+
+const savedSettings = localStorageService.getUserSettings()
 
 const slice = createSlice({
     name: 'user',
@@ -19,6 +20,10 @@ const slice = createSlice({
         user: {},
         isProcessingAuth: true,
         isAuthorized: null,
+        settings: {
+            onlyMy: true,
+            ...savedSettings,
+        },
     },
     reducers: {
         created: (state, action) => {
@@ -31,6 +36,10 @@ const slice = createSlice({
                     return updatedUser
                 return user
             })
+        },
+        settingsUpdated: (state, action) => {
+            state.settings = {...state.settings, ...action.payload}
+            localStorageService.setUserSettings(state.settings)
         },
         requested: (state) => {
             state.isLoading = true
@@ -65,10 +74,10 @@ const slice = createSlice({
             state.isProcessingAuth = false
         },
         loggedOut: (state,) => {
-            state.auth = null
+            state.auth = {userId: null, isAdmin: false}
             state.isAuthorized = false
             state.isDataLoaded = false
-            state.entities = null
+            state.entities = []
         },
     }
 })
@@ -83,6 +92,7 @@ const {
     authRequestSuccess,
     authRequestFailed,
     loggedOut,
+    settingsUpdated,
 } = slice.actions
 
 const userCreateRequested = createAction('user/userCreateRequested')
@@ -124,9 +134,7 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(userUpdateRequested(payload))
             try {
-                console.log('user/update', payload)
                 const content = await userService.update(payload)
-                console.log(content)
                 thunkAPI.dispatch(updated(content))
                 return content
             } catch (error) {
@@ -217,6 +225,19 @@ export const action = {
         },
     ),
 
+    updateSettings: createAsyncThunk(
+        'user/updateSettings',
+        async (payload, thunkAPI) => {
+            // thunkAPI.dispatch(requested())
+            try {
+                thunkAPI.dispatch(settingsUpdated(payload))
+            } catch (error) {
+                // thunkAPI.dispatch(requestFailed(error.message))
+                return thunkAPI.rejectWithValue(error.message)
+            }
+        },
+    ),
+
 }
 
 export const selector = {
@@ -229,6 +250,7 @@ export const selector = {
     isProcessingAuth: () => state => state.user.isProcessingAuth,
     authErrors: () => state => state.user.error,
     authData: () => state => state.user.auth,
+    settings: () => state => state.user.settings,
 }
 
 export default slice.reducer

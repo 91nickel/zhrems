@@ -7,6 +7,7 @@ import { selector as userSelector, action as userAction } from 'store/user'
 import Button from 'components/common/buttons'
 import UserForm from 'components/ui/form/userForm'
 import NotFound from 'layouts/404'
+import Forbidden from 'layouts/403'
 
 const Update = () => {
     const {id} = useParams()
@@ -17,18 +18,15 @@ const Update = () => {
     const {userId, isAdmin} = useSelector(userSelector.authData())
 
     async function onSubmit (payload) {
-        return console.log(payload)
-        // const payload = {}
-        // Object.keys(formData).forEach(key => {
-        //     if ((typeof profile[key] !== 'undefined' && profile[key] !== formData[key]) || key === 'password')
-        //         payload[key] = formData[key]
-        // })
-        // await dispatch(action.update({_id: id, ...payload})).unwrap()
-        // navigate('..')
+        await dispatch(userAction.update(payload)).unwrap()
+        navigate('..')
     }
 
     if (!profile)
         return <NotFound />
+
+    if (profile._id !== userId && !isAdmin)
+        return <Forbidden/>
 
     return (
         <>

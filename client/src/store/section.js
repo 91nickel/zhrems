@@ -102,7 +102,6 @@ export const action = {
         async (payload, thunkAPI) => {
             thunkAPI.dispatch(deleteRequested(payload))
             try {
-                console.log('store.section.delete', payload)
                 const content = await service.delete(payload)
                 thunkAPI.dispatch(deleted(payload))
             } catch (error) {
@@ -150,8 +149,12 @@ export const action = {
 }
 
 export const selector = {
-    get: () => state => state.section.entities,
-    byId: id => state => state.section.entities.find(u => u._id === id),
+    get: () => state => state.section.entities.filter(s => {
+        return state.user.settings.onlyMy
+            ? s.user === state.user.auth.userId
+            : s
+    }),
+    byId: id => state => state.section.entities.find(s => s._id === id),
     isDataLoaded: () => state => state.section.isDataLoaded,
     isLoading: () => state => state.section.isLoading,
     error: () => state => state.section.error,

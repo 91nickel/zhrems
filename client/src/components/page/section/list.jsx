@@ -12,7 +12,7 @@ import Table from 'components/ui/table/sectionTable'
 import SearchStatus from 'components/ui/searchStatus'
 import SearchString from 'components/ui/searchString'
 import Button from 'components/common/buttons'
-import CheckboxField from 'components/common/form/checkboxField'
+import OnlyMySelector from 'components/common/onlyMySelector'
 
 import paginate from 'utils/paginate'
 
@@ -23,11 +23,11 @@ const List = () => {
 
     const {userId} = useSelector(authSelector.authData())
     const sections = useSelector(sectionSelector.get())
+    const settings = useSelector(authSelector.settings())
 
     const pageSize = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
-    const [onlyMy, setOnlyMy] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
     useEffect(() => {
@@ -60,7 +60,7 @@ const List = () => {
 
         let filteredData = [...data]
 
-        if (onlyMy) {
+        if (settings.onlyMy) {
             filteredData = data.filter(p => p.user === userId)
         }
 
@@ -95,9 +95,7 @@ const List = () => {
                 query={searchQuery}
                 onSubmit={searchHandler.onSubmit}
             />
-            <CheckboxField onChange={({value}) => {setOnlyMy(value)}} value={onlyMy} name="my">
-                Показать только мои
-            </CheckboxField>
+            <OnlyMySelector />
             <Table
                 sections={crop}
                 currentSort={currentSort}

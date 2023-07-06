@@ -22,8 +22,8 @@ const ModalWeightCreate = ({date, user}) => {
     const startData = {date, value: lastValue, user: userId}
 
     function onSubmit (payload) {
-        console.log('onSubmit()', payload)
-        dispatch(action.create([{...payload, date, user}]))
+        // console.log('onSubmit()', payload)
+        dispatch(action.create({...payload, date, user}))
             .unwrap()
             .then(res => {
                 dispatch(modalAction.close())

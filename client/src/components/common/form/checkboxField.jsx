@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const CheckboxField = ({label, name, value, required, error, children, onChange}) => {
+const CheckboxField = ({label, name, value, required, error, children, onChange, className}) => {
 
     const handleChange = ({target}) => {
         onChange({name: name, value: !value})
@@ -16,7 +16,7 @@ const CheckboxField = ({label, name, value, required, error, children, onChange}
     }
 
     return (
-        <div className="mb-4">
+        <div className={className}>
             {label && <p><label className="form-label">{label}</label></p>}
             <div className="form-check">
                 <input
@@ -39,12 +39,14 @@ const CheckboxField = ({label, name, value, required, error, children, onChange}
     )
 }
 CheckboxField.defaultProps = {
-    required: false
+    required: false,
+    className: 'mb-4',
 }
 CheckboxField.propTypes = {
     label: PropTypes.string,
     name: PropTypes.string.isRequired,
     value: PropTypes.bool.isRequired,
+    className: PropTypes.string,
     required: PropTypes.bool,
     error: PropTypes.string,
     children: PropTypes.oneOfType([

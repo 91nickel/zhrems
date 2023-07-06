@@ -18,9 +18,8 @@ function NavBar () {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <a className="navbar-brand" href="/">
-                <span className="fs-6 d-md-none">ZHREMS</span>
-                <span className="d-none d-md-block">ZHREMS</span>
-
+                <span className="fs-6 d-md-none">ЖРЕМС</span>
+                <span className="d-none d-md-block">ЖРЕМС</span>
             </a>
             <div className="navbar-nav flex-row justify-content-start me-auto">
                 <li className="nav-item d-none d-md-block">
@@ -30,11 +29,17 @@ function NavBar () {
                     <NavLink className="nav-link me-2" to="/products">Продукты</NavLink>
                 </li>
                 <li className="nav-item">
-                    <NavLink className="nav-link me-2" to="/meals">Блюда</NavLink>
+                    <NavLink className="nav-link me-2" to="/sections">Разделы</NavLink>
                 </li>
-                {isAdmin && <li className="nav-item">
-                    <NavLink className="nav-link me-2" to="/users">Пользователи</NavLink>
-                </li>}
+                <li className="nav-item">
+                    <NavLink className="nav-link me-2" to="/meals">Комбинации</NavLink>
+                </li>
+                {
+                    isAdmin
+                    && <li className="nav-item">
+                        <NavLink className="nav-link me-2" to="/users">Пользователи</NavLink>
+                    </li>
+                }
             </div>
             <div className="navbar-profile">
                 <NavProfile/>

@@ -30,7 +30,7 @@ const ProductTable = ({products, currentSort, onSort, onDelete, ...rest}) => {
             path: 'section',
             component: el => {
                 const section = sections.find(s => s._id === el.section)
-                return section && <NavLink to={`/products/section/${section._id}`}>{section.name}</NavLink>
+                return section ? section.name : ''
             },
         },
         user: {

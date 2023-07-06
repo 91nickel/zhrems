@@ -4,14 +4,16 @@ const User = require('models/User')
 const Account = require('models/Account')
 const Weight = require('models/Weight')
 const auth = require('middleware/auth.middleware')
+const log = require('middleware/log.middleware')
 const tokenService = require('services/token.service')
 
 const router = express.Router({mergeParams: true})
 
-router.get('/:id?', auth, async (request, response) => {
+router.get('/:id?', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body, request.params)
         const {id} = request.params
+        const {user} = request
+
         if (id) {
             const user = await User.findOne({_id: id})
             const account = await Account.findById(user.account)
@@ -19,14 +21,13 @@ router.get('/:id?', auth, async (request, response) => {
             return response.json({
                 ...user.toObject(),
                 isAdmin: account.admin,
-                // weight: weight.value,
                 email: account.email,
             })
         }
 
-        const conditions = request.user.isAdmin
+        const conditions = user.isAdmin
             ? {}
-            : {_id: request.user.localId}
+            : {_id: user.localId}
 
         const userList = await User.find(conditions)
         // const userIds = userList.map(u => u._id)
@@ -43,74 +44,71 @@ router.get('/:id?', auth, async (request, response) => {
                 ...user.toObject(),
                 email: account.email,
                 isAdmin: account.admin,
-                // weight: weight.value,
             }
         })
 
         return response.json(await Promise.all(result))
 
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
+        return response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
-router.patch('/:id', auth, async (request, response) => {
+router.patch('/:id', auth, log, async (request, response) => {
     try {
-        console.log({
-            path: 'PATCH /users/' + request.url,
-            body: request.body,
-            params: request.params,
-            user: request.user
-        })
         const {id} = request.params
+        const {user, body} = request
+        delete body._id
 
-        if (id === request.user._id || request.user.isAdmin) {
+        if (id === user.localId || user.isAdmin) {
             let account
-            const user = await User.findByIdAndUpdate(id, request.body, {new: true})
+            const user = await User.findByIdAndUpdate(id, body, {new: true})
 
-            if (request.body.email || request.body.password || request.body.isAdmin) {
+            if (body.email || body.password || body.isAdmin) {
                 const fields = {}
-                if (request.body.email)
-                    fields.email = request.body.email
-                if (request.body.password)
-                    fields.password = await bcrypt.hash(request.body.password, 12)
-                if (typeof request.body.isAdmin !== 'undefined' && request.user.isAdmin)
-                    fields.isAdmin = request.body.isAdmin
+                if (body.email)
+                    fields.email = body.email
+                if (body.password)
+                    fields.password = await bcrypt.hash(body.password, 12)
+                if (typeof body.isAdmin !== 'undefined' && user.isAdmin)
+                    fields.isAdmin = body.isAdmin
                 account = await Account.findByIdAndUpdate(user.account, fields, {new: true})
-                await tokenService.delete(request.user._id)
+                await tokenService.delete(id)
             } else {
                 account = await Account.findById(user.account)
             }
 
-            const weight = await Weight.findOne({user: id}).sort({value: 'desc'})
-
-            console.log(user)
             return response.json({
                 ...user.toObject(),
-                weight: weight.value,
                 email: account.email,
                 isAdmin: account.admin,
             })
         } else {
-            return response.status(401).json({error: {message: 'Unauthorized', code: 401}})
+            return response.status(403).json({error: {message: 'Forbidden', code: 403}})
         }
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
+        return response.status(500).json({error: {message: 'Server error. Try later. ' + error.message, code: 500}})
     }
 })
 
-router.delete('/:id', auth, async (request, response) => {
+router.delete('/:id', auth, log, async (request, response) => {
     try {
-        console.log(request.url, request.body)
         const {id} = request.params
-        if (id === request.user._id || request.user.isAdmin) {
-            const deletedUser = await User.findByIdAndDelete(id)
-            return response.json(deletedUser)
-        } else {
-            return response.status(401).json({error: {message: 'Unauthorized', code: 401}})
-        }
+        const {user} = request
+
+        if (id !== user.localId && !user.isAdmin)
+            return response.status(403).json({error: {message: 'FORBIDDEN', code: 403}})
+
+        let profile = await User.findById(id)
+        if (!profile)
+            return response.status(404).json({error: {message: 'NOT_FOUND', code: 404}})
+
+        await User.findByIdAndRemove(id)
+
+        return response.json({})
+
     } catch (error) {
-        response.status(500).json({error: {message: 'Server error. Try later', code: 500}})
+        return response.status(500).json({error: {message: 'Server error. Try later', code: 500}})
     }
 })
 

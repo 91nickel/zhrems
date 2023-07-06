@@ -2,16 +2,11 @@ import React from 'react'
 import { Route, Routes, NavLink, Navigate, Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
-// import Users from 'layouts/users'
-// import Login from 'layouts/login'
-// import Logout from 'layouts/logout'
-// import NotFound from 'layouts/not-found'
-// import NavBar from 'components/ui/navBar'
+
 import Layout from 'layouts'
 import CommonLoader from 'components/hoc/commonLoader'
 import AppLoader from 'components/hoc/appLoader'
 import DashboardLoader from 'components/hoc/dasboardLoader'
-
 import Dashboard from 'components/ui/dashboard/dashBoard'
 import ProtectedRoute from 'components/common/protectedRoute'
 import ProductPage from 'components/page/product'
@@ -80,11 +75,28 @@ const App = () => {
                             <Route path=":id/*">
                                 <Route index element={<ProductPage.View/>}/>
                                 <Route path="update" element={<ProductPage.Update/>}/>
+                                <Route path="*" element={<Layout.NotFound/>}/>
                             </Route>
-                            <Route path="sections/*">
-                                <Route index element={<SectionPage.List/>}/>
-                                <Route path="create" element={<SectionPage.Create/>}/>
-                                <Route path=":id/update" element={<SectionPage.Update/>}/>
+                            <Route path="*" element={<Layout.NotFound/>}/>
+                        </Route>
+                        <Route
+                            path="/sections/*"
+                            element={
+                                <ProtectedRoute redirectTo="/auth/signIn">
+                                    <CommonLoader entity="product">
+                                        <MainWrapper>
+                                            <Outlet/>
+                                        </MainWrapper>
+                                    </CommonLoader>
+                                </ProtectedRoute>
+                            }
+                        >
+                            <Route index element={<SectionPage.List/>}/>
+                            <Route path="create" element={<SectionPage.Create/>}/>
+                            <Route path=":id/*">
+                                <Route index element={<Navigate to="/sections"/>}/>
+                                <Route path="update" element={<SectionPage.Update/>}/>
+                                <Route path="*" element={<Layout.NotFound/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
@@ -106,6 +118,7 @@ const App = () => {
                             <Route path=":id/*">
                                 <Route index element={<MealPage.View/>}/>
                                 <Route path="update" element={<MealPage.Update/>}/>
+                                <Route path="*" element={<Layout.NotFound/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>
@@ -161,6 +174,7 @@ const App = () => {
                             <Route path=":id/*">
                                 <Route index element={<UserPage.View/>}/>
                                 <Route path="update" element={<UserPage.Update/>}/>
+                                <Route path="*" element={<Layout.NotFound/>}/>
                             </Route>
                             <Route path="*" element={<Layout.NotFound/>}/>
                         </Route>

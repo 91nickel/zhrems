@@ -7,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selector as authSelector } from 'store/user'
 import { selector as mealSelector, action as mealAction } from 'store/meal'
 import { selector as productSelector } from 'store/product'
-import Button from '../../common/buttons'
+import Button from 'components/common/buttons'
+import NotFound from 'layouts/404'
+import Forbidden from 'layouts/403'
 
 const Update = () => {
     const {id} = useParams()
@@ -18,16 +20,22 @@ const Update = () => {
     const meal = useSelector(mealSelector.byId(id))
 
     async function onSubmit (payload) {
-        console.log('Meal.update.onSubmit()', payload)
+        // console.log('Meal.update.onSubmit()', payload)
         await dispatch(mealAction.update({_id: id, ...payload})).unwrap()
         navigate('..')
     }
+
+    if (!meal)
+        return <NotFound/>
+
+    if (meal.user !== userId && !isAdmin)
+        return <Forbidden/>
 
     return (
         <>
             <div className="row">
                 <div className="col-6 col-lg-3">
-                    <Button.Back to=".." />
+                    <Button.Back to=".."/>
                 </div>
             </div>
             <h2>Редактирование комбинации</h2>

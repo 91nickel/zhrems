@@ -2,10 +2,11 @@ const TOKEN_KEY = 'jwt-token'
 const REFRESH_KEY = 'jwt-refresh-token'
 const EXPIRES_KEY = 'jwt-expires'
 const USER_ID_KEY = 'user-local-id'
+const USER_SETTINGS_KEY = 'user-settings'
 
 export function setTokens ({refreshToken, idToken, localId, expiresIn = 3600}) {
     const expirationDate = (Date.now() + expiresIn * 1000).toString()
-    console.log('setTokens', refreshToken, idToken, localId, expiresIn)
+    // console.log('setTokens', refreshToken, idToken, localId, expiresIn)
     if (localId)
         localStorage.setItem(USER_ID_KEY, localId)
     if (idToken)
@@ -32,6 +33,14 @@ export function getUserId () {
     return localStorage.getItem(USER_ID_KEY)
 }
 
+export function setUserSettings (settings) {
+    return localStorage.setItem(USER_SETTINGS_KEY, JSON.stringify(settings))
+}
+
+export function getUserSettings () {
+    return JSON.parse(localStorage.getItem(USER_SETTINGS_KEY) || '{}')
+}
+
 export function removeAuthData () {
     localStorage.removeItem(USER_ID_KEY)
     localStorage.removeItem(TOKEN_KEY)
@@ -45,6 +54,8 @@ const localStorageService = {
     getRefreshToken,
     getTokenExpirationDate,
     getUserId,
+    getUserSettings,
+    setUserSettings,
     removeAuthData,
 }
 

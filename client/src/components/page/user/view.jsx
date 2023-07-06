@@ -1,23 +1,26 @@
 import React from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selector, action } from 'store/user'
-import LoadingLayout from 'layouts/loading'
-import Button from '../../common/buttons'
+import { selector as userSelector, action as userAction } from 'store/user'
+import { selector as weightSelector, action as weightAction } from 'store/weight'
+import Button from 'components/common/buttons'
+import NotFound from 'layouts/404'
+import Forbidden from 'layouts/403'
 
 const View = () => {
     const {id} = useParams()
-    const {isAdmin} = useSelector(selector.authData)
 
-    const user = useSelector(selector.current())
-    const profile = useSelector(selector.byId(id))
+    const {isAdmin, userId} = useSelector(userSelector.authData())
+    const profile = useSelector(userSelector.byId(id))
+    const weight = useSelector(weightSelector.last())
 
-    if (!profile || !user)
-        return <LoadingLayout/>
+    if (!profile)
+        return <NotFound/>
 
-    const isMyProfile = profile._id === user._id
+    if (profile._id !== userId && !isAdmin)
+        return <Forbidden/>
 
-    return (profile &&
+    return (
         <>
             <div className="row mb-3">
                 <div className="col-6 col-lg-3">
@@ -27,10 +30,9 @@ const View = () => {
 
             <div className="card mb-3">
                 <div className="card-body">
-                    {(isMyProfile || isAdmin) &&
                     <NavLink to="update" className="position-absolute top-0 end-0 btn btn-light btn-sm">
                         <i className="bi bi-gear"/>
-                    </NavLink>}
+                    </NavLink>
                     <div className="d-flex flex-column align-items-center text-center position-relative">
                         <img
                             src={profile.image}
@@ -48,18 +50,35 @@ const View = () => {
             <div className="card mb-3">
                 <div className="card-body d-flex flex-column justify-content-center text-center">
                     <h5 className="card-title">
-                        <span>Последний вес</span>
+                        <span>Пол</span>
                     </h5>
                     <p className="card-text">
-                        {profile.weight}
+                        {profile.sex === 'male' && 'МУЖ'}
+                        {profile.sex === 'female' && 'ЖЕН'}
+                        {profile.sex === 'other' && 'ДР'}
                     </p>
                 </div>
             </div>
+            {
+                weight
+                &&
+                <div className="card mb-3">
+                    <div className="card-body d-flex flex-column justify-content-center text-center">
+                        <h5 className="card-title">
+                            <span>Последний вес</span>
+                        </h5>
+                        <p className="card-text">
+                            {weight.value}
+                        </p>
+                    </div>
+                </div>
+            }
         </>
     )
 }
 
-View.propTypes = {
+View.propTypes =
+{
     // id: PropTypes.string.isRequired,
 }
 

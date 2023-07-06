@@ -14,6 +14,7 @@ import paginate from 'utils/paginate'
 import Button from 'components/common/buttons'
 import { selector as authSelector } from 'store/user'
 import CheckboxField from 'components/common/form/checkboxField'
+import OnlyMySelector from '../../common/onlyMySelector'
 
 const List = () => {
 
@@ -22,11 +23,11 @@ const List = () => {
 
     const meals = useSelector(mealSelector.get())
     const {userId} = useSelector(authSelector.authData())
+    const settings = useSelector(authSelector.settings())
 
     const pageSize = 20
     const [currentPage, setCurrentPage] = useState(1)
     const [currentSort, setCurrentSort] = useState({path: 'name', order: 'asc'})
-    const [onlyMy, setOnlyMy] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
     useEffect(() => {
@@ -60,7 +61,7 @@ const List = () => {
 
         let filteredData = [...data]
 
-        if (onlyMy) {
+        if (settings.onlyMy) {
             filteredData = data.filter(m => m.user === userId)
         }
 
@@ -98,9 +99,7 @@ const List = () => {
                         query={searchQuery}
                         onSubmit={searchHandler.onSubmit}
                     />
-                    <CheckboxField onChange={({value}) => {setOnlyMy(value)}} value={onlyMy} name="my">
-                        Показать только мои
-                    </CheckboxField>
+                    <OnlyMySelector />
                     <Table
                         products={crop}
                         currentSort={currentSort}

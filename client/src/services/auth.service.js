@@ -41,7 +41,7 @@ const service = {
         const {data} = await httpAuth.post('token', {
             refresh_token: localStorageService.getRefreshToken(),
         })
-        console.log('auth.service.refresh()', data)
+        // console.log('auth.service.refresh()', data)
         return data
     },
 
