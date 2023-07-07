@@ -19,11 +19,11 @@ const PORT = config.get('port') ?? 3000
 
 if (process.env.NODE_ENV === 'production') {
     console.log('Prod ...')
-    app.use('/', express.static(path.join(__dirname, 'client')))
-    const indexPath = path.join(__dirname, 'client', 'index.html')
-    app.get('*', (request, response) => {
-        return response.sendFile(indexPath)
-    })
+    // app.use('/', express.static(path.join(__dirname, 'client')))
+    // const indexPath = path.join(__dirname, 'client', 'index.html')
+    // app.get('*', (request, response) => {
+    //     return response.sendFile(indexPath)
+    // })
 } else {
     console.log('Dev ...')
 }
