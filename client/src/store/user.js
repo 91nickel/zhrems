@@ -7,8 +7,6 @@ import localStorageService from 'services/localStorage.service'
 
 import generateAuthError from 'utils/generateAuthError'
 
-const savedSettings = localStorageService.getUserSettings()
-
 const slice = createSlice({
     name: 'user',
     initialState: {
@@ -22,7 +20,6 @@ const slice = createSlice({
         isAuthorized: null,
         settings: {
             onlyMy: true,
-            ...savedSettings,
         },
     },
     reducers: {
@@ -225,18 +222,9 @@ export const action = {
         },
     ),
 
-    updateSettings: createAsyncThunk(
-        'user/updateSettings',
-        async (payload, thunkAPI) => {
-            // thunkAPI.dispatch(requested())
-            try {
-                thunkAPI.dispatch(settingsUpdated(payload))
-            } catch (error) {
-                // thunkAPI.dispatch(requestFailed(error.message))
-                return thunkAPI.rejectWithValue(error.message)
-            }
-        },
-    ),
+    updateSettings: payload => dispatch => {
+        dispatch(settingsUpdated(payload))
+    },
 
 }
 
